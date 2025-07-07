@@ -1,0 +1,1666 @@
+lipid ,family
+Carnitine_(00:0),Acyl-carnitine
+Carnitine_(02:0),Acyl-carnitine
+Carnitine_(03:0),Acyl-carnitine
+Carnitine_(03:0-2COOH),Acyl-carnitine
+Carnitine_(03:0-OH),Acyl-carnitine
+Carnitine_(03:1),Acyl-carnitine
+Carnitine_(04:0),Acyl-carnitine
+Carnitine_(04:0-2COOH),Acyl-carnitine
+Carnitine_(04:0-OH),Acyl-carnitine
+Carnitine_(04:1),Acyl-carnitine
+Carnitine_(05:0),Acyl-carnitine
+Carnitine_(05:1),Acyl-carnitine
+Carnitine_(06:0),Acyl-carnitine
+Carnitine_(06:0-2COOH),Acyl-carnitine
+Carnitine_(06:1),Acyl-carnitine
+Carnitine_(07:0),Acyl-carnitine
+Carnitine_(08:0),Acyl-carnitine
+Carnitine_(08:0),Acyl-carnitine
+Carnitine_(08:0-2COOH),Acyl-carnitine
+Carnitine_(08:1),Acyl-carnitine
+Carnitine_(09:0),Acyl-carnitine
+Carnitine_(10:0),Acyl-carnitine
+Carnitine_(10:0-2COOH),Acyl-carnitine
+Carnitine_(10:0-OH),Acyl-carnitine
+Carnitine_(10:1),Acyl-carnitine
+Carnitine_(10:2),Acyl-carnitine
+Carnitine_(11:0),Acyl-carnitine
+Carnitine_(12:0),Acyl-carnitine
+Carnitine_(12:0-OH),Acyl-carnitine
+Carnitine_(12:1),Acyl-carnitine
+Carnitine_(13:0),Acyl-carnitine
+Carnitine_(14:0),Acyl-carnitine
+Carnitine_(14:0-OH),Acyl-carnitine
+Carnitine_(14:1),Acyl-carnitine
+Carnitine_(14:2),Acyl-carnitine
+Carnitine_(15:0),Acyl-carnitine
+Carnitine_(16:0),Acyl-carnitine
+Carnitine_(16:0-OH),Acyl-carnitine
+Carnitine_(16:1),Acyl-carnitine
+Carnitine_(16:2),Acyl-carnitine
+Carnitine_(17:0),Acyl-carnitine
+Carnitine_(17:1),Acyl-carnitine
+Carnitine_(17:2),Acyl-carnitine
+Carnitine_(18:0),Acyl-carnitine
+Carnitine_(18:0-OH),Acyl-carnitine
+Carnitine_(18:1),Acyl-carnitine
+Carnitine_(18:2),Acyl-carnitine
+Carnitine_(18:3),Acyl-carnitine
+Carnitine_(19:0),Acyl-carnitine
+Carnitine_(20:0),Acyl-carnitine
+Carnitine_(20:1),Acyl-carnitine
+Carnitine_(20:2),Acyl-carnitine
+Carnitine_(20:3),Acyl-carnitine
+Carnitine_(20:4),Acyl-carnitine
+Carnitine_(20:5),Acyl-carnitine
+Carnitine_(21:0),Acyl-carnitine
+Carnitine_(22:0),Acyl-carnitine
+Carnitine_(22:1),Acyl-carnitine
+Carnitine_(22:2),Acyl-carnitine
+Carnitine_(22:4),Acyl-carnitine
+Carnitine_(22:5),Acyl-carnitine
+Carnitine_(22:6),Acyl-carnitine
+CL_(66:01),Cardiolipins
+CL_(66:02),Cardiolipins
+CL_(66:03),Cardiolipins
+CL_(66:04),Cardiolipins
+CL_(68:00),Cardiolipins
+CL_(68:01),Cardiolipins
+CL_(68:02),Cardiolipins
+CL_(68:03),Cardiolipins
+CL_(68:04),Cardiolipins
+CL_(68:05),Cardiolipins
+CL_(68:06),Cardiolipins
+CL_(68:07),Cardiolipins
+CL_(68:08),Cardiolipins
+CL_(69:02),Cardiolipins
+CL_(69:03),Cardiolipins
+CL_(69:04),Cardiolipins
+CL_(69:05),Cardiolipins
+CL_(69:06),Cardiolipins
+CL_(69:07),Cardiolipins
+CL_(69:08),Cardiolipins
+CL_(70:00),Cardiolipins
+CL_(70:01),Cardiolipins
+CL_(70:02),Cardiolipins
+CL_(70:03),Cardiolipins
+CL_(70:04),Cardiolipins
+CL_(70:05),Cardiolipins
+CL_(70:06),Cardiolipins
+CL_(70:07),Cardiolipins
+CL_(70:08),Cardiolipins
+CL_(70:09),Cardiolipins
+CL_(71:02),Cardiolipins
+CL_(71:03),Cardiolipins
+CL_(71:04),Cardiolipins
+CL_(71:05),Cardiolipins
+CL_(71:06),Cardiolipins
+CL_(71:07),Cardiolipins
+CL_(71:08),Cardiolipins
+CL_(72:00),Cardiolipins
+CL_(72:01),Cardiolipins
+CL_(72:02),Cardiolipins
+CL_(72:03),Cardiolipins
+CL_(72:04),Cardiolipins
+CL_(72:05),Cardiolipins
+CL_(72:06),Cardiolipins
+CL_(72:07),Cardiolipins
+CL_(72:08),Cardiolipins
+CL_(72:09),Cardiolipins
+CL_(72:10),Cardiolipins
+CL_(72:11),Cardiolipins
+CL_(72:12),Cardiolipins
+CL_(73:03),Cardiolipins
+CL_(73:04),Cardiolipins
+CL_(73:05),Cardiolipins
+CL_(73:06),Cardiolipins
+CL_(73:07),Cardiolipins
+CL_(73:08),Cardiolipins
+CL_(74:00),Cardiolipins
+CL_(74:01),Cardiolipins
+CL_(74:02),Cardiolipins
+CL_(74:03),Cardiolipins
+CL_(74:04),Cardiolipins
+CL_(74:05),Cardiolipins
+CL_(74:06),Cardiolipins
+CL_(74:07),Cardiolipins
+CL_(74:08),Cardiolipins
+CL_(74:09),Cardiolipins
+CL_(74:10),Cardiolipins
+CL_(74:11),Cardiolipins
+CL_(74:12),Cardiolipins
+CL_(75:04),Cardiolipins
+CL_(75:05),Cardiolipins
+CL_(75:06),Cardiolipins
+CL_(75:07),Cardiolipins
+CL_(75:08),Cardiolipins
+CL_(76:00),Cardiolipins
+CL_(76:01),Cardiolipins
+CL_(76:02),Cardiolipins
+CL_(76:03),Cardiolipins
+CL_(76:04),Cardiolipins
+CL_(76:05),Cardiolipins
+CL_(76:06),Cardiolipins
+CL_(76:07),Cardiolipins
+CL_(76:08),Cardiolipins
+CL_(76:09),Cardiolipins
+CL_(76:10),Cardiolipins
+CL_(76:11),Cardiolipins
+CL_(76:12),Cardiolipins
+Cer_(32:0),Ceramides
+Cer_(32:0-OH),Ceramides
+Cer_(32:1),Ceramides
+Cer_(32:1-OH),Ceramides
+Cer_(33:0),Ceramides
+Cer_(33:0-OH),Ceramides
+Cer_(33:1),Ceramides
+Cer_(33:1-OH),Ceramides
+Cer_(34:0),Ceramides
+Cer_(34:0-OH),Ceramides
+Cer_(34:1),Ceramides
+Cer_(34:1-OH),Ceramides
+Cer_(34:2),Ceramides
+Cer_(35:0),Ceramides
+Cer_(35:0-OH),Ceramides
+Cer_(35:1),Ceramides
+Cer_(35:1-OH),Ceramides
+Cer_(36:0),Ceramides
+Cer_(36:0-OH),Ceramides
+Cer_(36:1),Ceramides
+Cer_(36:1-OH),Ceramides
+Cer_(36:2),Ceramides
+Cer_(36:2-OH),Ceramides
+Cer_(37:0),Ceramides
+Cer_(37:0-OH),Ceramides
+Cer_(37:1),Ceramides
+Cer_(37:1-OH),Ceramides
+Cer_(37:2),Ceramides
+Cer_(38:0),Ceramides
+Cer_(38:0-OH),Ceramides
+Cer_(38:1),Ceramides
+Cer_(38:1-OH),Ceramides
+Cer_(38:2),Ceramides
+Cer_(39:0),Ceramides
+Cer_(39:0-OH),Ceramides
+Cer_(39:1),Ceramides
+Cer_(39:1-OH),Ceramides
+Cer_(39:2),Ceramides
+Cer_(40:0),Ceramides
+Cer_(40:0-OH),Ceramides
+Cer_(40:1),Ceramides
+Cer_(40:1-OH),Ceramides
+Cer_(40:2),Ceramides
+Cer_(41:0),Ceramides
+Cer_(41:0-OH),Ceramides
+Cer_(41:1),Ceramides
+Cer_(41:1-OH),Ceramides
+Cer_(41:2),Ceramides
+Cer_(42:0),Ceramides
+Cer_(42:0-OH),Ceramides
+Cer_(42:1),Ceramides
+Cer_(42:1-OH),Ceramides
+Cer_(42:2),Ceramides
+Cer_(42:3),Ceramides
+Cer_(43:0),Ceramides
+Cer_(43:0-OH),Ceramides
+Cer_(43:1),Ceramides
+Cer_(43:1-OH),Ceramides
+Cer_(43:2),Ceramides
+Cer_(44:0),Ceramides
+Cer_(44:0-OH),Ceramides
+Cer_(44:1),Ceramides
+Cer_(44:1-OH),Ceramides
+Cer_(44:2),Ceramides
+Cer_(45:0),Ceramides
+Cer_(45:0-OH),Ceramides
+Cer_(45:1),Ceramides
+Cer_(45:1-OH),Ceramides
+Cer_(45:2),Ceramides
+Cer_(46:0),Ceramides
+Cer_(46:0-OH),Ceramides
+Cer_(46:1),Ceramides
+Cer_(46:1-OH),Ceramides
+Cer_(46:2),Ceramides
+Cer_(47:0),Ceramides
+Cer_(47:0-OH),Ceramides
+Cer_(47:1),Ceramides
+Cer_(48:0),Ceramides
+Cer_(48:0-OH),Ceramides
+Cer_(48:1),Ceramides
+Cer_(48:1-OH),Ceramides
+Cer_(48:2),Ceramides
+Cer_(50:0),Ceramides
+Cer_(50:0-OH),Ceramides
+Cer_(50:1),Ceramides
+Cer_(50:2),Ceramides
+Cholesterol,Cholesterol + cholesteryl esters
+CE_(02:0),Cholesterol + cholesteryl esters
+CE_(04:0),Cholesterol + cholesteryl esters
+CE_(06:0),Cholesterol + cholesteryl esters
+CE_(08:0),Cholesterol + cholesteryl esters
+CE_(10:0),Cholesterol + cholesteryl esters
+CE_(12:0),Cholesterol + cholesteryl esters
+CE_(14:0),Cholesterol + cholesteryl esters
+CE_(14:1),Cholesterol + cholesteryl esters
+CE_(15:0),Cholesterol + cholesteryl esters
+CE_(15:1),Cholesterol + cholesteryl esters
+CE_(16:0),Cholesterol + cholesteryl esters
+CE_(16:1),Cholesterol + cholesteryl esters
+CE_(16:2),Cholesterol + cholesteryl esters
+CE_(17:0),Cholesterol + cholesteryl esters
+CE_(17:1),Cholesterol + cholesteryl esters
+CE_(17:2),Cholesterol + cholesteryl esters
+CE_(18:0),Cholesterol + cholesteryl esters
+CE_(18:1),Cholesterol + cholesteryl esters
+CE_(18:2),Cholesterol + cholesteryl esters
+CE_(18:3),Cholesterol + cholesteryl esters
+CE_(20:0),Cholesterol + cholesteryl esters
+CE_(20:4),Cholesterol + cholesteryl esters
+CE_(20:5),Cholesterol + cholesteryl esters
+CE_(21:0),Cholesterol + cholesteryl esters
+CE_(22:0),Cholesterol + cholesteryl esters
+CE_(22:6),Cholesterol + cholesteryl esters
+CPE_(32:0),Ceramide phospho-ethanolamines
+CPE_(32:1),Ceramide phospho-ethanolamines
+CPE_(32:2),Ceramide phospho-ethanolamines
+CPE_(33:0),Ceramide phospho-ethanolamines
+CPE_(33:1),Ceramide phospho-ethanolamines
+CPE_(33:2),Ceramide phospho-ethanolamines
+CPE_(34:0),Ceramide phospho-ethanolamines
+CPE_(34:1),Ceramide phospho-ethanolamines
+CPE_(34:2),Ceramide phospho-ethanolamines
+CPE_(35:0),Ceramide phospho-ethanolamines
+CPE_(35:1),Ceramide phospho-ethanolamines
+CPE_(35:2),Ceramide phospho-ethanolamines
+CPE_(36:0),Ceramide phospho-ethanolamines
+CPE_(36:1),Ceramide phospho-ethanolamines
+CPE_(36:2),Ceramide phospho-ethanolamines
+CPE_(37:0),Ceramide phospho-ethanolamines
+CPE_(37:1),Ceramide phospho-ethanolamines
+CPE_(37:2),Ceramide phospho-ethanolamines
+CPE_(38:0),Ceramide phospho-ethanolamines
+CPE_(38:1),Ceramide phospho-ethanolamines
+CPE_(38:2),Ceramide phospho-ethanolamines
+CPE_(39:0),Ceramide phospho-ethanolamines
+CPE_(39:1),Ceramide phospho-ethanolamines
+CPE_(39:2),Ceramide phospho-ethanolamines
+CPE_(40:0),Ceramide phospho-ethanolamines
+CPE_(40:1),Ceramide phospho-ethanolamines
+CPE_(40:2),Ceramide phospho-ethanolamines
+CPE_(41:0),Ceramide phospho-ethanolamines
+CPE_(41:1),Ceramide phospho-ethanolamines
+CPE_(41:2),Ceramide phospho-ethanolamines
+CPE_(42:0),Ceramide phospho-ethanolamines
+CPE_(42:1),Ceramide phospho-ethanolamines
+CPE_(42:2),Ceramide phospho-ethanolamines
+CPE_(43:0),Ceramide phospho-ethanolamines
+CPE_(43:1),Ceramide phospho-ethanolamines
+CPE_(43:2),Ceramide phospho-ethanolamines
+CPE_(44:0),Ceramide phospho-ethanolamines
+CPE_(44:1),Ceramide phospho-ethanolamines
+CPE_(44:2),Ceramide phospho-ethanolamines
+DG_(30:0),Diacyl-glycerols
+DG_(30:1),Diacyl-glycerols
+DG_(32:0),Diacyl-glycerols
+DG_(32:1),Diacyl-glycerols
+DG_(33:0),Diacyl-glycerols
+DG_(33:1),Diacyl-glycerols
+DG_(34:0),Diacyl-glycerols
+DG_(34:1),Diacyl-glycerols
+DG_(34:2),Diacyl-glycerols
+DG_(35:0),Diacyl-glycerols
+DG_(35:1),Diacyl-glycerols
+DG_(35:2),Diacyl-glycerols
+DG_(35:3),Diacyl-glycerols
+DG_(36:0),Diacyl-glycerols
+DG_(36:1),Diacyl-glycerols
+DG_(36:2),Diacyl-glycerols
+DG_(36:3),Diacyl-glycerols
+DG_(37:0),Diacyl-glycerols
+DG_(37:1),Diacyl-glycerols
+DG_(37:2),Diacyl-glycerols
+DG_(38:0),Diacyl-glycerols
+DG_(38:1),Diacyl-glycerols
+DG_(38:2),Diacyl-glycerols
+DG_(38:3),Diacyl-glycerols
+DG_(39:2),Diacyl-glycerols
+DG_(40:1),Diacyl-glycerols
+DG_(40:2),Diacyl-glycerols
+DG_(40:3),Diacyl-glycerols
+DG_(40:4),Diacyl-glycerols
+DG_(40:5),Diacyl-glycerols
+DG_(41:4),Diacyl-glycerols
+DG_(42:3),Diacyl-glycerols
+DG_(42:4),Diacyl-glycerols
+DG_(42:5),Diacyl-glycerols
+DG_(42:6),Diacyl-glycerols
+DGDG_(32:0),Digalacto-diacylglycerols
+DGDG_(32:1),Digalacto-diacylglycerols
+DGDG_(32:2),Digalacto-diacylglycerols
+DGDG_(33:0),Digalacto-diacylglycerols
+DGDG_(33:1),Digalacto-diacylglycerols
+DGDG_(33:2),Digalacto-diacylglycerols
+DGDG_(34:0),Digalacto-diacylglycerols
+DGDG_(34:1),Digalacto-diacylglycerols
+DGDG_(34:2),Digalacto-diacylglycerols
+DGDG_(35:0),Digalacto-diacylglycerols
+DGDG_(35:1),Digalacto-diacylglycerols
+DGDG_(35:2),Digalacto-diacylglycerols
+DGDG_(36:0),Digalacto-diacylglycerols
+DGDG_(36:1),Digalacto-diacylglycerols
+DGDG_(36:2),Digalacto-diacylglycerols
+DGDG_(37:0),Digalacto-diacylglycerols
+DGDG_(37:1),Digalacto-diacylglycerols
+DGDG_(37:2),Digalacto-diacylglycerols
+DGDG_(38:0),Digalacto-diacylglycerols
+DGDG_(38:1),Digalacto-diacylglycerols
+DGDG_(38:2),Digalacto-diacylglycerols
+PC-O_(30:0),Ether-PC
+PC-O_(30:1),Ether-PC
+PC-O_(31:0),Ether-PC
+PC-O_(31:1),Ether-PC
+PC-O_(32:0),Ether-PC
+PC-O_(32:1),Ether-PC
+PC-O_(32:2),Ether-PC
+PC-O_(33:0),Ether-PC
+PC-O_(33:1),Ether-PC
+PC-O_(33:2),Ether-PC
+PC-O_(34:0),Ether-PC
+PC-O_(34:1),Ether-PC
+PC-O_(34:2),Ether-PC
+PC-O_(34:3),Ether-PC
+PC-O_(35:0),Ether-PC
+PC-O_(35:1),Ether-PC
+PC-O_(35:2),Ether-PC
+PC-O_(35:3),Ether-PC
+PC-O_(36:0),Ether-PC
+PC-O_(36:1),Ether-PC
+PC-O_(36:2),Ether-PC
+PC-O_(36:3),Ether-PC
+PC-O_(36:4),Ether-PC
+PC-O_(37:0),Ether-PC
+PC-O_(37:1),Ether-PC
+PC-O_(37:2),Ether-PC
+PC-O_(37:3),Ether-PC
+PC-O_(37:4),Ether-PC
+PC-O_(38:0),Ether-PC
+PC-O_(38:1),Ether-PC
+PC-O_(38:2),Ether-PC
+PC-O_(38:3),Ether-PC
+PC-O_(38:4),Ether-PC
+PC-O_(39:0),Ether-PC
+PC-O_(39:1),Ether-PC
+PC-O_(39:2),Ether-PC
+PC-O_(39:3),Ether-PC
+PC-O_(39:4),Ether-PC
+PC-O_(40:0),Ether-PC
+PC-O_(40:1),Ether-PC
+PC-O_(40:2),Ether-PC
+PC-O_(40:3),Ether-PC
+PC-O_(40:4),Ether-PC
+PC-O_(40:5),Ether-PC
+PC-O_(40:6),Ether-PC
+PC-P_(30:0),Ether-PC
+PC-P_(30:1),Ether-PC
+PC-P_(31:0),Ether-PC
+PC-P_(31:1),Ether-PC
+PC-P_(32:0),Ether-PC
+PC-P_(32:1),Ether-PC
+PC-P_(32:2),Ether-PC
+PC-P_(32:3),Ether-PC
+PC-P_(33:0),Ether-PC
+PC-P_(33:1),Ether-PC
+PC-P_(33:2),Ether-PC
+PC-P_(33:3),Ether-PC
+PC-P_(34:0),Ether-PC
+PC-P_(34:1),Ether-PC
+PC-P_(34:2),Ether-PC
+PC-P_(34:3),Ether-PC
+PC-P_(35:0),Ether-PC
+PC-P_(35:1),Ether-PC
+PC-P_(35:2),Ether-PC
+PC-P_(35:3),Ether-PC
+PC-P_(36:0),Ether-PC
+PC-P_(36:1),Ether-PC
+PC-P_(36:2),Ether-PC
+PC-P_(36:3),Ether-PC
+PC-P_(36:4),Ether-PC
+PC-P_(37:0),Ether-PC
+PC-P_(37:1),Ether-PC
+PC-P_(37:2),Ether-PC
+PC-P_(37:3),Ether-PC
+PC-P_(37:4),Ether-PC
+PC-P_(38:0),Ether-PC
+PC-P_(38:1),Ether-PC
+PC-P_(38:2),Ether-PC
+PC-P_(38:3),Ether-PC
+PC-P_(38:4),Ether-PC
+PC-P_(39:0),Ether-PC
+PC-P_(39:1),Ether-PC
+PC-P_(39:2),Ether-PC
+PC-P_(39:3),Ether-PC
+PC-P_(39:4),Ether-PC
+PC-P_(40:0),Ether-PC
+PC-P_(40:1),Ether-PC
+PC-P_(40:2),Ether-PC
+PC-P_(40:3),Ether-PC
+PC-P_(40:4),Ether-PC
+PC-P_(40:5),Ether-PC
+PC-P_(40:6),Ether-PC
+PE-O_(30:0),Ether-PE
+PE-O_(30:1),Ether-PE
+PE-O_(31:0),Ether-PE
+PE-O_(31:1),Ether-PE
+PE-O_(32:0),Ether-PE
+PE-O_(32:1),Ether-PE
+PE-O_(32:2),Ether-PE
+PE-O_(33:0),Ether-PE
+PE-O_(33:1),Ether-PE
+PE-O_(33:2),Ether-PE
+PE-O_(34:0),Ether-PE
+PE-O_(34:1),Ether-PE
+PE-O_(34:2),Ether-PE
+PE-O_(34:3),Ether-PE
+PE-O_(35:0),Ether-PE
+PE-O_(35:1),Ether-PE
+PE-O_(35:2),Ether-PE
+PE-O_(35:3),Ether-PE
+PE-O_(36:0),Ether-PE
+PE-O_(36:1),Ether-PE
+PE-O_(36:2),Ether-PE
+PE-O_(36:3),Ether-PE
+PE-O_(36:4),Ether-PE
+PE-O_(37:0),Ether-PE
+PE-O_(37:1),Ether-PE
+PE-O_(37:2),Ether-PE
+PE-O_(37:3),Ether-PE
+PE-O_(37:4),Ether-PE
+PE-O_(38:0),Ether-PE
+PE-O_(38:1),Ether-PE
+PE-O_(38:2),Ether-PE
+PE-O_(38:3),Ether-PE
+PE-O_(38:4),Ether-PE
+PE-O_(39:0),Ether-PE
+PE-O_(39:1),Ether-PE
+PE-O_(39:2),Ether-PE
+PE-O_(39:3),Ether-PE
+PE-O_(39:4),Ether-PE
+PE-O_(40:0),Ether-PE
+PE-O_(40:1),Ether-PE
+PE-O_(40:2),Ether-PE
+PE-O_(40:3),Ether-PE
+PE-O_(40:4),Ether-PE
+PE-O_(40:5),Ether-PE
+PE-O_(40:6),Ether-PE
+PE-P_(30:0),Ether-PE
+PE-P_(30:1),Ether-PE
+PE-P_(31:0),Ether-PE
+PE-P_(31:1),Ether-PE
+PE-P_(32:0),Ether-PE
+PE-P_(32:1),Ether-PE
+PE-P_(32:2),Ether-PE
+PE-P_(32:3),Ether-PE
+PE-P_(33:0),Ether-PE
+PE-P_(33:1),Ether-PE
+PE-P_(33:2),Ether-PE
+PE-P_(33:3),Ether-PE
+PE-P_(34:0),Ether-PE
+PE-P_(34:1),Ether-PE
+PE-P_(34:2),Ether-PE
+PE-P_(34:3),Ether-PE
+PE-P_(35:0),Ether-PE
+PE-P_(35:1),Ether-PE
+PE-P_(35:2),Ether-PE
+PE-P_(35:3),Ether-PE
+PE-P_(36:0),Ether-PE
+PE-P_(36:1),Ether-PE
+PE-P_(36:2),Ether-PE
+PE-P_(36:3),Ether-PE
+PE-P_(36:4),Ether-PE
+PE-P_(37:0),Ether-PE
+PE-P_(37:1),Ether-PE
+PE-P_(37:2),Ether-PE
+PE-P_(37:3),Ether-PE
+PE-P_(37:4),Ether-PE
+PE-P_(38:0),Ether-PE
+PE-P_(38:1),Ether-PE
+PE-P_(38:2),Ether-PE
+PE-P_(38:3),Ether-PE
+PE-P_(38:4),Ether-PE
+PE-P_(39:0),Ether-PE
+PE-P_(39:1),Ether-PE
+PE-P_(39:2),Ether-PE
+PE-P_(39:3),Ether-PE
+PE-P_(39:4),Ether-PE
+PE-P_(40:0),Ether-PE
+PE-P_(40:1),Ether-PE
+PE-P_(40:2),Ether-PE
+PE-P_(40:3),Ether-PE
+PE-P_(40:4),Ether-PE
+PE-P_(40:5),Ether-PE
+PE-P_(40:6),Ether-PE
+FFA_(14:0),Free fatty acids
+FFA_(15:0),Free fatty acids
+FFA_(16:0),Free fatty acids
+FFA_(16:1),Free fatty acids
+FFA_(17:0),Free fatty acids
+FFA_(17:1),Free fatty acids
+FFA_(17:2),Free fatty acids
+FFA_(18:0),Free fatty acids
+FFA_(18:1),Free fatty acids
+FFA_(18:2),Free fatty acids
+FFA_(18:3),Free fatty acids
+FFA_(19:0),Free fatty acids
+FFA_(20:0),Free fatty acids
+FFA_(20:1),Free fatty acids
+FFA_(20:2),Free fatty acids
+FFA_(20:3),Free fatty acids
+FFA_(20:4),Free fatty acids
+FFA_(20:5),Free fatty acids
+FFA_(21:0),Free fatty acids
+FFA_(22:0),Free fatty acids
+FFA_(22:1),Free fatty acids
+FFA_(22:2),Free fatty acids
+FFA_(22:3),Free fatty acids
+FFA_(22:4),Free fatty acids
+FFA_(22:5),Free fatty acids
+FFA_(22:6),Free fatty acids
+FFA_(24:0),Free fatty acids
+FFA_(24:1),Free fatty acids
+GB3_(34:0-OH),GB Gangliosides
+GB3_(34:1),GB Gangliosides
+GB3_(34:1-OH),GB Gangliosides
+GB3_(34:2),GB Gangliosides
+GB3_(36:1),GB Gangliosides
+GB3_(36:1-OH),GB Gangliosides
+GB3_(36:2),GB Gangliosides
+GB3_(38:0),GB Gangliosides
+GB3_(38:1),GB Gangliosides
+GB3_(38:1-OH),GB Gangliosides
+GB3_(40:0),GB Gangliosides
+GB3_(40:0-OH),GB Gangliosides
+GB3_(40:1),GB Gangliosides
+GB3_(40:1-OH),GB Gangliosides
+GB3_(40:2),GB Gangliosides
+GB3_(41:1),GB Gangliosides
+GB3_(41:1-OH),GB Gangliosides
+GB3_(41:2),GB Gangliosides
+GB3_(41:2-OH),GB Gangliosides
+GB3_(42:0-OH),GB Gangliosides
+GB3_(42:1),GB Gangliosides
+GB3_(42:1-OH),GB Gangliosides
+GB3_(42:2),GB Gangliosides
+GB3_(42:2-OH),GB Gangliosides
+GB3_(42:3),GB Gangliosides
+GB3_(42:3-OH),GB Gangliosides
+GB3_(44:0),GB Gangliosides
+GB3_(44:1),GB Gangliosides
+GB4_(34:1),GB Gangliosides
+GB4_(34:1-OH),GB Gangliosides
+GB4_(36:0),GB Gangliosides
+GB4_(36:1),GB Gangliosides
+GB4_(36:1-OH),GB Gangliosides
+GB4_(38:1),GB Gangliosides
+GB4_(40:0),GB Gangliosides
+GB4_(40:0-OH),GB Gangliosides
+GB4_(40:1),GB Gangliosides
+GB4_(40:1-OH),GB Gangliosides
+GB4_(41:1),GB Gangliosides
+GB4_(42:0-OH),GB Gangliosides
+GB4_(42:1),GB Gangliosides
+GB4_(42:1-OH),GB Gangliosides
+GB4_(42:2),GB Gangliosides
+GB4_(42:2-OH),GB Gangliosides
+GB4_(43:0),GB Gangliosides
+GB4_(43:2),GB Gangliosides
+GD1_(34:0),GD Gangliosides
+GD1_(34:1),GD Gangliosides
+GD1_(34:2),GD Gangliosides
+GD1_(36:0),GD Gangliosides
+GD1_(36:1),GD Gangliosides
+GD1_(36:2),GD Gangliosides
+GD1_(38:0),GD Gangliosides
+GD1_(38:1),GD Gangliosides
+GD1_(38:2),GD Gangliosides
+GD1_(40:0),GD Gangliosides
+GD1_(40:1),GD Gangliosides
+GD1_(40:2),GD Gangliosides
+GD1_(42:0),GD Gangliosides
+GD1_(42:1),GD Gangliosides
+GD1_(42:2),GD Gangliosides
+GD3_(34:0),GD Gangliosides
+GD3_(34:1),GD Gangliosides
+GD3_(34:1-OH),GD Gangliosides
+GD3_(35:0),GD Gangliosides
+GD3_(35:1),GD Gangliosides
+GD3_(36:0),GD Gangliosides
+GD3_(36:1),GD Gangliosides
+GD3_(36:1-OH),GD Gangliosides
+GD3_(37:0),GD Gangliosides
+GD3_(37:1),GD Gangliosides
+GD3_(38:0),GD Gangliosides
+GD3_(38:1),GD Gangliosides
+GD3_(38:1-OH),GD Gangliosides
+GD3_(39:0),GD Gangliosides
+GD3_(39:1),GD Gangliosides
+GD3_(40:0),GD Gangliosides
+GD3_(40:1),GD Gangliosides
+GD3_(40:1-OH),GD Gangliosides
+GD3_(41:0),GD Gangliosides
+GD3_(41:1),GD Gangliosides
+GD3_(42:0),GD Gangliosides
+GD3_(42:1),GD Gangliosides
+GM1_(32:0),GM Gangliosides
+GM1_(32:1),GM Gangliosides
+GM1_(34:0),GM Gangliosides
+GM1_(34:1),GM Gangliosides
+GM1_(34:1-OH),GM Gangliosides
+GM1_(35:0),GM Gangliosides
+GM1_(35:1),GM Gangliosides
+GM1_(36:0),GM Gangliosides
+GM1_(36:1),GM Gangliosides
+GM1_(36:1-OH),GM Gangliosides
+GM1_(36:2),GM Gangliosides
+GM1_(37:0),GM Gangliosides
+GM1_(37:1),GM Gangliosides
+GM1_(37:2),GM Gangliosides
+GM1_(38:0),GM Gangliosides
+GM1_(38:1),GM Gangliosides
+GM1_(38:1-OH),GM Gangliosides
+GM1_(38:2),GM Gangliosides
+GM1_(39:0),GM Gangliosides
+GM1_(39:1),GM Gangliosides
+GM1_(39:1-OH),GM Gangliosides
+GM1_(40:0),GM Gangliosides
+GM1_(40:1),GM Gangliosides
+GM1_(40:1-OH),GM Gangliosides
+GM2_(32:0),GM Gangliosides
+GM2_(32:1),GM Gangliosides
+GM2_(33:0),GM Gangliosides
+GM2_(33:1),GM Gangliosides
+GM2_(34:0),GM Gangliosides
+GM2_(34:1),GM Gangliosides
+GM2_(34:1-OH),GM Gangliosides
+GM2_(35:0),GM Gangliosides
+GM2_(35:1),GM Gangliosides
+GM2_(36:0),GM Gangliosides
+GM2_(36:1),GM Gangliosides
+GM2_(36:1-OH),GM Gangliosides
+GM2_(37:0),GM Gangliosides
+GM2_(37:1),GM Gangliosides
+GM2_(38:0),GM Gangliosides
+GM2_(38:1),GM Gangliosides
+GM2_(38:1-OH),GM Gangliosides
+GM2_(39:0),GM Gangliosides
+GM2_(39:1),GM Gangliosides
+GM2_(40:0),GM Gangliosides
+GM2_(40:1),GM Gangliosides
+GM2_(40:1-OH),GM Gangliosides
+GM3_(32:0),GM Gangliosides
+GM3_(32:1),GM Gangliosides
+GM3_(33:0),GM Gangliosides
+GM3_(33:1),GM Gangliosides
+GM3_(34:0),GM Gangliosides
+GM3_(34:1),GM Gangliosides
+GM3_(35:0),GM Gangliosides
+GM3_(35:1),GM Gangliosides
+GM3_(36:0),GM Gangliosides
+GM3_(36:1),GM Gangliosides
+GM3_(37:0),GM Gangliosides
+GM3_(37:1),GM Gangliosides
+GM3_(38:0),GM Gangliosides
+GM3_(38:1),GM Gangliosides
+GM3_(39:0),GM Gangliosides
+GM3_(39:1),GM Gangliosides
+GM3_(40:0),GM Gangliosides
+GM3_(40:1),GM Gangliosides
+Hex-Cer_(32:0),Hexosyl-ceramides
+Hex-Cer_(32:1),Hexosyl-ceramides
+Hex-Cer_(34:0),Hexosyl-ceramides
+Hex-Cer_(34:0-OH),Hexosyl-ceramides
+Hex-Cer_(34:1),Hexosyl-ceramides
+Hex-Cer_(34:1-OH),Hexosyl-ceramides
+Hex-Cer_(34:2),Hexosyl-ceramides
+Hex-Cer_(34:2-OH),Hexosyl-ceramides
+Hex-Cer_(35:0),Hexosyl-ceramides
+Hex-Cer_(35:0-OH),Hexosyl-ceramides
+Hex-Cer_(35:1),Hexosyl-ceramides
+Hex-Cer_(35:1-OH),Hexosyl-ceramides
+Hex-Cer_(35:2),Hexosyl-ceramides
+Hex-Cer_(36:0),Hexosyl-ceramides
+Hex-Cer_(36:0-OH),Hexosyl-ceramides
+Hex-Cer_(36:1),Hexosyl-ceramides
+Hex-Cer_(36:1-OH),Hexosyl-ceramides
+Hex-Cer_(36:2),Hexosyl-ceramides
+Hex-Cer_(36:2-OH),Hexosyl-ceramides
+Hex-Cer_(37:0),Hexosyl-ceramides
+Hex-Cer_(37:0-OH),Hexosyl-ceramides
+Hex-Cer_(37:1),Hexosyl-ceramides
+Hex-Cer_(37:1-OH),Hexosyl-ceramides
+Hex-Cer_(37:2),Hexosyl-ceramides
+Hex-Cer_(38:0),Hexosyl-ceramides
+Hex-Cer_(38:0-OH),Hexosyl-ceramides
+Hex-Cer_(38:1),Hexosyl-ceramides
+Hex-Cer_(38:1-OH),Hexosyl-ceramides
+Hex-Cer_(38:2),Hexosyl-ceramides
+Hex-Cer_(39:0),Hexosyl-ceramides
+Hex-Cer_(39:0-OH),Hexosyl-ceramides
+Hex-Cer_(39:1),Hexosyl-ceramides
+Hex-Cer_(39:2),Hexosyl-ceramides
+Hex-Cer_(40:0),Hexosyl-ceramides
+Hex-Cer_(40:0-OH),Hexosyl-ceramides
+Hex-Cer_(40:1),Hexosyl-ceramides
+Hex-Cer_(40:1-OH),Hexosyl-ceramides
+Hex-Cer_(40:2),Hexosyl-ceramides
+Hex-Cer_(40:2-OH),Hexosyl-ceramides
+Hex-Cer_(41:0),Hexosyl-ceramides
+Hex-Cer_(41:0-OH),Hexosyl-ceramides
+Hex-Cer_(41:1),Hexosyl-ceramides
+Hex-Cer_(41:2),Hexosyl-ceramides
+Hex-Cer_(42:0),Hexosyl-ceramides
+Hex-Cer_(42:0-OH),Hexosyl-ceramides
+Hex-Cer_(42:1),Hexosyl-ceramides
+Hex-Cer_(42:1-OH),Hexosyl-ceramides
+Hex-Cer_(42:2),Hexosyl-ceramides
+Hex-Cer_(42:2-OH),Hexosyl-ceramides
+Hex-Cer_(43:0),Hexosyl-ceramides
+Hex-Cer_(43:0-OH),Hexosyl-ceramides
+Hex-Cer_(43:1),Hexosyl-ceramides
+Hex-Cer_(43:2),Hexosyl-ceramides
+Hex-Cer_(44:0),Hexosyl-ceramides
+Hex-Cer_(44:1),Hexosyl-ceramides
+Hex-Cer_(44:2),Hexosyl-ceramides
+Hex-Sph_(16:0),Hexosyl-sphingosine
+Hex-Sph_(16:1),Hexosyl-sphingosine
+Hex-Sph_(18:0),Hexosyl-sphingosine
+Hex-Sph_(18:1),Hexosyl-sphingosine
+Hex-Sph_(20:0),Hexosyl-sphingosine
+Hex-Sph_(20:1),Hexosyl-sphingosine
+IP-Cer_(42:0-trihydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(42:0-dihydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(44:0-pentahydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(42:0-hydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(44:0-tetrahydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(44:0-trihydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(46:0-pentahydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(44:0-dihydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(44:0-hydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(46:0-tetrahydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(46:0-trihydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(48:0-pentahydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(46:0-dihydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(46:0-hydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(48:0-tetrahydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(48:0-trihydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(48:0-dihydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(48:0-hydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(50:0-trihydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(50:0-dihydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(50:0-hydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(52:0-trihydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(52:0-dihydroxy),Inositolphosphoryl-ceramide
+IP-Cer_(52:0-hydroxy),Inositolphosphoryl-ceramide
+Lacto-cer_(32:0),Lactosyl-ceramides
+Lacto-cer_(32:0-OH),Lactosyl-ceramides
+Lacto-cer_(32:1),Lactosyl-ceramides
+Lacto-cer_(32:1-OH),Lactosyl-ceramides
+Lacto-cer_(32:2),Lactosyl-ceramides
+Lacto-cer_(33:0),Lactosyl-ceramides
+Lacto-cer_(33:0-OH),Lactosyl-ceramides
+Lacto-cer_(33:1),Lactosyl-ceramides
+Lacto-cer_(33:1-OH),Lactosyl-ceramides
+Lacto-cer_(33:2),Lactosyl-ceramides
+Lacto-cer_(33:2-OH),Lactosyl-ceramides
+Lacto-cer_(34:0),Lactosyl-ceramides
+Lacto-cer_(34:0-OH),Lactosyl-ceramides
+Lacto-cer_(34:1),Lactosyl-ceramides
+Lacto-cer_(34:1-OH),Lactosyl-ceramides
+Lacto-cer_(34:2),Lactosyl-ceramides
+Lacto-cer_(34:2-OH),Lactosyl-ceramides
+Lacto-cer_(34:3),Lactosyl-ceramides
+Lacto-cer_(35:0),Lactosyl-ceramides
+Lacto-cer_(35:0-OH),Lactosyl-ceramides
+Lacto-cer_(35:1),Lactosyl-ceramides
+Lacto-cer_(35:1-OH),Lactosyl-ceramides
+Lacto-cer_(35:2),Lactosyl-ceramides
+Lacto-cer_(35:2-OH),Lactosyl-ceramides
+Lacto-cer_(36:0),Lactosyl-ceramides
+Lacto-cer_(36:0-OH),Lactosyl-ceramides
+Lacto-cer_(36:1),Lactosyl-ceramides
+Lacto-cer_(36:1-OH),Lactosyl-ceramides
+Lacto-cer_(36:2),Lactosyl-ceramides
+Lacto-cer_(36:2-OH),Lactosyl-ceramides
+Lacto-cer_(36:3),Lactosyl-ceramides
+Lacto-cer_(37:0),Lactosyl-ceramides
+Lacto-cer_(37:0-OH),Lactosyl-ceramides
+Lacto-cer_(37:1),Lactosyl-ceramides
+Lacto-cer_(37:1-OH),Lactosyl-ceramides
+Lacto-cer_(37:2),Lactosyl-ceramides
+Lacto-cer_(37:2-OH),Lactosyl-ceramides
+Lacto-cer_(38:0),Lactosyl-ceramides
+Lacto-cer_(38:0-OH),Lactosyl-ceramides
+Lacto-cer_(38:1),Lactosyl-ceramides
+Lacto-cer_(38:1-OH),Lactosyl-ceramides
+Lacto-cer_(38:2),Lactosyl-ceramides
+Lacto-cer_(38:2-OH),Lactosyl-ceramides
+Lacto-cer_(38:3),Lactosyl-ceramides
+Lacto-cer_(39:0),Lactosyl-ceramides
+Lacto-cer_(39:0-OH),Lactosyl-ceramides
+Lacto-cer_(39:1),Lactosyl-ceramides
+Lacto-cer_(39:1-OH),Lactosyl-ceramides
+Lacto-cer_(39:2),Lactosyl-ceramides
+Lacto-cer_(39:2-OH),Lactosyl-ceramides
+Lacto-cer_(40:0),Lactosyl-ceramides
+Lacto-cer_(40:0-OH),Lactosyl-ceramides
+Lacto-cer_(40:1),Lactosyl-ceramides
+Lacto-cer_(40:1-OH),Lactosyl-ceramides
+Lacto-cer_(40:2),Lactosyl-ceramides
+Lacto-cer_(40:2-OH),Lactosyl-ceramides
+Lacto-cer_(42:0),Lactosyl-ceramides
+Lacto-cer_(42:0-OH),Lactosyl-ceramides
+Lacto-cer_(42:1),Lactosyl-ceramides
+Lacto-cer_(42:1-OH),Lactosyl-ceramides
+Lacto-cer_(42:2),Lactosyl-ceramides
+Lacto-cer_(42:2-OH),Lactosyl-ceramides
+Lacto-cer_(44:0),Lactosyl-ceramides
+Lacto-cer_(44:1),Lactosyl-ceramides
+Lacto-cer_(44:2),Lactosyl-ceramides
+LPC_(12:0),Lysophosphatidyl-cholines
+LPC_(14:0),Lysophosphatidyl-cholines
+LPC_(14:1),Lysophosphatidyl-cholines
+LPC_(15:0),Lysophosphatidyl-cholines
+LPC_(15:1),Lysophosphatidyl-cholines
+LPC_(16:0),Lysophosphatidyl-cholines
+LPC_(16:1),Lysophosphatidyl-cholines
+LPC_(17:0),Lysophosphatidyl-cholines
+LPC_(17:1),Lysophosphatidyl-cholines
+LPC_(17:2),Lysophosphatidyl-cholines
+LPC_(18:0),Lysophosphatidyl-cholines
+LPC_(18:1),Lysophosphatidyl-cholines
+LPC_(18:2),Lysophosphatidyl-cholines
+LPC_(18:3),Lysophosphatidyl-cholines
+LPC_(18:4),Lysophosphatidyl-cholines
+LPC_(19:0),Lysophosphatidyl-cholines
+LPC_(20:0),Lysophosphatidyl-cholines
+LPC_(20:1),Lysophosphatidyl-cholines
+LPC_(20:2),Lysophosphatidyl-cholines
+LPC_(20:3),Lysophosphatidyl-cholines
+LPC_(20:4),Lysophosphatidyl-cholines
+LPC_(20:5),Lysophosphatidyl-cholines
+LPC_(21:0),Lysophosphatidyl-cholines
+LPC_(22:0),Lysophosphatidyl-cholines
+LPC_(22:1),Lysophosphatidyl-cholines
+LPC_(22:2),Lysophosphatidyl-cholines
+LPC_(22:3),Lysophosphatidyl-cholines
+LPC_(22:4),Lysophosphatidyl-cholines
+LPC_(22:5),Lysophosphatidyl-cholines
+LPC_(22:6),Lysophosphatidyl-cholines
+LPC_(24:0),Lysophosphatidyl-cholines
+LPE_(12:0),Lysophosphatidy-ethanolamines
+LPE_(14:0),Lysophosphatidy-ethanolamines
+LPE_(15:0),Lysophosphatidy-ethanolamines
+LPE_(15:1),Lysophosphatidy-ethanolamines
+LPE_(16:0),Lysophosphatidy-ethanolamines
+LPE_(16:1),Lysophosphatidy-ethanolamines
+LPE_(17:0),Lysophosphatidy-ethanolamines
+LPE_(17:1),Lysophosphatidy-ethanolamines
+LPE_(17:2),Lysophosphatidy-ethanolamines
+LPE_(18:0),Lysophosphatidy-ethanolamines
+LPE_(18:1),Lysophosphatidy-ethanolamines
+LPE_(18:2),Lysophosphatidy-ethanolamines
+LPE_(18:3),Lysophosphatidy-ethanolamines
+LPE_(18:4),Lysophosphatidy-ethanolamines
+LPE_(19:0),Lysophosphatidy-ethanolamines
+LPE_(20:0),Lysophosphatidy-ethanolamines
+LPE_(20:1),Lysophosphatidy-ethanolamines
+LPE_(20:2),Lysophosphatidy-ethanolamines
+LPE_(20:3),Lysophosphatidy-ethanolamines
+LPE_(20:4),Lysophosphatidy-ethanolamines
+LPE_(20:5),Lysophosphatidy-ethanolamines
+LPE_(21:0),Lysophosphatidy-ethanolamines
+LPE_(22:0),Lysophosphatidy-ethanolamines
+LPE_(22:1),Lysophosphatidy-ethanolamines
+LPE_(22:2),Lysophosphatidy-ethanolamines
+LPE_(22:3),Lysophosphatidy-ethanolamines
+LPE_(22:4),Lysophosphatidy-ethanolamines
+LPE_(22:5),Lysophosphatidy-ethanolamines
+LPE_(22:6),Lysophosphatidy-ethanolamines
+LPE_(24:0),Lysophosphatidy-ethanolamines
+LPI_(14:0),Lysophosphatidyl-inositols
+LPI_(15:0),Lysophosphatidyl-inositols
+LPI_(16:0),Lysophosphatidyl-inositols
+LPI_(16:1),Lysophosphatidyl-inositols
+LPI_(17:0),Lysophosphatidyl-inositols
+LPI_(17:1),Lysophosphatidyl-inositols
+LPI_(18:0),Lysophosphatidyl-inositols
+LPI_(18:1),Lysophosphatidyl-inositols
+LPI_(18:2),Lysophosphatidyl-inositols
+LPI_(18:3),Lysophosphatidyl-inositols
+LPI_(20:0),Lysophosphatidyl-inositols
+LPI_(20:1),Lysophosphatidyl-inositols
+LPI_(20:2),Lysophosphatidyl-inositols
+LPI_(20:3),Lysophosphatidyl-inositols
+LPI_(20:4),Lysophosphatidyl-inositols
+LPI_(20:5),Lysophosphatidyl-inositols
+LysoPAF_(12:0),Platelet-activating factor
+LysoPAF_(13:0),Platelet-activating factor
+LysoPAF_(14:0),Platelet-activating factor
+LysoPAF_(15:0),Platelet-activating factor
+LysoPAF_(15:1),Platelet-activating factor
+LysoPAF_(16:0),Platelet-activating factor
+LysoPAF_(16:1),Platelet-activating factor
+LysoPAF_(17:0),Platelet-activating factor
+LysoPAF_(17:1),Platelet-activating factor
+LysoPAF_(17:2),Platelet-activating factor
+LysoPAF_(18:0),Platelet-activating factor
+LysoPAF_(18:1),Platelet-activating factor
+LysoPAF_(18:2),Platelet-activating factor
+LysoPAF_(19:0),Platelet-activating factor
+LysoPAF_(20:0),Platelet-activating factor
+LysoPAF_(20:3),Platelet-activating factor
+LysoPAF_(20:5),Platelet-activating factor
+LysoPAF_(21:0),Platelet-activating factor
+LysoPAF_(22:0),Platelet-activating factor
+LysoPAF_(22:3),Platelet-activating factor
+LysoPAF_(24:0),Platelet-activating factor
+PAF_(12:0),Platelet-activating factor
+PAF_(13:0),Platelet-activating factor
+PAF_(14:0),Platelet-activating factor
+PAF_(15:0),Platelet-activating factor
+PAF_(15:1),Platelet-activating factor
+PAF_(16:0),Platelet-activating factor
+PAF_(16:1),Platelet-activating factor
+PAF_(17:0),Platelet-activating factor
+PAF_(17:1),Platelet-activating factor
+PAF_(17:2),Platelet-activating factor
+PAF_(18:0),Platelet-activating factor
+PAF_(18:1),Platelet-activating factor
+PAF_(18:2),Platelet-activating factor
+PAF_(19:0),Platelet-activating factor
+PAF_(20:0),Platelet-activating factor
+PAF_(20:1),Platelet-activating factor
+PAF_(20:5),Platelet-activating factor
+PAF_(21:0),Platelet-activating factor
+PAF_(22:0),Platelet-activating factor
+PAF_(22:3),Platelet-activating factor
+PAF_(24:0),Platelet-activating factor
+MG_(16:0),Monoacyl-glycerols
+MG_(17:0),Monoacyl-glycerols
+MG_(18:0),Monoacyl-glycerols
+MG_(18:1),Monoacyl-glycerols
+MG_(18:2),Monoacyl-glycerols
+MG_(20:0),Monoacyl-glycerols
+MG_(20:1),Monoacyl-glycerols
+MG_(20:2),Monoacyl-glycerols
+MG_(20:3),Monoacyl-glycerols
+MG_(20:4),Monoacyl-glycerols
+MG_(20:5),Monoacyl-glycerols
+MG_(22:6),Monoacyl-glycerols
+MGDG_(32:0),Monogalacto-diacylglycerols
+MGDG_(32:1),Monogalacto-diacylglycerols
+MGDG_(32:2),Monogalacto-diacylglycerols
+MGDG_(32:3),Monogalacto-diacylglycerols
+MGDG_(32:4),Monogalacto-diacylglycerols
+MGDG_(33:0),Monogalacto-diacylglycerols
+MGDG_(33:1),Monogalacto-diacylglycerols
+MGDG_(33:2),Monogalacto-diacylglycerols
+MGDG_(33:3),Monogalacto-diacylglycerols
+MGDG_(33:4),Monogalacto-diacylglycerols
+MGDG_(33:5),Monogalacto-diacylglycerols
+MGDG_(34:0),Monogalacto-diacylglycerols
+MGDG_(34:1),Monogalacto-diacylglycerols
+MGDG_(34:2),Monogalacto-diacylglycerols
+MGDG_(34:3),Monogalacto-diacylglycerols
+MGDG_(34:4),Monogalacto-diacylglycerols
+MGDG_(34:5),Monogalacto-diacylglycerols
+MGDG_(34:6),Monogalacto-diacylglycerols
+MGDG_(35:0),Monogalacto-diacylglycerols
+MGDG_(35:1),Monogalacto-diacylglycerols
+MGDG_(35:2),Monogalacto-diacylglycerols
+MGDG_(35:3),Monogalacto-diacylglycerols
+MGDG_(35:4),Monogalacto-diacylglycerols
+MGDG_(35:5),Monogalacto-diacylglycerols
+MGDG_(35:6),Monogalacto-diacylglycerols
+MGDG_(36:0),Monogalacto-diacylglycerols
+MGDG_(36:1),Monogalacto-diacylglycerols
+MGDG_(36:2),Monogalacto-diacylglycerols
+MGDG_(36:3),Monogalacto-diacylglycerols
+MGDG_(36:4),Monogalacto-diacylglycerols
+MGDG_(36:5),Monogalacto-diacylglycerols
+MGDG_(36:6),Monogalacto-diacylglycerols
+MGDG_(37:0),Monogalacto-diacylglycerols
+MGDG_(37:1),Monogalacto-diacylglycerols
+MGDG_(37:2),Monogalacto-diacylglycerols
+MGDG_(37:3),Monogalacto-diacylglycerols
+MGDG_(37:4),Monogalacto-diacylglycerols
+MGDG_(37:5),Monogalacto-diacylglycerols
+MGDG_(37:6),Monogalacto-diacylglycerols
+MGDG_(38:0),Monogalacto-diacylglycerols
+MGDG_(38:1),Monogalacto-diacylglycerols
+MGDG_(38:2),Monogalacto-diacylglycerols
+MGDG_(38:3),Monogalacto-diacylglycerols
+MGDG_(38:4),Monogalacto-diacylglycerols
+MGDG_(38:5),Monogalacto-diacylglycerols
+MGDG_(38:6),Monogalacto-diacylglycerols
+M(IP)2-Cer_(42:0-trihydroxy),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(42:0-dihydroxy),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(42:0-hydroxy),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(42:0),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(44:0-trihydroxy),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(44:0-dihydroxy),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(44:0-hydroxy),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(44:0),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(46:0-trihydroxy),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(46:0-dihydroxy),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(46:0-hydroxy),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(46:0),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(48:0-trihydroxy),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(48:0-dihydroxy),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(48:0-hydroxy),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(50:0-trihydroxy),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(48:0),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(50:0-dihydroxy),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(50:0-hydroxy),Mannosyl-di-(inositolphosphoryl)-ceramide
+M(IP)2-Cer_(50:0),Mannosyl-di-(inositolphosphoryl)-ceramide
+Mono-lyso_CL_(52:00),Mono-lysocardiolipins
+Mono-lyso_CL_(52:01),Mono-lysocardiolipins
+Mono-lyso_CL_(52:02),Mono-lysocardiolipins
+Mono-lyso_CL_(52:03),Mono-lysocardiolipins
+Mono-lyso_CL_(52:04),Mono-lysocardiolipins
+Mono-lyso_CL_(52:05),Mono-lysocardiolipins
+Mono-lyso_CL_(52:06),Mono-lysocardiolipins
+Mono-lyso_CL_(53:00),Mono-lysocardiolipins
+Mono-lyso_CL_(53:01),Mono-lysocardiolipins
+Mono-lyso_CL_(53:02),Mono-lysocardiolipins
+Mono-lyso_CL_(53:03),Mono-lysocardiolipins
+Mono-lyso_CL_(53:04),Mono-lysocardiolipins
+Mono-lyso_CL_(53:05),Mono-lysocardiolipins
+Mono-lyso_CL_(53:06),Mono-lysocardiolipins
+Mono-lyso_CL_(54:00),Mono-lysocardiolipins
+Mono-lyso_CL_(54:01),Mono-lysocardiolipins
+Mono-lyso_CL_(54:02),Mono-lysocardiolipins
+Mono-lyso_CL_(54:03),Mono-lysocardiolipins
+Mono-lyso_CL_(54:04),Mono-lysocardiolipins
+Mono-lyso_CL_(54:05),Mono-lysocardiolipins
+Mono-lyso_CL_(54:06),Mono-lysocardiolipins
+Mono-lyso_CL_(56:00),Mono-lysocardiolipins
+Mono-lyso_CL_(56:01),Mono-lysocardiolipins
+Mono-lyso_CL_(56:02),Mono-lysocardiolipins
+Mono-lyso_CL_(56:03),Mono-lysocardiolipins
+Mono-lyso_CL_(56:04),Mono-lysocardiolipins
+Mono-lyso_CL_(56:05),Mono-lysocardiolipins
+Mono-lyso_CL_(56:06),Mono-lysocardiolipins
+MIP-Cer_(40:0),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(42:0-trihydroxy),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(42:0-dihydroxy),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(42:0-hydroxy),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(42:0),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(44:0-trihydroxy),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(44:0-dihydroxy),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(44:0-hydroxy),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(44:0),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(46:0-trihydroxy),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(46:0-dihydroxy),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(46:0-hydroxy),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(46:0),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(48:0-trihydroxy),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(48:0-dihydroxy),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(48:0-hydroxy),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(50:0-trihydroxy),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(48:0),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(50:0-dihydroxy),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(50:0-hydroxy),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(50:0),Mannosyl-inositolphosphoryl-ceramides
+MIP-Cer_(52:0),Mannosyl-inositolphosphoryl-ceramides
+PA_(32:1),Phosphatidic acid
+PA_(32:2),Phosphatidic acid
+PA_(33:1),Phosphatidic acid
+PA_(33:2),Phosphatidic acid
+PA_(34:1),Phosphatidic acid
+PA_(34:2),Phosphatidic acid
+PA_(35:1),Phosphatidic acid
+PA_(35:2),Phosphatidic acid
+PA_(35:3),Phosphatidic acid
+PA_(36:1),Phosphatidic acid
+PA_(36:2),Phosphatidic acid
+PA_(36:3),Phosphatidic acid
+PA_(36:4),Phosphatidic acid
+PA_(37:1),Phosphatidic acid
+PA_(37:2),Phosphatidic acid
+PA_(37:3),Phosphatidic acid
+PA_(37:4),Phosphatidic acid
+PA_(38:1),Phosphatidic acid
+PA_(38:2),Phosphatidic acid
+PA_(38:3),Phosphatidic acid
+PA_(38:4),Phosphatidic acid
+PA_(38:5),Phosphatidic acid
+PA_(38:6),Phosphatidic acid
+PA_(40:1),Phosphatidic acid
+PA_(40:2),Phosphatidic acid
+PA_(40:3),Phosphatidic acid
+PA_(40:4),Phosphatidic acid
+PA_(40:5),Phosphatidic acid
+PA_(40:6),Phosphatidic acid
+PA_(40:7),Phosphatidic acid
+PC_(28:0),Phosphatidy-cholines
+PC_(28:1),Phosphatidy-cholines
+PC_(29:0),Phosphatidy-cholines
+PC_(29:1),Phosphatidy-cholines
+PC_(30:0),Phosphatidy-cholines
+PC_(30:1),Phosphatidy-cholines
+PC_(30:2),Phosphatidy-cholines
+PC_(31:0),Phosphatidy-cholines
+PC_(31:1),Phosphatidy-cholines
+PC_(31:2),Phosphatidy-cholines
+PC_(32:0),Phosphatidy-cholines
+PC_(32:1),Phosphatidy-cholines
+PC_(32:2),Phosphatidy-cholines
+PC_(33:0),Phosphatidy-cholines
+PC_(33:1),Phosphatidy-cholines
+PC_(33:2),Phosphatidy-cholines
+PC_(33:3),Phosphatidy-cholines
+PC_(34:0),Phosphatidy-cholines
+PC_(34:1),Phosphatidy-cholines
+PC_(34:2),Phosphatidy-cholines
+PC_(34:3),Phosphatidy-cholines
+PC_(34:4),Phosphatidy-cholines
+PC_(35:0),Phosphatidy-cholines
+PC_(35:1),Phosphatidy-cholines
+PC_(35:2),Phosphatidy-cholines
+PC_(35:3),Phosphatidy-cholines
+PC_(35:4),Phosphatidy-cholines
+PC_(36:0),Phosphatidy-cholines
+PC_(36:1),Phosphatidy-cholines
+PC_(36:2),Phosphatidy-cholines
+PC_(36:3),Phosphatidy-cholines
+PC_(36:4),Phosphatidy-cholines
+PC_(36:5),Phosphatidy-cholines
+PC_(37:0),Phosphatidy-cholines
+PC_(37:1),Phosphatidy-cholines
+PC_(37:2),Phosphatidy-cholines
+PC_(37:3),Phosphatidy-cholines
+PC_(37:4),Phosphatidy-cholines
+PC_(37:5),Phosphatidy-cholines
+PC_(37:6),Phosphatidy-cholines
+PC_(38:0),Phosphatidy-cholines
+PC_(38:1),Phosphatidy-cholines
+PC_(38:2),Phosphatidy-cholines
+PC_(38:3),Phosphatidy-cholines
+PC_(38:4),Phosphatidy-cholines
+PC_(38:5),Phosphatidy-cholines
+PC_(38:6),Phosphatidy-cholines
+PC_(39:0),Phosphatidy-cholines
+PC_(39:1),Phosphatidy-cholines
+PC_(39:2),Phosphatidy-cholines
+PC_(39:3),Phosphatidy-cholines
+PC_(39:4),Phosphatidy-cholines
+PC_(39:5),Phosphatidy-cholines
+PC_(39:6),Phosphatidy-cholines
+PC_(39:7),Phosphatidy-cholines
+PC_(40:0),Phosphatidy-cholines
+PC_(40:1),Phosphatidy-cholines
+PC_(40:2),Phosphatidy-cholines
+PC_(40:3),Phosphatidy-cholines
+PC_(40:4),Phosphatidy-cholines
+PC_(40:5),Phosphatidy-cholines
+PC_(40:6),Phosphatidy-cholines
+PC_(40:7),Phosphatidy-cholines
+PC_(42:0),Phosphatidy-cholines
+PC_(42:1),Phosphatidy-cholines
+PC_(42:10),Phosphatidy-cholines
+PC_(42:11),Phosphatidy-cholines
+PC_(42:2),Phosphatidy-cholines
+PC_(42:3),Phosphatidy-cholines
+PC_(42:4),Phosphatidy-cholines
+PC_(42:5),Phosphatidy-cholines
+PC_(42:6),Phosphatidy-cholines
+PC_(42:7),Phosphatidy-cholines
+PC_(42:8),Phosphatidy-cholines
+PC_(42:9),Phosphatidy-cholines
+PE_(30:0),Phosphatidy-ethanolamines
+PE_(30:1),Phosphatidy-ethanolamines
+PE_(31:0),Phosphatidy-ethanolamines
+PE_(32:0),Phosphatidy-ethanolamines
+PE_(32:1),Phosphatidy-ethanolamines
+PE_(33:0),Phosphatidy-ethanolamines
+PE_(33:1),Phosphatidy-ethanolamines
+PE_(34:0),Phosphatidy-ethanolamines
+PE_(34:1),Phosphatidy-ethanolamines
+PE_(34:2),Phosphatidy-ethanolamines
+PE_(34:3),Phosphatidy-ethanolamines
+PE_(35:0),Phosphatidy-ethanolamines
+PE_(35:1),Phosphatidy-ethanolamines
+PE_(35:2),Phosphatidy-ethanolamines
+PE_(35:3),Phosphatidy-ethanolamines
+PE_(36:0),Phosphatidy-ethanolamines
+PE_(36:1),Phosphatidy-ethanolamines
+PE_(36:2),Phosphatidy-ethanolamines
+PE_(36:3),Phosphatidy-ethanolamines
+PE_(36:4),Phosphatidy-ethanolamines
+PE_(36:5),Phosphatidy-ethanolamines
+PE_(37:0),Phosphatidy-ethanolamines
+PE_(37:1),Phosphatidy-ethanolamines
+PE_(37:2),Phosphatidy-ethanolamines
+PE_(37:3),Phosphatidy-ethanolamines
+PE_(37:4),Phosphatidy-ethanolamines
+PE_(37:5),Phosphatidy-ethanolamines
+PE_(37:6),Phosphatidy-ethanolamines
+PE_(38:0),Phosphatidy-ethanolamines
+PE_(38:1),Phosphatidy-ethanolamines
+PE_(38:2),Phosphatidy-ethanolamines
+PE_(38:3),Phosphatidy-ethanolamines
+PE_(38:4),Phosphatidy-ethanolamines
+PE_(38:5),Phosphatidy-ethanolamines
+PE_(38:6),Phosphatidy-ethanolamines
+PE_(38:7),Phosphatidy-ethanolamines
+PE_(38:8),Phosphatidy-ethanolamines
+PE_(39:6),Phosphatidy-ethanolamines
+PE_(40:0),Phosphatidy-ethanolamines
+PE_(40:1),Phosphatidy-ethanolamines
+PE_(40:2),Phosphatidy-ethanolamines
+PE_(40:3),Phosphatidy-ethanolamines
+PE_(40:4),Phosphatidy-ethanolamines
+PE_(40:5),Phosphatidy-ethanolamines
+PE_(40:6),Phosphatidy-ethanolamines
+PE_(40:7),Phosphatidy-ethanolamines
+PE_(40:8),Phosphatidy-ethanolamines
+PE_(42:11),Phosphatidy-ethanolamines
+PG_(32:0),Phosphatidyl-glycerols
+PG_(32:1),Phosphatidyl-glycerols
+PG_(33:0),Phosphatidyl-glycerols
+PG_(33:1),Phosphatidyl-glycerols
+PG_(33:2),Phosphatidyl-glycerols
+PG_(34:0),Phosphatidyl-glycerols
+PG_(34:1),Phosphatidyl-glycerols
+PG_(34:2),Phosphatidyl-glycerols
+PG_(34:3),Phosphatidyl-glycerols
+PG_(35:0),Phosphatidyl-glycerols
+PG_(35:1),Phosphatidyl-glycerols
+PG_(35:2),Phosphatidyl-glycerols
+PG_(36:0),Phosphatidyl-glycerols
+PG_(36:1),Phosphatidyl-glycerols
+PG_(36:2),Phosphatidyl-glycerols
+PG_(36:3),Phosphatidyl-glycerols
+PG_(36:4),Phosphatidyl-glycerols
+PG_(36:5),Phosphatidyl-glycerols
+PG_(37:0),Phosphatidyl-glycerols
+PG_(37:1),Phosphatidyl-glycerols
+PG_(37:2),Phosphatidyl-glycerols
+PG_(37:3),Phosphatidyl-glycerols
+PG_(37:4),Phosphatidyl-glycerols
+PG_(37:5),Phosphatidyl-glycerols
+PG_(37:6),Phosphatidyl-glycerols
+PG_(38:0),Phosphatidyl-glycerols
+PG_(38:1),Phosphatidyl-glycerols
+PG_(38:2),Phosphatidyl-glycerols
+PG_(38:3),Phosphatidyl-glycerols
+PG_(38:4),Phosphatidyl-glycerols
+PG_(38:5),Phosphatidyl-glycerols
+PG_(38:6),Phosphatidyl-glycerols
+PG_(38:7),Phosphatidyl-glycerols
+PG_(39:6),Phosphatidyl-glycerols
+PG_(39:7),Phosphatidyl-glycerols
+PG_(40:0),Phosphatidyl-glycerols
+PG_(40:1),Phosphatidyl-glycerols
+PG_(40:2),Phosphatidyl-glycerols
+PG_(40:3),Phosphatidyl-glycerols
+PG_(40:4),Phosphatidyl-glycerols
+PG_(40:5),Phosphatidyl-glycerols
+PG_(40:6),Phosphatidyl-glycerols
+PG_(40:7),Phosphatidyl-glycerols
+PG_(40:8),Phosphatidyl-glycerols
+PG_(42:10),Phosphatidyl-glycerols
+PG_(42:11),Phosphatidyl-glycerols
+PG_(42:5),Phosphatidyl-glycerols
+PG_(42:6),Phosphatidyl-glycerols
+PG_(42:7),Phosphatidyl-glycerols
+PG_(42:8),Phosphatidyl-glycerols
+PI_(32:0),Phosphatidyl-inositiols
+PI_(32:1),Phosphatidyl-inositiols
+PI_(33:0),Phosphatidyl-inositiols
+PI_(33:1),Phosphatidyl-inositiols
+PI_(34:0),Phosphatidyl-inositiols
+PI_(34:1),Phosphatidyl-inositiols
+PI_(34:2),Phosphatidyl-inositiols
+PI_(35:0),Phosphatidyl-inositiols
+PI_(35:1),Phosphatidyl-inositiols
+PI_(35:2),Phosphatidyl-inositiols
+PI_(36:0),Phosphatidyl-inositiols
+PI_(36:1),Phosphatidyl-inositiols
+PI_(36:2),Phosphatidyl-inositiols
+PI_(36:3),Phosphatidyl-inositiols
+PI_(36:4),Phosphatidyl-inositiols
+PI_(37:0),Phosphatidyl-inositiols
+PI_(37:1),Phosphatidyl-inositiols
+PI_(37:2),Phosphatidyl-inositiols
+PI_(37:3),Phosphatidyl-inositiols
+PI_(37:4),Phosphatidyl-inositiols
+PI_(38:0),Phosphatidyl-inositiols
+PI_(38:1),Phosphatidyl-inositiols
+PI_(38:2),Phosphatidyl-inositiols
+PI_(38:3),Phosphatidyl-inositiols
+PI_(38:4),Phosphatidyl-inositiols
+PI_(38:5),Phosphatidyl-inositiols
+PI_(40:0),Phosphatidyl-inositiols
+PI_(40:1),Phosphatidyl-inositiols
+PI_(40:2),Phosphatidyl-inositiols
+PI_(40:3),Phosphatidyl-inositiols
+PI_(40:4),Phosphatidyl-inositiols
+PI_(40:5),Phosphatidyl-inositiols
+PI_(40:6),Phosphatidyl-inositiols
+PS_(32:0),Phosphatidyl-serines
+PS_(32:1),Phosphatidyl-serines
+PS_(33:0),Phosphatidyl-serines
+PS_(33:1),Phosphatidyl-serines
+PS_(33:2),Phosphatidyl-serines
+PS_(34:0),Phosphatidyl-serines
+PS_(34:1),Phosphatidyl-serines
+PS_(34:2),Phosphatidyl-serines
+PS_(34:3),Phosphatidyl-serines
+PS_(35:1),Phosphatidyl-serines
+PS_(35:2),Phosphatidyl-serines
+PS_(35:3),Phosphatidyl-serines
+PS_(35:4),Phosphatidyl-serines
+PS_(36:0),Phosphatidyl-serines
+PS_(36:1),Phosphatidyl-serines
+PS_(36:2),Phosphatidyl-serines
+PS_(36:3),Phosphatidyl-serines
+PS_(36:4),Phosphatidyl-serines
+PS_(37:0),Phosphatidyl-serines
+PS_(37:1),Phosphatidyl-serines
+PS_(37:2),Phosphatidyl-serines
+PS_(37:3),Phosphatidyl-serines
+PS_(37:4),Phosphatidyl-serines
+PS_(37:5),Phosphatidyl-serines
+PS_(38:0),Phosphatidyl-serines
+PS_(38:1),Phosphatidyl-serines
+PS_(38:2),Phosphatidyl-serines
+PS_(38:3),Phosphatidyl-serines
+PS_(38:4),Phosphatidyl-serines
+PS_(38:5),Phosphatidyl-serines
+PS_(38:6),Phosphatidyl-serines
+PS_(38:7),Phosphatidyl-serines
+PS_(38:8),Phosphatidyl-serines
+PS_(39:0),Phosphatidyl-serines
+PS_(39:1),Phosphatidyl-serines
+PS_(39:2),Phosphatidyl-serines
+PS_(39:3),Phosphatidyl-serines
+PS_(39:4),Phosphatidyl-serines
+PS_(39:5),Phosphatidyl-serines
+PS_(40:0),Phosphatidyl-serines
+PS_(40:1),Phosphatidyl-serines
+PS_(40:2),Phosphatidyl-serines
+PS_(40:3),Phosphatidyl-serines
+PS_(40:4),Phosphatidyl-serines
+PS_(40:5),Phosphatidyl-serines
+PS_(40:6),Phosphatidyl-serines
+PS_(40:7),Phosphatidyl-serines
+PS_(40:8),Phosphatidyl-serines
+PS_(40:9),Phosphatidyl-serines
+S_(30:1),Sulfatides
+S_(30:1-OH),Sulfatides
+S_(32:0),Sulfatides
+S_(32:1),Sulfatides
+S_(32:1-OH),Sulfatides
+S_(32:2),Sulfatides
+S_(33:0),Sulfatides
+S_(33:1),Sulfatides
+S_(33:1-OH),Sulfatides
+S_(33:2),Sulfatides
+S_(34:0),Sulfatides
+S_(34:1),Sulfatides
+S_(34:1-OH),Sulfatides
+S_(34:2),Sulfatides
+S_(35:0),Sulfatides
+S_(35:1),Sulfatides
+S_(35:1-OH),Sulfatides
+S_(35:2),Sulfatides
+S_(36:0),Sulfatides
+S_(36:1),Sulfatides
+S_(36:1-OH),Sulfatides
+S_(36:2),Sulfatides
+S_(36:2-OH),Sulfatides
+S_(37:0),Sulfatides
+S_(37:1),Sulfatides
+S_(37:1-OH),Sulfatides
+S_(37:2),Sulfatides
+S_(37:2-OH),Sulfatides
+S_(38:0),Sulfatides
+S_(38:1),Sulfatides
+S_(38:1-OH),Sulfatides
+S_(38:2),Sulfatides
+S_(38:2-OH),Sulfatides
+S_(39:0),Sulfatides
+S_(39:1),Sulfatides
+S_(39:1-OH),Sulfatides
+S_(39:2),Sulfatides
+S_(39:2-OH),Sulfatides
+S_(40:0),Sulfatides
+S_(40:1),Sulfatides
+S_(40:1-OH),Sulfatides
+S_(40:2),Sulfatides
+S_(40:2-OH),Sulfatides
+S_(41:0),Sulfatides
+S_(41:1),Sulfatides
+S_(41:2),Sulfatides
+S_(42:0),Sulfatides
+S_(42:1),Sulfatides
+S_(42:1-OH),Sulfatides
+S_(42:2),Sulfatides
+S_(42:2-OH),Sulfatides
+S_(43:0),Sulfatides
+S_(43:1),Sulfatides
+S_(43:2),Sulfatides
+S_(44:0),Sulfatides
+S_(44:1),Sulfatides
+S_(44:1-OH),Sulfatides
+S_(44:2),Sulfatides
+S_(44:2-OH),Sulfatides
+S_(45:0),Sulfatides
+S_(45:1),Sulfatides
+S_(45:2),Sulfatides
+S_(46:0),Sulfatides
+S_(46:1),Sulfatides
+S_(46:1-OH),Sulfatides
+S_(46:2),Sulfatides
+S_(46:2-OH),Sulfatides
+S_(47:2),Sulfatides
+S_(48:0),Sulfatides
+S_(48:1),Sulfatides
+S_(48:1-OH),Sulfatides
+S_(48:2),Sulfatides
+S_(48:2-OH),Sulfatides
+S1P_(16:0),Sphingosine 1 phosphate
+S1P_(16:1),Sphingosine 1 phosphate
+S1P_(18:0),Sphingosine 1 phosphate
+S1P_(18:1),Sphingosine 1 phosphate
+S1P_(20:0),Sphingosine 1 phosphate
+S1P_(20:1),Sphingosine 1 phosphate
+SM_(30:0),Sphingomyelines
+SM_(30:1),Sphingomyelines
+SM_(32:0),Sphingomyelines
+SM_(32:1),Sphingomyelines
+SM_(33:0),Sphingomyelines
+SM_(33:1),Sphingomyelines
+SM_(34:0),Sphingomyelines
+SM_(34:0-OH),Sphingomyelines
+SM_(34:1),Sphingomyelines
+SM_(34:1-OH),Sphingomyelines
+SM_(34:2),Sphingomyelines
+SM_(34:2-OH),Sphingomyelines
+SM_(35:0),Sphingomyelines
+SM_(35:1),Sphingomyelines
+SM_(35:2),Sphingomyelines
+SM_(36:0),Sphingomyelines
+SM_(36:0-OH),Sphingomyelines
+SM_(36:1),Sphingomyelines
+SM_(36:1-OH),Sphingomyelines
+SM_(36:2),Sphingomyelines
+SM_(36:3),Sphingomyelines
+SM_(37:0),Sphingomyelines
+SM_(37:1),Sphingomyelines
+SM_(37:2),Sphingomyelines
+SM_(38:0),Sphingomyelines
+SM_(38:0-OH),Sphingomyelines
+SM_(38:1),Sphingomyelines
+SM_(38:1-OH),Sphingomyelines
+SM_(38:2),Sphingomyelines
+SM_(38:3),Sphingomyelines
+SM_(39:0),Sphingomyelines
+SM_(39:1),Sphingomyelines
+SM_(40:0),Sphingomyelines
+SM_(40:0-OH),Sphingomyelines
+SM_(40:1),Sphingomyelines
+SM_(40:1-OH),Sphingomyelines
+SM_(40:2),Sphingomyelines
+SM_(41:0),Sphingomyelines
+SM_(41:1),Sphingomyelines
+SM_(42:0),Sphingomyelines
+SM_(42:0-OH),Sphingomyelines
+SM_(42:1),Sphingomyelines
+SM_(42:2),Sphingomyelines
+SM_(43:0),Sphingomyelines
+SM_(43:1),Sphingomyelines
+SM_(44:0),Sphingomyelines
+SM_(44:1),Sphingomyelines
+SM_(44:2),Sphingomyelines
+SM_(45:0),Sphingomyelines
+SM_(45:1),Sphingomyelines
+SM_(46:0),Sphingomyelines
+SM_(46:1),Sphingomyelines
+SM_(48:0),Sphingomyelines
+SM_(48:2),Sphingomyelines
+Sph_(16:0),Sphingosine
+Sph_(16:1),Sphingosine
+Sph_(18:0),Sphingosine
+Sph_(18:1),Sphingosine
+Sph_(20:0),Sphingosine
+Sph_(20:1),Sphingosine
+TG_(06:0),Triacyl-glycerols
+TG_(12:0),Triacyl-glycerols
+TG_(18:0),Triacyl-glycerols
+TG_(24:0),Triacyl-glycerols
+TG_(30:0),Triacyl-glycerols
+TG_(36:0),Triacyl-glycerols
+TG_(42:0),Triacyl-glycerols
+TG_(42:1),Triacyl-glycerols
+TG_(42:2),Triacyl-glycerols
+TG_(43:0),Triacyl-glycerols
+TG_(43:1),Triacyl-glycerols
+TG_(44:0),Triacyl-glycerols
+TG_(44:1),Triacyl-glycerols
+TG_(44:2),Triacyl-glycerols
+TG_(45:0),Triacyl-glycerols
+TG_(45:1),Triacyl-glycerols
+TG_(45:2),Triacyl-glycerols
+TG_(46:0),Triacyl-glycerols
+TG_(46:1),Triacyl-glycerols
+TG_(46:2),Triacyl-glycerols
+TG_(46:3),Triacyl-glycerols
+TG_(46:4),Triacyl-glycerols
+TG_(47:0),Triacyl-glycerols
+TG_(47:1),Triacyl-glycerols
+TG_(47:2),Triacyl-glycerols
+TG_(47:3),Triacyl-glycerols
+TG_(47:4),Triacyl-glycerols
+TG_(47:5),Triacyl-glycerols
+TG_(48:0),Triacyl-glycerols
+TG_(48:1),Triacyl-glycerols
+TG_(48:2),Triacyl-glycerols
+TG_(48:3),Triacyl-glycerols
+TG_(48:4),Triacyl-glycerols
+TG_(48:5),Triacyl-glycerols
+TG_(48:6),Triacyl-glycerols
+TG_(49:0),Triacyl-glycerols
+TG_(49:1),Triacyl-glycerols
+TG_(49:2),Triacyl-glycerols
+TG_(49:3),Triacyl-glycerols
+TG_(49:4),Triacyl-glycerols
+TG_(49:5),Triacyl-glycerols
+TG_(50:0),Triacyl-glycerols
+TG_(50:1),Triacyl-glycerols
+TG_(50:2),Triacyl-glycerols
+TG_(50:3),Triacyl-glycerols
+TG_(50:4),Triacyl-glycerols
+TG_(50:5),Triacyl-glycerols
+TG_(51:0),Triacyl-glycerols
+TG_(51:1),Triacyl-glycerols
+TG_(51:2),Triacyl-glycerols
+TG_(51:3),Triacyl-glycerols
+TG_(51:4),Triacyl-glycerols
+TG_(51:5),Triacyl-glycerols
+TG_(52:0),Triacyl-glycerols
+TG_(52:1),Triacyl-glycerols
+TG_(52:2),Triacyl-glycerols
+TG_(52:3),Triacyl-glycerols
+TG_(52:4),Triacyl-glycerols
+TG_(52:5),Triacyl-glycerols
+TG_(53:0),Triacyl-glycerols
+TG_(53:1),Triacyl-glycerols
+TG_(53:2),Triacyl-glycerols
+TG_(53:3),Triacyl-glycerols
+TG_(53:4),Triacyl-glycerols
+TG_(53:5),Triacyl-glycerols
+TG_(54:0),Triacyl-glycerols
+TG_(54:1),Triacyl-glycerols
+TG_(54:2),Triacyl-glycerols
+TG_(54:3),Triacyl-glycerols
+TG_(54:4),Triacyl-glycerols
+TG_(54:5),Triacyl-glycerols
+TG_(54:6),Triacyl-glycerols
+TG_(55:0),Triacyl-glycerols
+TG_(55:1),Triacyl-glycerols
+TG_(55:2),Triacyl-glycerols
+TG_(55:3),Triacyl-glycerols
+TG_(55:4),Triacyl-glycerols
+TG_(55:5),Triacyl-glycerols
+TG_(55:6),Triacyl-glycerols
+TG_(56:0),Triacyl-glycerols
+TG_(56:1),Triacyl-glycerols
+TG_(56:2),Triacyl-glycerols
+TG_(56:3),Triacyl-glycerols
+TG_(56:4),Triacyl-glycerols
+TG_(56:5),Triacyl-glycerols
+TG_(56:6),Triacyl-glycerols
+TG_(56:7),Triacyl-glycerols
+TG_(56:8),Triacyl-glycerols
+TG_(57:0),Triacyl-glycerols
+TG_(57:1),Triacyl-glycerols
+TG_(57:10),Triacyl-glycerols
+TG_(57:2),Triacyl-glycerols
+TG_(57:3),Triacyl-glycerols
+TG_(57:4),Triacyl-glycerols
+TG_(57:5),Triacyl-glycerols
+TG_(57:6),Triacyl-glycerols
+TG_(57:7),Triacyl-glycerols
+TG_(57:8),Triacyl-glycerols
+TG_(57:9),Triacyl-glycerols
+TG_(58:0),Triacyl-glycerols
+TG_(58:1),Triacyl-glycerols
+TG_(58:10),Triacyl-glycerols
+TG_(58:11),Triacyl-glycerols
+TG_(58:12),Triacyl-glycerols
+TG_(58:2),Triacyl-glycerols
+TG_(58:3),Triacyl-glycerols
+TG_(58:4),Triacyl-glycerols
+TG_(58:5),Triacyl-glycerols
+TG_(58:6),Triacyl-glycerols
+TG_(58:7),Triacyl-glycerols
+TG_(58:8),Triacyl-glycerols
+TG_(58:9),Triacyl-glycerols
+TG_(59:3),Triacyl-glycerols
+TG_(59:4),Triacyl-glycerols
+TG_(59:5),Triacyl-glycerols
+TG_(59:6),Triacyl-glycerols
+TG_(59:7),Triacyl-glycerols
+TG_(59:8),Triacyl-glycerols
+TG_(59:9),Triacyl-glycerols
+TG_(60:0),Triacyl-glycerols
+TG_(60:10),Triacyl-glycerols
+TG_(60:12),Triacyl-glycerols
+TG_(61:12),Triacyl-glycerols
+TG_(62:12),Triacyl-glycerols
+TG_(62:13),Triacyl-glycerols
+TG_(62:14),Triacyl-glycerols
+TG_(66:18),Triacyl-glycerols
