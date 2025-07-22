@@ -70,8 +70,8 @@ raw_data_columns <- colnames(raw_data_lipids)
 lipids <- lipids_tested$lipid
 
 unmatched_cols <- setdiff(raw_data_columns, lipids)
-length(unmatched_cols)
-print(unmatched_cols[1:11])
+number_unmatched <- length(unmatched_cols)
+print(unmatched_cols[1:number_unmatched])
 
 ## subset data by lipid family #################################################
 
