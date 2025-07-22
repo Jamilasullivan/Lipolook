@@ -35,6 +35,9 @@ rownames(raw_data_lipids) <- raw_data_lipids[[2]]
 
 raw_data_lipids <- raw_data_lipids[, -(1:3)]
 
+duplicated_columns <- duplicated(as.list(raw_data_lipids)) # creates logical list of whether any columns are completely duplicated values
+any(duplicated_columns) # tells you if any in the list are true
+
 ################################################################################
 ## lipids tested for the client ################################################
 ################################################################################
@@ -58,7 +61,7 @@ lipids_tested <- lipids_tested[!(is.na(lipids_tested$lipid) | lipids_tested$lipi
 
 lipids_tested$lipid <- make.names(lipids_tested$lipid) # changing the (): characters to . to match the syntax of the column names in the other data frame.
 
-View(lipids_tested)
+#View(lipids_tested)
 summary(lipids_tested) # 1602 rows without empty lipid cells
 
 ## subset data by lipid family #################################################
@@ -72,7 +75,7 @@ for(family in names(lipid_families)) {
   cols <- lipid_families[[family]]
   
   # Only keep columns that actually exist in raw_data
-  cols <- intersect(cols, colnames(raw_data))
+  cols <- intersect(cols, colnames(raw_data_lipids))
   
   # Subset raw_data by these columns
   raw_data_by_family[[family]] <- raw_data[, cols, drop = FALSE]
