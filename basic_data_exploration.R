@@ -1,15 +1,22 @@
+## packages ####################################################################
+
+library(tidyr)
+library(dplyr)
+
 ## Data given in .xlsx format ##################################################
 
 setwd("C:/Users/jamsu/OneDrive - Cardiff University/University/Masters/Big Data Biology/Modules/Dissertation/R Programme/Dissertation/test_data")
 
-## data provided to the client
+################################################################################
+## data provided to the client #################################################
+################################################################################
 
 raw_data <- read.csv("raw_data_1.csv", header = T)
 names(raw_data)[c(1,2,3,4,5)] <- c("Filename", "CMaLL Sample Name", "Group", "code", "Cell Count")
 raw_data <- raw_data[-1,]
 raw_data$code <- NULL
 raw_data$`Cell Count` <- NULL
-View(raw_data)
+#View(raw_data)
 summary(raw_data)
 str(raw_data) # they were all characters here
 # Convert columns 4 to end (since the first 3 are metadata)
@@ -18,19 +25,77 @@ sum(is.na(raw_data[, 4:ncol(raw_data)])) # no NA values introduced by coercion
 str(raw_data)
 summary(raw_data)
 
-sapply(raw_data[, 4:ncol(raw_data)], class)
-colSums(is.na(raw_data[, 4:ncol(raw_data)]))
-colSums(is.infinite(as.matrix(raw_data[, 4:ncol(raw_data)])))
+summary(raw_data[, 4:10]) # summaries for a subset of data
 
-summary(raw_data[, 4:10])
-
-## lipids tested for the client
+################################################################################
+## lipids tested for the client ################################################
+################################################################################
 
 lipids_tested <- read.csv("lipids_tested_1.csv", header = T)
 View(lipids_tested)
 
+lipids_tested <- lipids_tested %>% 
+  pivot_longer(
+    cols = everything(),
+    names_to = "family",
+    values_to = "lipid"
+  ) %>% 
+  filter(!is.na(lipid))
 
-## subset the data by groups ###################################################
+lipids_tested <- lipids_tested[order(lipids_tested$family), ] # ordering the lipid fmailies alphabetically
 
-group_names <- unique(raw_data$Group)
-View(group_names)
+summary(lipids_tested) # 4318 rows with empty lipid cells
+
+lipids_tested <- lipids_tested[!(is.na(lipids_tested$lipid) | lipids_tested$lipid == ""), ]
+
+lipids_tested$lipid <- make.names(lipids_tested$lipid) # changing the (): characters to . to match the syntax of the column names in the other data frame.
+
+View(lipids_tested)
+summary(lipids_tested) # 1602 rows without empty lipid cells
+
+############ i want to test this with Ben's full list to see if the numbers are the same
+
+bens_list <- read.csv("all_lipids.csv", header = T)
+View(bens_list)
+
+bens_list <- bens_list %>% 
+  pivot_longer(
+    cols = everything(),
+    names_to = "family",
+    values_to = "lipid"
+  ) %>% 
+  filter(!is.na(lipid))
+
+bens_list <- bens_list[order(bens_list$family), ] # ordering the lipid fmailies alphabetically
+
+summary(bens_list) # 4318 rows with empty lipid cells
+
+bens_list <- bens_list[!(is.na(bens_list$lipid) | bens_list$lipid == ""), ]
+
+bens_list$lipid <- make.names(bens_list$lipid) # changing the (): characters to . to match the syntax of the column names in the other data frame.
+
+View(bens_list)
+summary(bens_list) # 1602 rows without empty lipid cells
+
+## subset data by lipid family #################################################
+
+lipid_families <- split(bens_list$lipid, bens_list$family) # split the lipids by their family and save them as such
+
+raw_data_by_family <- list() # creating an empty list to store the separated data frames
+
+for(family in names(lipid_families)) {
+  # Get lipid columns for this family
+  cols <- lipid_families[[family]]
+  
+  # Only keep columns that actually exist in raw_data
+  cols <- intersect(cols, colnames(raw_data))
+  
+  # Subset raw_data by these columns
+  raw_data_by_family[[family]] <- raw_data[, cols, drop = FALSE]
+} # all of the column numbers are wrong
+
+for(family in names(raw_data_by_family)) {
+  assign(paste0("raw_data_", family), raw_data_by_family[[family]])
+}
+
+## univariate statistics #######################################################
