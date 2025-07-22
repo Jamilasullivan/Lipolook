@@ -64,7 +64,10 @@ lipids_tested$lipid <- make.names(lipids_tested$lipid) # changing the (): charac
 #View(lipids_tested)
 summary(lipids_tested) # 1602 rows without empty lipid cells
 
-## checking for mismatched columns #############################################
+## checking for mismatched columns ############################################
+
+all_cols <- unique(unlist(lapply(raw_data_by_family, colnames))) 
+number_of_lipids_saved <- length(all_cols)  # total number of unique column names. Should be the same as the number of variables in the raw_data_lipids. If it's not then there is an issue with mismatched columns somewhere and the below script will help with figuring out where those are.
 
 raw_data_columns <- colnames(raw_data_lipids)
 lipids <- lipids_tested$lipid
@@ -92,6 +95,6 @@ for(family in names(lipid_families)) {
 
 for(family in names(raw_data_by_family)) {
   assign(paste0("raw_data_", family), raw_data_by_family[[family]])
-}
+} # creating different data frames of the separated 
 
-## univariate statistics #######################################################
+## uni variate statistics ######################################################
