@@ -88,7 +88,7 @@ for(family in names(lipid_families)) {
   
   # Subset raw_data by these columns
   raw_data_by_family[[family]] <- raw_data[, cols, drop = FALSE]
-} # all of the column numbers are wrong
+} # the column numbers (489 added) do not match the number of columns in the raw data (500 columns) because of the mismatched columns previously detected. This means that this program will only separate columns in raw data that are identically found in the list of tested lipids. Anything named any differently will be ignored. Therefore, data could be lost this way and is something to be very careful of.
 
 for(family in names(raw_data_by_family)) {
   assign(paste0("raw_data_", family), raw_data_by_family[[family]])
