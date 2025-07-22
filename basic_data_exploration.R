@@ -27,12 +27,20 @@ summary(raw_data)
 
 summary(raw_data[, 4:10]) # summaries for a subset of data
 
+## setting row names to sample names (not decided long term) and deleting all columns other than lipids tested.
+
+raw_data_lipids <- raw_data
+
+rownames(raw_data_lipids) <- raw_data_lipids[[2]]
+
+raw_data_lipids <- raw_data_lipids[, -(1:3)]
+
 ################################################################################
 ## lipids tested for the client ################################################
 ################################################################################
 
 lipids_tested <- read.csv("lipids_tested_1.csv", header = T)
-View(lipids_tested)
+#View(lipids_tested)
 
 lipids_tested <- lipids_tested %>% 
   pivot_longer(
