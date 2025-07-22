@@ -55,7 +55,7 @@ summary(lipids_tested) # 1602 rows without empty lipid cells
 
 ############ i want to test this with Ben's full list to see if the numbers are the same
 
-bens_list <- read.csv("all_lipids.csv", header = T)
+bens_list <- read.csv("all_lipids_wide.csv", header = T)
 View(bens_list)
 
 bens_list <- bens_list %>% 
@@ -79,7 +79,7 @@ summary(bens_list) # 1602 rows without empty lipid cells
 
 ## subset data by lipid family #################################################
 
-lipid_families <- split(bens_list$lipid, bens_list$family) # split the lipids by their family and save them as such
+lipid_families <- split(lipids_tested$lipid, lipids_tested$family) # split the lipids by their family and save them as such
 
 raw_data_by_family <- list() # creating an empty list to store the separated data frames
 
