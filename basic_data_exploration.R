@@ -64,6 +64,16 @@ lipids_tested$lipid <- make.names(lipids_tested$lipid) # changing the (): charac
 #View(lipids_tested)
 summary(lipids_tested) # 1602 rows without empty lipid cells
 
+## checking for mismatched columns #############################################
+
+raw_data_columns <- colnames(raw_data_lipids)
+lipids <- lipids_tested$lipid
+
+unmatched_cols <- setdiff(raw_data_columns, lipids)
+length(unmatched_cols)
+print(unmatched_cols[1:10]) 
+
+
 ## subset data by lipid family #################################################
 
 lipid_families <- split(lipids_tested$lipid, lipids_tested$family) # split the lipids by their family and save them as such
