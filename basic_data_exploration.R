@@ -53,11 +53,11 @@ lipids_tested <- lipids_tested %>%
   ) %>% 
   filter(!is.na(lipid))
 
-lipids_tested <- lipids_tested[order(lipids_tested$family), ] # ordering the lipid fmailies alphabetically
+lipids_tested <- lipids_tested[order(lipids_tested$family), ] # ordering the lipid families alphabetically
 
 summary(lipids_tested) # 4318 rows with empty lipid cells
 
-lipids_tested <- lipids_tested[!(is.na(lipids_tested$lipid) | lipids_tested$lipid == ""), ]
+lipids_tested <- lipids_tested[!(is.na(lipids_tested$lipid) | lipids_tested$lipid == ""), ] # getting rid of the rows without relevant lipids attached (i.e. blank cells for lipid names)
 
 lipids_tested$lipid <- make.names(lipids_tested$lipid) # changing the (): characters to . to match the syntax of the column names in the other data frame.
 
@@ -66,8 +66,8 @@ summary(lipids_tested) # 1602 rows without empty lipid cells
 
 ## checking for mismatched columns ############################################
 
-all_cols <- unique(unlist(lapply(raw_data_by_family, colnames))) 
-number_of_lipids_saved <- length(all_cols)  # total number of unique column names. Should be the same as the number of variables in the raw_data_lipids. If it's not then there is an issue with mismatched columns somewhere and the below script will help with figuring out where those are.
+#all_cols <- unique(unlist(lapply(raw_data_by_family, colnames))) 
+#number_of_lipids_saved <- length(all_cols)  # total number of unique column names. Should be the same as the number of variables in the raw_data_lipids. If it's not then there is an issue with mismatched columns somewhere and the below script will help with figuring out where those are.
 
 raw_data_columns <- colnames(raw_data_lipids)
 lipids <- lipids_tested$lipid
@@ -97,5 +97,16 @@ for(family in names(raw_data_by_family)) {
   assign(paste0("raw_data_", family), raw_data_by_family[[family]])
 } # creating different data frames of the separated 
 
-## uni variate statistics ######################################################
+## separate groups out #########################################################
+
+groups <- data.frame(raw_data[3])
+
+
+
+
+
+
+
+
+
 
