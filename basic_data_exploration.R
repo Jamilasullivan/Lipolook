@@ -33,7 +33,7 @@ raw_data_lipids <- raw_data
 
 rownames(raw_data_lipids) <- raw_data_lipids[[2]]
 
-raw_data_lipids <- raw_data_lipids[, -(1:3)]
+raw_data_lipids <- raw_data_lipids[, -(1:2)] # to 2 is keeping grouping, to 3 is without grouping
 
 duplicated_columns <- duplicated(as.list(raw_data_lipids)) # creates logical list of whether any columns are completely duplicated values
 any(duplicated_columns) # tells you if any in the list are true
@@ -98,3 +98,4 @@ for(family in names(raw_data_by_family)) {
 } # creating different data frames of the separated 
 
 ## uni variate statistics ######################################################
+
