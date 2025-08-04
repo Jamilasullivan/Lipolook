@@ -64,7 +64,7 @@ lipids_tested$lipid <- make.names(lipids_tested$lipid) # changing the (): charac
 #View(lipids_tested)
 summary(lipids_tested) # 1602 rows without empty lipid cells
 
-## checking for mismatched columns ############################################
+## checking for mismatched columns #############################################
 
 #all_cols <- unique(unlist(lapply(raw_data_by_family, colnames))) 
 #number_of_lipids_saved <- length(all_cols)  # total number of unique column names. Should be the same as the number of variables in the raw_data_lipids. If it's not then there is an issue with mismatched columns somewhere and the below script will help with figuring out where those are.
@@ -95,12 +95,105 @@ for(family in names(lipid_families)) {
 
 for(family in names(raw_data_by_family)) {
   assign(paste0("raw_data_", family), raw_data_by_family[[family]])
-} # creating different data frames of the separated 
+} # creating different data frames of the separated
+
+## remove data frames with 0 variables before averaging ########################
+
+# Get all object names that start with 'raw_data_'
+raw_data_names <- ls(pattern = "^raw_data_")
+
+# Loop through them and check number of columns
+for (name in raw_data_names) {
+  df <- get(name)
+  
+  if (is.data.frame(df) && ncol(df) == 0) {
+    message("Removing empty data frame: ", name)
+    rm(list = name, envir = .GlobalEnv)
+  }
+}
+
+## comparing lipids within families ############################################
+
+# List all objects starting with 'raw_data_'
+raw_data_names <- ls(pattern = "^raw_data_")
+
+# Create empty list for valid average rows
+avg_list <- list()
+
+for (name in raw_data_names) {
+  obj <- get(name)
+  
+  # Only proceed if it's a data frame (not a list or other object)
+  if (is.data.frame(obj)) {
+    if (nrow(obj) > 0 && ncol(obj) > 0) {
+      if ("average" %in% rownames(obj)) {
+        avg_list[[name]] <- obj["average", , drop = FALSE]
+      } else {
+        message(name, " has no 'average' row — skipped.")
+      }
+    } else {
+      message(name, " is an empty data frame — skipped.")
+    }
+  } else {
+    message(name, " is not a data frame — skipped.")
+  }
+}
+
+# Rename entries by family name
+names(avg_list) <- sub("raw_data_", "", names(avg_list))
+
+# Combine into one long-form data frame for plotting
+library(dplyr)
+library(tidyr)
+
+avg_df <- bind_rows(avg_list, .id = "Family")
+
+avg_long <- pivot_longer(
+  avg_df,
+  cols = -Family,
+  names_to = "Lipid",
+  values_to = "AverageValue"
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## separate groups out #########################################################
 
 groups <- data.frame(raw_data[3])
+raw_data_names <- ls(pattern = "^raw_data_")
 
+for (name in raw_data_names) {
+  df <- get(name)
+  new_df <- cbind(groups, df)
+  colnames(new_df)[1] <- "Grouping"
+  assign(name, new_df)
+} # make sure to only run this loop once. Otherwise, remove all objects related to this script and start all steps again from line 14.
 
 
 
