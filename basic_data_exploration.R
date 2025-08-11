@@ -163,6 +163,25 @@ text(
 
 ## SECONDLY: COMPARING AVERAGE VALUES BETWEEN EXPERIMENTAL GROUPS
 
+# this is dependent on having the groups back in the data frame
+
+groupings <- raw_data_lipids[,1] # making a list of all the groupings associated with the data
+
+raw_data_Triacyl.glycerols <- raw_data_Triacyl.glycerols[1:57,] # removing the average column so that the next step of binding has the same number of columns to work with 
+
+TG_grouping <- cbind(groupings,raw_data_Triacyl.glycerols) # adding the groupings to the TG data specifically
+
+# now ask R for averages for each group to compare. Use aggregate which splits data into specified groups, applies a function and then gives back a new data frame with the results of the function
+
+TG_group_averages <- aggregate(. ~ groupings, data = TG_grouping, FUN = mean, na.rm = TRUE) # Asks for 'all other columns' against column 1 (groupings) in TG_grouping to be processed for their mean. This leaves 19 columns, one for each group. 
+
+colnames(TG_group_averages)[1] <- "Group" # renaming the column to 'Group'
+
+# I now want to compare these results
+
+# firstly, I want to make a bar chart for all of them individually
+
+
 
 
 
