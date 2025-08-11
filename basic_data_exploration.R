@@ -144,7 +144,7 @@ names(avg_values) <- colnames(raw_data_Triacyl.glycerols)
 pal <- colorRampPalette(c("mistyrose", "darkred")) # creating the colour palette for bars
 bar_colours <- pal(length(avg_values))[rank(avg_values)] # 
 
-barplot(
+bp <- barplot(
   avg_values,
   main = "Average Lipid Values",
   horiz = TRUE,
@@ -152,6 +152,16 @@ barplot(
   cex.names = 0.7,        # Shrink label size if needed
   col = bar_colours
 )
+
+text(
+  x = avg_values + max(avg_values) * 0.02,  # position slightly to the right
+  y = bp,
+  labels = round(avg_values, 2),            # round to 2 decimals
+  cex = 0.7,
+  adj = 0
+)
+
+## SECONDLY: COMPARING AVERAGE VALUES BETWEEN EXPERIMENTAL GROUPS
 
 
 
