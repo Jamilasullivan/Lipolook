@@ -110,7 +110,7 @@ for(family in names(raw_data_by_family)) {
 } # creating different data frames of the separated
 
 ## remove data frames with 0 variables before averaging ########################
-## it causes issues with loops to keep them there and they are unnecessary ######
+## it causes issues with loops to keep them there and they are unnecessary #####
 
 raw_data_names <- ls(pattern = "^raw_data_") # making a list of all the data frames I have with names starting 'raw_data_'
 
@@ -123,97 +123,30 @@ for (name in raw_data_names) {
   }
 } # checking for empty data frames and removing them. This loops says, check for every name in the list I've made, get the data frame that's related to it, if the data frame has no columns then give a message that it's empty and then remove it. 
 
+################################################################################
+############ Primary data exploration ##########################################
+################################################################################
 
+## my idea is to firstly do this for one single lipid family to see what I'd like as an output and then loop this through all for the programme.
 
+## below is the test using just Triacylglycerols
 
+avg_row <- colMeans(raw_data_Triacyl.glycerols, na.rm = TRUE) # make a data frame with the average values
 
+raw_data_Triacyl.glycerols <- rbind(raw_data_Triacyl.glycerols, Average = avg_row) # adding the average row to the original data frame
 
+avg_values <- as.numeric(raw_data_Triacyl.glycerols["Average", ]) # removing the average values to plot
 
+names(avg_values) <- colnames(raw_data_Triacyl.glycerols)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## comparing lipids within families ############################################
-
-raw_data_names <- ls(pattern = "^raw_data_") # making a list of all the data frames I have with names starting 'raw_data_'
-
-avg_list <- list() # create an empty list for the average rows
-
-for (name in raw_data_names) {
-  obj <- get(name)
-  
-  # Only proceed if it's a data frame (not a list or other object)
-  if (is.data.frame(obj)) {
-    if (nrow(obj) > 0 && ncol(obj) > 0) {
-      if ("average" %in% rownames(obj)) {
-        avg_list[[name]] <- obj["average", , drop = FALSE]
-      } else {
-        message(name, " has no 'average' row — skipped.")
-      }
-    } else {
-      message(name, " is an empty data frame — skipped.")
-    }
-  } else {
-    message(name, " is not a data frame — skipped.")
-  }
-} # this means that for every data frame, it will create an object from that data frame, 
-
-# Rename entries by family name
-names(avg_list) <- sub("raw_data_", "", names(avg_list))
-
-# Combine into one long-form data frame for plotting
-library(dplyr)
-library(tidyr)
-
-avg_df <- bind_rows(avg_list, .id = "Family")
-
-avg_long <- pivot_longer(
-  avg_df,
-  cols = -Family,
-  names_to = "Lipid",
-  values_to = "AverageValue"
+barplot(
+  avg_values,
+  main = "Average Lipid Values",
+  ylab = "Average Value",
+  las = 2,                # Rotate x-axis labels
+  cex.names = 0.7,        # Shrink label size if needed
+  col = "skyblue"
 )
-
-
-## separate groups out #########################################################
-
-groups <- data.frame(raw_data[3])
-raw_data_names <- ls(pattern = "^raw_data_")
-
-for (name in raw_data_names) {
-  df <- get(name)
-  new_df <- cbind(groups, df)
-  colnames(new_df)[1] <- "Grouping"
-  assign(name, new_df)
-} # make sure to only run this loop once. Otherwise, remove all objects related to this script and start all steps again from line 14.
-
-
-
-
-
-
 
 
 
