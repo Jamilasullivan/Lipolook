@@ -348,7 +348,7 @@ for (name in raw_data_names) {
   cat("Saved results to:", csv_file, "\n")
 }
 
-
+## I believe it would also be beneficial to do an ANOVA on the whole data frame to know which lipids change most significantly out of all those tested between groups.
 
 
 
