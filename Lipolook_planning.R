@@ -125,120 +125,6 @@ for (name in raw_data_names) {
 } # checking for empty data frames and removing them. This loops says, check for every name in the list I've made, get the data frame that's related to it, if the data frame has no columns then give a message that it's empty and then remove it. 
 
 ################################################################################
-############ Primary data exploration ##########################################
-################################################################################
-
-## my idea is to firstly do this for one single lipid family to see what I'd like as an output and then loop this through all for the programme.
-
-## below is the test using just 
-
-## FIRSTLY: COMPARING THE AVERAGE VALUES OF EACH COLUMN (LIPID) WITHIN THE FAMILY #########################################################################
-
-avg_row <- colMeans(raw_data_Triacyl.glycerols, na.rm = TRUE) # make a data frame with the average values
-
-raw_data_Triacyl.glycerols <- rbind(raw_data_Triacyl.glycerols, Average = avg_row) # adding the average row to the original data frame
-
-avg_values <- as.numeric(raw_data_Triacyl.glycerols["Average", ]) # removing the average values to plot
-
-names(avg_values) <- colnames(raw_data_Triacyl.glycerols)
-
-pal <- colorRampPalette(c("mistyrose", "darkred")) # creating the colour palette for bars
-bar_colours <- pal(length(avg_values))[rank(avg_values)] # 
-
-bp <- barplot(
-  avg_values,
-  main = "Average Lipid Values",
-  horiz = TRUE,
-  las = 2,                # Rotate x-axis labels
-  cex.names = 0.7,        # Shrink label size if needed
-  col = bar_colours
-)
-
-text(
-  x = avg_values + max(avg_values) * 0.02,  # position slightly to the right
-  y = bp,
-  labels = round(avg_values, 2),            # round to 2 decimals
-  cex = 0.7,
-  adj = 0
-)
-
-# I now want to make a forest plot for all of these TGs too
-
-raw_data_Triacyl.glycerols <- raw_data_Triacyl.glycerols[1:57,]
-
-raw_data_Triacyl.glycerols$Sample <- rownames(raw_data_Triacyl.glycerols)
-
-raw_data_Triacyl.glycerols_long <- raw_data_Triacyl.glycerols %>%
-  pivot_longer(
-    cols = -Sample, 
-    names_to = "Lipid", 
-    values_to = "Value"
-  )
-
-TG_summary_stats <- raw_data_Triacyl.glycerols_long %>%
-  group_by(Lipid) %>%
-  summarise(
-    mean = mean(Value, na.rm = TRUE),
-    sd = sd(Value, na.rm = TRUE),
-    n = n(),
-    se = sd / sqrt(n),
-    lower = mean - 1.96 * se,
-    upper = mean + 1.96 * se
-  )
-
-ggplot(TG_summary_stats, aes(x = mean, y = reorder(Lipid, mean))) +
-  geom_point(color = "red", size = 3) +             # mean points
-  geom_errorbarh(aes(xmin = lower, xmax = upper), height = 0.3, color = "red") +  # 95% CI
-  labs(
-    x = "Mean Lipid Value with 95% CI",
-    y = "Lipid",
-    title = "Forest Plot: Lipid Distribution Across Samples"
-  ) +
-  theme_minimal() # this plots all 63 lipids in the TG family
-
-# I'd like to now just plot the top 10%
-
-TG_summary_stats <- TG_summary_stats %>%
-  mutate(ci_width = upper - lower)
-
-cutoff <- quantile(TG_summary_stats$ci_width, 0.9)
-
-top_10_percent_CI <- TG_summary_stats %>%
-  filter(ci_width >= cutoff)
-
-ggplot(top_10_percent_CI, aes(x = mean, y = reorder(Lipid, mean))) +
-  geom_point(color = "darkred", size = 3) +                        # mean points
-  geom_errorbarh(aes(xmin = lower, xmax = upper), height = 0.3,    # horizontal error bars
-                 color = "darkred") +
-  labs(
-    x = "Mean Lipid Value with 95% CI",
-    y = "Lipid",
-    title = "Forest Plot: Lipids with Top 10% Widest 95% CI"
-  ) +
-  theme_minimal()
-
-## SECONDLY: COMPARING AVERAGE VALUES BETWEEN EXPERIMENTAL GROUPS ##############
-
-# this is dependent on having the groups back in the data frame
-
-groupings <- raw_data_lipids[,1] # making a list of all the groupings associated with the data
-
-raw_data_Triacyl.glycerols <- raw_data_Triacyl.glycerols[1:57,] # removing the average column so that the next step of binding has the same number of columns to work with 
-
-TG_grouping <- cbind(groupings,raw_data_Triacyl.glycerols) # adding the groupings to the TG data specifically
-
-# now ask R for averages for each group to compare. Use aggregate which splits data into specified groups, applies a function and then gives back a new data frame with the results of the function
-
-TG_group_averages <- aggregate(. ~ groupings, data = TG_grouping, FUN = mean, na.rm = TRUE) # Asks for 'all other columns' against column 1 (groupings) in TG_grouping to be processed for their mean. This leaves 19 columns, one for each group. 
-
-colnames(TG_group_averages)[1] <- "Group" # renaming the column to 'Group'
-
-# I now want to compare these results
-
-# firstly, I want to make a bar chart for all of them individually
-
-
-################################################################################
 ########### WORKING ON A LOOP FOR ALL LIPID FAMILIES ###########################
 ################################################################################
 
@@ -268,9 +154,6 @@ for (name in raw_data_names) {
     dir.create(folder_path)
   }
 } # creates a folder in 'outputs/lipid_families' for all information relating to each of the lipid families
-
-
-
 
 #### FOR LOOP FOR COMPARING THE AVERAGES OF ALL LIPIDS WITHIN A FAMILY #########
 
