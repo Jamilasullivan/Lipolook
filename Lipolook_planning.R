@@ -251,43 +251,86 @@ raw_data_names <- raw_data_names[sapply(raw_data_names, function(x) {
 
 if (!dir.exists("outputs")) {
   dir.create("outputs")
-}
+} # makes a folder called 'outputs'
+
+lipid_families_folder <- file.path("outputs", "lipid_families")
+
+if (!dir.exists(lipid_families_folder)) {
+  dir.create(lipid_families_folder)
+} # makes an extra folder in 'outputs' called 'lipid families'
+
 
 for (name in raw_data_names) {
   cat("Creating folder for:", name, "\n")
-  
+  lipid_family <- sub("^raw_data_", "", name)
+  folder_path <- file.path("outputs/lipid_families", lipid_family)
+  if (!dir.exists(folder_path)) {
+    dir.create(folder_path)
+  }
+} # creates a folder in 'outputs/lipid_families' for all information relating to each of the lipid families
 
-for (name in raw_data_names) {
+
+
+
+#### FOR LOOP FOR COMPARING THE AVERAGES OF ALL LIPIDS WITHIN A FAMILY #########
+
+for (df_name in raw_data_names) {
+  
+  lipid_family <- sub("^raw_data_", "", df_name)
+  folder_path <- file.path("outputs", "lipid_families", lipid_family)
   
   ## setting message
-  cat("Processing:", name, "\n")
+  cat("Processing:", df_name, "\n")
   
-  ## getting each data frame
-  df <- get(name)
+  ## Just in case folder doesn't exist, you can optionally check or skip
+  if (!dir.exists(folder_path)) {
+    warning(paste("Folder does not exist:", folder_path))
+    next  # skip to next iteration if folder missing
+  }
   
-  ## 
-  avg_row <- colMeans(df, na.rm = TRUE)
-  df <- rbind(df, Average = avg_row)
-  avg_values <- as.numeric(df["Average", ])
-  names(avg_values) <- colnames(df)
-  pal <- colorRampPalette(c("mistyrose", "darkred")) # creating the colour palette for bars
-  bar_colours <- pal(length(avg_values))[rank(avg_values)] #
-  bp <- barplot(
-    avg_values,
-    main = "Average Lipid Values",
-    horiz = TRUE,
-    las = 2,                # Rotate x-axis labels
-    cex.names = 0.7,        # Shrink label size if needed
-    col = bar_colours
+  df <- get(df_name)
+  
+  # Calculate average values for each lipid
+  avg_values <- colMeans(df, na.rm = TRUE)
+  
+  plot_df <- data.frame(
+    Lipid = names(avg_values),
+    Average = as.numeric(avg_values)
   )
-  text(
-    x = avg_values + max(avg_values) * 0.02,  # position slightly to the right
-    y = bp,
-    labels = round(avg_values, 2),            # round to 2 decimals
-    cex = 0.7,
-    adj = 0
-  )
+  
+  p <- ggplot(plot_df, aes(x = reorder(Lipid, Average), y = Average, fill = Average)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    scale_fill_gradient(low = "pink", high = "red") +
+    labs(title = paste("Average Lipid Values -", lipid_family),
+         x = "Lipid",
+         y = "Average Value") +
+    theme_minimal()
+  
+  # Save the plot inside the existing folder
+  plot_file <- file.path(folder_path, paste0(lipid_family, "_barplot.png"))
+  ggsave(filename = plot_file, plot = p, width = 8, height = 4)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
