@@ -1,4 +1,4 @@
-"lipid","p_value"
-"Mono.lyso_CL_.52.01.",0.211765576507189
-"Mono.lyso_CL_.54.02.",0.453651572381767
-"Mono.lyso_CL_.54.04.",0.223155363012566
+"lipid","p_value","significance"
+"Mono.lyso_CL_.52.01.",0.211765576507189,"NO"
+"Mono.lyso_CL_.54.04.",0.223155363012566,"NO"
+"Mono.lyso_CL_.54.02.",0.453651572381767,"NO"

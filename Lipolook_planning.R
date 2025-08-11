@@ -299,6 +299,8 @@ for (name in raw_data_names) {
 ################## CALCULATING AVERAGES FOR GROUPS #############################
 ################################################################################
 
+## this loop performs an ANOVA on all lipid families individually and confirms whether, for any lipid, there is one group significantly different from the others. Based on a p-value threshold of 0.05 and below.
+
 for (name in raw_data_names) {
   cat("Running ANOVA for:", name, "\n")
   
@@ -331,12 +333,21 @@ for (name in raw_data_names) {
     dir.create(folder_path, recursive = TRUE)
   }
   
+  output_df$significance <- cut(output_df$p_value,
+                                breaks = c(-Inf, 0.001, 0.01, 0.05, Inf),
+                                labels = c("***", "**", "*", "NO"),
+                                right = TRUE
+  )
+  
+  output_df <- output_df[order(output_df$p_value, decreasing = FALSE), ]
+  
   # Write CSV with p-values
   csv_file <- file.path(folder_path, paste0(lipid_family, "_anova_pvalues.csv"))
   write.csv(output_df, file = csv_file, row.names = FALSE)
   
   cat("Saved results to:", csv_file, "\n")
 }
+
 
 
 
