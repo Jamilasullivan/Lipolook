@@ -11,38 +11,50 @@ setwd("C:/Users/jamsu/OneDrive - Cardiff University/University/Masters/Big Data 
 ## data provided to the client #################################################
 ################################################################################
 
-raw_data <- read.csv("raw_data_1.csv", header = T)
-names(raw_data)[c(1,2,3,4,5)] <- c("Filename", "CMaLL Sample Name", "Group", "code", "Cell Count")
-raw_data <- raw_data[-1,]
-raw_data$code <- NULL
-raw_data$`Cell Count` <- NULL
-#View(raw_data)
-summary(raw_data)
-str(raw_data) # they were all characters here
-# Convert columns 4 to end (since the first 3 are metadata)
-raw_data[, 4:ncol(raw_data)] <- lapply(raw_data[, 4:ncol(raw_data)], function(x) as.numeric(as.character(x)))
-sum(is.na(raw_data[, 4:ncol(raw_data)])) # no NA values introduced by coercion
-str(raw_data)
-summary(raw_data)
+raw_data <- read.csv("raw_data_1.csv", header = T) # reading in the raw data
+
+names(raw_data)[c(1,2,3,4,5)] <- c("Filename", "CMaLL Sample Name", "Group", "code", "Cell Count") # renaming columns
+
+raw_data <- raw_data[-1,] # deleting the first row 
+
+raw_data$code <- NULL # deleting 'code' column
+
+raw_data$`Cell Count` <- NULL # deleting 'Cell count' column
+
+#View(raw_data) # viewing raw data 
+
+summary(raw_data) # summary of results
+
+str(raw_data) # looking at data structure. They were all characters here.
+
+raw_data[, 4:ncol(raw_data)] <- lapply(raw_data[, 4:ncol(raw_data)], function(x)
+as.numeric(as.character(x))) # changing columns 4-n in raw data to numeric variables
+
+sum(is.na(raw_data[, 4:ncol(raw_data)])) # checking that no NA values were introduced by coercion
+
+str(raw_data) # checking the structure again
+
+summary(raw_data) # summarising the data 
 
 summary(raw_data[, 4:10]) # summaries for a subset of data
 
-## setting row names to sample names (not decided long term) and deleting all columns other than lipids tested.
+##### setting row names to sample names (not decided long term) and deleting all columns other than lipids tested. ##############################################
 
-raw_data_lipids <- raw_data
+raw_data_lipids <- raw_data # copying the data frame to manipulate
 
-rownames(raw_data_lipids) <- raw_data_lipids[[2]]
+rownames(raw_data_lipids) <- raw_data_lipids[[2]] # renaming the row names as the sample names
 
-raw_data_lipids <- raw_data_lipids[, -(1:2)] # to 2 is keeping grouping, to 3 is without grouping
+raw_data_lipids <- raw_data_lipids[, -(1:2)] # Deleting columns 1-2/3 to just keep the lipid data and remove unnecessary metadata. To 2 is keeping grouping, to 3 is without grouping.
 
 duplicated_columns <- duplicated(as.list(raw_data_lipids)) # creates logical list of whether any columns are completely duplicated values
+
 any(duplicated_columns) # tells you if any in the list are true
 
 ################################################################################
 ## lipids tested for the client ################################################
 ################################################################################
 
-lipids_tested <- read.csv("lipids_tested_1.csv", header = T)
+lipids_tested <- read.csv("lipids_tested_1.csv", header = T) # reading in the list of lipids tested
 #View(lipids_tested)
 
 lipids_tested <- lipids_tested %>% 
@@ -51,7 +63,7 @@ lipids_tested <- lipids_tested %>%
     names_to = "family",
     values_to = "lipid"
   ) %>% 
-  filter(!is.na(lipid))
+  filter(!is.na(lipid)) # putting all column values (lipid) into rows with their associated column name (family)
 
 lipids_tested <- lipids_tested[order(lipids_tested$family), ] # ordering the lipid families alphabetically
 
@@ -69,12 +81,12 @@ summary(lipids_tested) # 1602 rows without empty lipid cells
 #all_cols <- unique(unlist(lapply(raw_data_by_family, colnames))) 
 #number_of_lipids_saved <- length(all_cols)  # total number of unique column names. Should be the same as the number of variables in the raw_data_lipids. If it's not then there is an issue with mismatched columns somewhere and the below script will help with figuring out where those are.
 
-raw_data_columns <- colnames(raw_data_lipids)
-lipids <- lipids_tested$lipid
+raw_data_columns <- colnames(raw_data_lipids) # saving all of the column names (lipids)
+lipids <- lipids_tested$lipid # saving the names of all of the lipids tested.
 
-unmatched_cols <- setdiff(raw_data_columns, lipids)
-number_unmatched <- length(unmatched_cols)
-print(unmatched_cols[1:number_unmatched])
+unmatched_cols <- setdiff(raw_data_columns, lipids) # looking at how the two above lists match by outputting which ones didn't
+number_unmatched <- length(unmatched_cols) # asking how many columns didn't match
+print(unmatched_cols[1:number_unmatched]) # to tell me what the mismatched columns are
 
 ## subset data by lipid family #################################################
 
@@ -98,11 +110,10 @@ for(family in names(raw_data_by_family)) {
 } # creating different data frames of the separated
 
 ## remove data frames with 0 variables before averaging ########################
+## it causes issues with loops to keep them there and they are unnecessary ######
 
-# Get all object names that start with 'raw_data_'
-raw_data_names <- ls(pattern = "^raw_data_")
+raw_data_names <- ls(pattern = "^raw_data_") # making a list of all the data frames I have with names starting 'raw_data_'
 
-# Loop through them and check number of columns
 for (name in raw_data_names) {
   df <- get(name)
   
@@ -110,15 +121,45 @@ for (name in raw_data_names) {
     message("Removing empty data frame: ", name)
     rm(list = name, envir = .GlobalEnv)
   }
-}
+} # checking for empty data frames and removing them. This loops says, check for every name in the list I've made, get the data frame that's related to it, if the data frame has no columns then give a message that it's empty and then remove it. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## comparing lipids within families ############################################
 
-# List all objects starting with 'raw_data_'
-raw_data_names <- ls(pattern = "^raw_data_")
+raw_data_names <- ls(pattern = "^raw_data_") # making a list of all the data frames I have with names starting 'raw_data_'
 
-# Create empty list for valid average rows
-avg_list <- list()
+avg_list <- list() # create an empty list for the average rows
 
 for (name in raw_data_names) {
   obj <- get(name)
@@ -137,7 +178,7 @@ for (name in raw_data_names) {
   } else {
     message(name, " is not a data frame — skipped.")
   }
-}
+} # this means that for every data frame, it will create an object from that data frame, 
 
 # Rename entries by family name
 names(avg_list) <- sub("raw_data_", "", names(avg_list))
@@ -154,33 +195,6 @@ avg_long <- pivot_longer(
   names_to = "Lipid",
   values_to = "AverageValue"
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ## separate groups out #########################################################
