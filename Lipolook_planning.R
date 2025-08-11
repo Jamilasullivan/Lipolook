@@ -163,7 +163,7 @@ for (df_name in raw_data_names) {
   folder_path <- file.path("outputs", "lipid_families", lipid_family)
   
   ## setting message
-  cat("Processing:", df_name, "\n")
+  cat("Processing bar plots for:", df_name, "\n")
   
   ## Just in case folder doesn't exist, you can optionally check or skip
   if (!dir.exists(folder_path)) {
@@ -188,26 +188,155 @@ for (df_name in raw_data_names) {
     labs(title = paste("Average Lipid Values -", lipid_family),
          x = "Lipid",
          y = "Average Value") +
-    theme_minimal()
+    theme_classic()  
+  
+  num_lipids <- nrow(plot_df)
+  height <- max(4, num_lipids * 0.15)
   
   # Save the plot inside the existing folder
   plot_file <- file.path(folder_path, paste0(lipid_family, "_barplot.png"))
-  ggsave(filename = plot_file, plot = p, width = 8, height = 4)
+  ggsave(filename = plot_file, plot = p, width = 8, height = height)
 }
 
 ################################################################################
 ####### LOOP FOR A GENERAL FOREST PLOT COMPARING ALL LIPIDS IN A FAMILY ########
 ################################################################################
 
+for (df_name in raw_data_names) {
+  
+  lipid_family <- sub("^raw_data_", "", df_name)
+  folder_path <- file.path("outputs", "lipid_families", lipid_family)
+  
+  cat("Processing forest plots comparing all lipids within a family for:", df_name, "\n")
+  
+  if (!dir.exists(folder_path)) {
+    warning(paste("Folder does not exist:", folder_path))
+    next
+  }
+  
+  df <- get(df_name)
+  
+  # Convert df to long format for easier summary stats
+  df_long <- tidyr::pivot_longer(df, cols = everything(), names_to = "Lipid", values_to = "Value")
+  
+  # Calculate summary statistics for each lipid
+  summary_stats <- df_long %>%
+    group_by(Lipid) %>%
+    summarise(
+      mean = mean(Value, na.rm = TRUE),
+      sd = sd(Value, na.rm = TRUE),
+      n = sum(!is.na(Value)),
+      se = sd / sqrt(n),
+      lower = mean - 1.96 * se,
+      upper = mean + 1.96 * se
+    )
+  
+  csv_file <- file.path(folder_path, paste0(lipid_family, "_summary_stats.csv"))
+  write.csv(summary_stats, csv_file, row.names = FALSE)
+  
+  # Create the forest plot
+  p <- ggplot(summary_stats, aes(x = reorder(Lipid, mean), y = mean)) +
+    geom_point(color = "red", size = 3) +
+    geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.3, color = "darkred") +
+    coord_flip() +
+    labs(title = paste("Forest Plot -", lipid_family),
+         x = "Lipid",
+         y = "Mean (95% CI)") +
+    theme_classic()
+  
+  num_lipids <- nrow(summary_stats)
+  height <- max(4, num_lipids * 0.15)
+  
+  # Save the forest plot to file
+  plot_file <- file.path(folder_path, paste0(lipid_family, "_forest_plot.png"))
+  ggsave(filename = plot_file, plot = p, width = 8, height = height)
+}
 
+################################################################################
+################## FOREST PLOT FOR TOP 10% OF AVERAGES #########################
+################################################################################
 
+################################################################################
+######################## ADDING GROUPS BACK TO DFS #############################
+################################################################################
 
+groups <- raw_data[,3]
 
+for (name in raw_data_names) {
+  cat("Adding 'groups' column to:", name, "\n")
+  df <- get(name)
+  cbind(groups, df)
+  assign(name, df)
+} # adding a groups column to every lipid families df
 
+################################################################################
+################## CALCULATING AVERAGES FOR GROUPS #############################
+################################################################################
 
+for (name in raw_data_names) {
+  
+  lipid_family <- sub("^raw_data_", "", name)
+  folder_path <- file.path("outputs", "lipid_families", lipid_family)
+  
+  # make sure the folder exists
+  if (!dir.exists(folder_path)) {
+    dir.create(folder_path, recursive = TRUE)
+  }
+  
+  cat("Processing group averages for:", name, "\n")
+  
+  df <- get(name)
+  df_avg <- aggregate(. ~ groups, data = df, FUN = mean)
+  
+  new_name <- paste0(name, "_avg")
+  assign(new_name, df_avg)
+  
+  csv_file <- file.path(folder_path, paste0(lipid_family, "_avg.csv"))
+  write.csv(df_avg, file = csv_file, row.names = FALSE)
+}
 
+################################################################################
+################## CALCULATING AVERAGES FOR GROUPS #############################
+################################################################################
 
-
+for (name in raw_data_names) {
+  cat("Running ANOVA for:", name, "\n")
+  
+  df <- get(name)
+  
+  # Identify lipid columns (everything except 'groups')
+  lipid_columns <- setdiff(names(df), "groups")
+  
+  # Create a vector to store p-values
+  p_values <- numeric(length(lipid_columns))
+  names(p_values) <- lipid_columns
+  
+  for (lipid in lipid_columns) {
+    formula <- as.formula(paste(lipid, "~ groups"))
+    aov_result <- aov(formula, data = df)
+    summary_result <- summary(aov_result)
+    p_values[lipid] <- summary_result[[1]][["Pr(>F)"]][1]
+  }
+  
+  # Convert to data frame for output
+  output_df <- data.frame(
+    lipid = lipid_columns,
+    p_value = p_values
+  )
+  
+  # Create output folder (adjust as needed)
+  lipid_family <- sub("^raw_data_", "", name)
+  folder_path <- file.path("outputs", "lipid_families", lipid_family)
+  if (!dir.exists(folder_path)) {
+    dir.create(folder_path, recursive = TRUE)
+  }
+  
+  # Write CSV with p-values
+  csv_file <- file.path(folder_path, paste0(lipid_family, "_anova_pvalues.csv"))
+  write.csv(output_df, file = csv_file, row.names = FALSE)
+  
+  cat("Saved results to:", csv_file, "\n")
+}
 
 
 
