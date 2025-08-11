@@ -129,7 +129,9 @@ for (name in raw_data_names) {
 
 ## my idea is to firstly do this for one single lipid family to see what I'd like as an output and then loop this through all for the programme.
 
-## below is the test using just Triacylglycerols
+## below is the test using just 
+
+## FIRSTLY: COMPARING THE AVERAGE VALUES OF EACH COLUMN (LIPID) WITHIN THE FAMILY
 
 avg_row <- colMeans(raw_data_Triacyl.glycerols, na.rm = TRUE) # make a data frame with the average values
 
@@ -139,14 +141,18 @@ avg_values <- as.numeric(raw_data_Triacyl.glycerols["Average", ]) # removing the
 
 names(avg_values) <- colnames(raw_data_Triacyl.glycerols)
 
+pal <- colorRampPalette(c("mistyrose", "darkred")) # creating the colour palette for bars
+bar_colours <- pal(length(avg_values))[rank(avg_values)] # 
+
 barplot(
   avg_values,
   main = "Average Lipid Values",
-  ylab = "Average Value",
+  horiz = TRUE,
   las = 2,                # Rotate x-axis labels
   cex.names = 0.7,        # Shrink label size if needed
-  col = "skyblue"
+  col = bar_colours
 )
+
 
 
 
