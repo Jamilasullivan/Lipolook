@@ -2,6 +2,7 @@
 
 library(tidyr)
 library(dplyr)
+library(ggplot2)
 
 ## Data given in .xlsx format ##################################################
 
@@ -131,7 +132,7 @@ for (name in raw_data_names) {
 
 ## below is the test using just 
 
-## FIRSTLY: COMPARING THE AVERAGE VALUES OF EACH COLUMN (LIPID) WITHIN THE FAMILY
+## FIRSTLY: COMPARING THE AVERAGE VALUES OF EACH COLUMN (LIPID) WITHIN THE FAMILY #########################################################################
 
 avg_row <- colMeans(raw_data_Triacyl.glycerols, na.rm = TRUE) # make a data frame with the average values
 
@@ -161,7 +162,62 @@ text(
   adj = 0
 )
 
-## SECONDLY: COMPARING AVERAGE VALUES BETWEEN EXPERIMENTAL GROUPS
+# I now want to make a forest plot for all of these TGs too
+
+raw_data_Triacyl.glycerols <- raw_data_Triacyl.glycerols[1:57,]
+
+raw_data_Triacyl.glycerols$Sample <- rownames(raw_data_Triacyl.glycerols)
+
+raw_data_Triacyl.glycerols_long <- raw_data_Triacyl.glycerols %>%
+  pivot_longer(
+    cols = -Sample, 
+    names_to = "Lipid", 
+    values_to = "Value"
+  )
+
+TG_summary_stats <- raw_data_Triacyl.glycerols_long %>%
+  group_by(Lipid) %>%
+  summarise(
+    mean = mean(Value, na.rm = TRUE),
+    sd = sd(Value, na.rm = TRUE),
+    n = n(),
+    se = sd / sqrt(n),
+    lower = mean - 1.96 * se,
+    upper = mean + 1.96 * se
+  )
+
+ggplot(TG_summary_stats, aes(x = mean, y = reorder(Lipid, mean))) +
+  geom_point(color = "red", size = 3) +             # mean points
+  geom_errorbarh(aes(xmin = lower, xmax = upper), height = 0.3, color = "red") +  # 95% CI
+  labs(
+    x = "Mean Lipid Value with 95% CI",
+    y = "Lipid",
+    title = "Forest Plot: Lipid Distribution Across Samples"
+  ) +
+  theme_minimal() # this plots all 63 lipids in the TG family
+
+# I'd like to now just plot the top 10%
+
+TG_summary_stats <- TG_summary_stats %>%
+  mutate(ci_width = upper - lower)
+
+cutoff <- quantile(TG_summary_stats$ci_width, 0.9)
+
+top_10_percent_CI <- TG_summary_stats %>%
+  filter(ci_width >= cutoff)
+
+ggplot(top_10_percent_CI, aes(x = mean, y = reorder(Lipid, mean))) +
+  geom_point(color = "darkred", size = 3) +                        # mean points
+  geom_errorbarh(aes(xmin = lower, xmax = upper), height = 0.3,    # horizontal error bars
+                 color = "darkred") +
+  labs(
+    x = "Mean Lipid Value with 95% CI",
+    y = "Lipid",
+    title = "Forest Plot: Lipids with Top 10% Widest 95% CI"
+  ) +
+  theme_minimal()
+
+## SECONDLY: COMPARING AVERAGE VALUES BETWEEN EXPERIMENTAL GROUPS ##############
 
 # this is dependent on having the groups back in the data frame
 
