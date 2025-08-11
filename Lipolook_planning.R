@@ -238,6 +238,79 @@ colnames(TG_group_averages)[1] <- "Group" # renaming the column to 'Group'
 # firstly, I want to make a bar chart for all of them individually
 
 
+################################################################################
+########### WORKING ON A LOOP FOR ALL LIPID FAMILIES ###########################
+################################################################################
+
+raw_data_names <- ls(pattern = "^raw_data_") # makes sure we're analysing everything that has data in the final data frame
+
+raw_data_names <- raw_data_names[sapply(raw_data_names, function(x) {
+  df <- get(x)
+  is.data.frame(df) && all(sapply(df, is.numeric))
+})]
+
+if (!dir.exists("outputs")) {
+  dir.create("outputs")
+}
+
+for (name in raw_data_names) {
+  cat("Creating folder for:", name, "\n")
+  
+
+for (name in raw_data_names) {
+  
+  ## setting message
+  cat("Processing:", name, "\n")
+  
+  ## getting each data frame
+  df <- get(name)
+  
+  ## 
+  avg_row <- colMeans(df, na.rm = TRUE)
+  df <- rbind(df, Average = avg_row)
+  avg_values <- as.numeric(df["Average", ])
+  names(avg_values) <- colnames(df)
+  pal <- colorRampPalette(c("mistyrose", "darkred")) # creating the colour palette for bars
+  bar_colours <- pal(length(avg_values))[rank(avg_values)] #
+  bp <- barplot(
+    avg_values,
+    main = "Average Lipid Values",
+    horiz = TRUE,
+    las = 2,                # Rotate x-axis labels
+    cex.names = 0.7,        # Shrink label size if needed
+    col = bar_colours
+  )
+  text(
+    x = avg_values + max(avg_values) * 0.02,  # position slightly to the right
+    y = bp,
+    labels = round(avg_values, 2),            # round to 2 decimals
+    cex = 0.7,
+    adj = 0
+  )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
