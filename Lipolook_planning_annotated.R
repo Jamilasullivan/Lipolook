@@ -70,7 +70,7 @@ lipids_tested <- lipids_tested[order(lipids_tested$family), ] # ordering the lip
 
 summary(lipids_tested) # 4318 rows with empty lipid cells
 
-lipids_tested <- lipids_tested[!(is.na(lipids_tested$lipid) | lipids_tested$lipid == ""), ] # getting rid of the rows without relevant lipids attached (i.e. blank cells for lipid names)
+lipids_tested <- lipids_tested[!(is.na(lipids_tested$lipid) | lipids_tested$lipid == ""), ] # getting rid of the rows without relevant lipids attached (i.e. blank cells for lipid names). | means OR in syntax.
 
 lipids_tested$lipid <- make.names(lipids_tested$lipid) # changing the (): characters to . to match the syntax of the column names in the other data frame.
 
