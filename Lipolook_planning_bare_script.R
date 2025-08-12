@@ -6,6 +6,8 @@ working_directory <- "C:/Users/jamsu/OneDrive - Cardiff University/University/Ma
 
 raw_data_file_name <- "raw_data_1.csv"
 
+lipids_tested_file_name <- "lipids_tested_1.csv"
+
 ################################################################################
 ############################ PACKAGES TO INSTALL ###############################
 ################################################################################
@@ -51,6 +53,30 @@ print(duplicated_column_names)
 ################################################################################
 ######################## LIPIDS TESTED MANIPULATION ############################
 ################################################################################
+
+lipids_tested <- read.csv(lipids_tested_file_name, header = T)
+lipids_tested <- pivot_longer(lipids_tested,
+    cols = everything(),
+    names_to = "family",
+    values_to = "lipid"
+  )
+lipids_tested <- lipids_tested[order(lipids_tested$family), ]
+lipids_tested <- lipids_tested[!(is.na(lipids_tested$lipid) | lipids_tested$lipid == ""), ]
+lipids_tested$lipid <- make.names(lipids_tested$lipid)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
