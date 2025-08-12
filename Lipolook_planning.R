@@ -350,6 +350,33 @@ for (name in raw_data_names) {
 
 ## I believe it would also be beneficial to do an ANOVA on the whole data frame to know which lipids change most significantly out of all those tested between groups.
 
+raw_data_lipids$groups <- as.factor(raw_data_lipids$groups) # Make sure groups column is a factor
+
+lipid_columns <- names(raw_data_lipids)[-1] # Get lipid column names (everything except column 1)
+
+
+p_values <- sapply(lipid_columns, function(lipid) {
+  formula <- as.formula(paste(lipid, "~ groups"))
+  summary(aov(formula, data = raw_data_lipids))[[1]][["Pr(>F)"]][1]
+}) # Run ANOVA for each lipid and extract p-values
+
+
+output_df <- data.frame(
+  lipid = lipid_columns,
+  p_value = p_values,
+  significance <- ifelse(p_values <= 0.001, "***",
+                         ifelse(p_values <= 0.01, "**",
+                                ifelse(p_values <= 0.05, "*", "NO")))
+) # Convert to data frame
+
+# Optional: order by p-value ascending (most significant first)
+output_df <- output_df[order(output_df$p_value, decreasing = FALSE), ]
+
+# View results
+print(output_df)
+
+# Save to CSV
+write.csv(output_df, "anova_results.csv", row.names = FALSE)
 
 
 
@@ -363,6 +390,73 @@ for (name in raw_data_names) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+################### HISTOGRAMS TO CHECK FOR NORMALITY ##########################
+################################################################################
+
+for (df_name in raw_data_names) {
+  
+  lipid_family <- sub("^raw_data_", "", df_name)
+  folder_path <- file.path("outputs", "lipid_families", lipid_family)
+  
+  cat("Processing histograms for:", df_name, "\n")
+  df <- get(df_name)
+  
+  for (col in setdiff(names(df), "groups")) {
+    
+    # Create PNG file for this histogram
+    png(file.path(folder_path, paste0(col, "_hist.png")))
+    
+    hist(df[[col]],
+         main = paste("Histogram of", col),
+         xlab = col)
+    
+    dev.off()  # Close the PNG device
+  }
+  
+}
+
+
+for (df_name in raw_data_names) {
+  
+  lipid_family <- sub("^raw_data_", "", df_name)
+  folder_path <- file.path("test_data", "outputs", "lipid_families", lipid_family, "histograms")
+  
+  # Ensure output folder exists
+  if (!dir.exists(folder_path)) {
+    dir.create(folder_path, recursive = TRUE)
+  }
+  
+  cat("Processing histograms for:", df_name, "\n")
+  df <- get(df_name)
+  
+  for (col in setdiff(names(df), "groups")) {
+    
+    # Create PNG file for this histogram
+    png(file.path(folder_path, paste0(col, "_hist.png")))
+    
+    hist(df[[col]],
+         main = paste("Histogram of", col),
+         xlab = col)
+    
+    dev.off()  # Close the PNG device
+  }
+}
 
 
 
