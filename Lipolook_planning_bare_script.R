@@ -64,6 +64,12 @@ lipids_tested <- lipids_tested[order(lipids_tested$family), ]
 lipids_tested <- lipids_tested[!(is.na(lipids_tested$lipid) | lipids_tested$lipid == ""), ]
 lipids_tested$lipid <- make.names(lipids_tested$lipid)
 
+################################################################################
+####################### CHECKING FOR MISMATCHED COLUMNS ########################
+######################## I.E. COLUMNS TESTED THAT THERE ########################
+############################## WAS NO DATA FOR #################################
+################################################################################
+
 
 
 
