@@ -26,8 +26,15 @@ setwd(working_directory)
 
 raw_data <- read.csv(raw_data_file_name, header = T)
 names(raw_data)[c(1,2,3,4,5)] <- c("Filename", "CMaLL Sample Name", "Group", "code", "Cell Count")
-
-
+raw_data <- raw_data[-1,]
+raw_data$code <- NULL
+raw_data$`Cell Count` <- NULL
+str(raw_data)
+raw_data[, 4:ncol(raw_data)] <- lapply(raw_data[, 4:ncol(raw_data)], function(x)
+  as.numeric(as.character(x)))
+sum(is.na(raw_data[, 4:ncol(raw_data)]))
+str(raw_data)
+sapply(raw_data, is.numeric)
 
 
 
