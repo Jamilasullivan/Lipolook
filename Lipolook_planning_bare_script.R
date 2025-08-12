@@ -40,8 +40,13 @@ sapply(raw_data, is.numeric)
 ######################### RAW DATA MANIPULATION ################################
 ################################################################################
 
-
-
+raw_data_lipids <- raw_data
+rownames(raw_data_lipids) <- raw_data_lipids[[2]]
+raw_data_lipids <- raw_data_lipids[, -(1:2)]
+duplicated_columns <- duplicated(as.list(raw_data_lipids))
+any(duplicated_columns)
+duplicated_column_names <- names(raw_data_lipids)[duplicated_columns]
+print(duplicated_column_names)
 
 
 
