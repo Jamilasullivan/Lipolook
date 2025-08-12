@@ -85,8 +85,10 @@ summary(lipids_tested) # 1602 rows without empty lipid cells
 raw_data_columns <- colnames(raw_data_lipids) # saving all of the column names (lipids)
 lipids <- lipids_tested$lipid # saving the names of all of the lipids tested.
 
-unmatched_cols <- setdiff(raw_data_columns, lipids) # looking at how the two above lists match by outputting which ones didn't
+unmatched_cols <- setdiff(raw_data_columns, lipids) # looking at how the two above lists match by outputting which ones didn't. We're asking what columns in the results table were never officially tested by name? We then need to look at what results these are and why they're there. These cause an issue as they are unlikely to be included in the analysis due to the way this script works.
+
 number_unmatched <- length(unmatched_cols) # asking how many columns didn't match
+
 print(unmatched_cols[1:number_unmatched]) # to tell me what the mismatched columns are
 
 ## subset data by lipid family #################################################
