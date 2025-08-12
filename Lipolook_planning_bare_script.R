@@ -67,10 +67,14 @@ lipids_tested$lipid <- make.names(lipids_tested$lipid)
 ################################################################################
 ####################### CHECKING FOR MISMATCHED COLUMNS ########################
 ######################## I.E. COLUMNS TESTED THAT THERE ########################
-############################## WAS NO DATA FOR #################################
+########################## WAS NO RESULTANT DATA FOR ###########################
 ################################################################################
 
-
+raw_data_columns <- colnames(raw_data_lipids[2:ncol(raw_data_lipids)])
+lipids <- lipids_tested$lipid
+unmatched_cols <- setdiff(raw_data_columns, lipids)
+number_unmatched <- length(unmatched_cols)
+print(unmatched_cols[1:number_unmatched])
 
 
 
