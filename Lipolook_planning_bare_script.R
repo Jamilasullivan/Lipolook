@@ -74,7 +74,8 @@ raw_data_columns <- colnames(raw_data_lipids[2:ncol(raw_data_lipids)])
 lipids <- lipids_tested$lipid
 unmatched_cols <- setdiff(raw_data_columns, lipids)
 number_unmatched <- length(unmatched_cols)
-print(unmatched_cols[1:number_unmatched])
+unmatched_cols <- data.frame(Unmatched_columns = unmatched_cols)
+write.csv(unmatched_cols, "outputs/total_lipids/unmatched_columns.csv", row.names = FALSE)
 
 
 
