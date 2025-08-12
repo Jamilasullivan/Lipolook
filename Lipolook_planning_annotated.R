@@ -29,7 +29,7 @@ summary(raw_data) # summary of results
 str(raw_data) # looking at data structure. They were all characters here.
 
 raw_data[, 4:ncol(raw_data)] <- lapply(raw_data[, 4:ncol(raw_data)], function(x)
-as.numeric(as.character(x))) # changing columns 4-n in raw data to numeric variables
+as.numeric(as.character(x))) # changing columns 4-n in raw data to numeric variables. Takes all columns in raw_data, from column 4 to the last and changes all character columns to numeric values
 
 sum(is.na(raw_data[, 4:ncol(raw_data)])) # checking that no NA values were introduced by coercion
 
