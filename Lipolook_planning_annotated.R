@@ -350,7 +350,7 @@ for (name in raw_data_names) {
 
 ## I believe it would also be beneficial to do an ANOVA on the whole data frame to know which lipids change most significantly out of all those tested between groups.
 
-raw_data_lipids$groups <- as.factor(raw_data_lipids$groups) # Make sure groups column is a factor
+raw_data_lipids$Group <- as.factor(raw_data_lipids$Group) # Make sure groups column is a factor
 
 lipid_columns <- names(raw_data_lipids)[-1] # Get lipid column names (everything except column 1)
 
@@ -412,30 +412,7 @@ write.csv(output_df, "anova_results.csv", row.names = FALSE)
 for (df_name in raw_data_names) {
   
   lipid_family <- sub("^raw_data_", "", df_name)
-  folder_path <- file.path("outputs", "lipid_families", lipid_family)
-  
-  cat("Processing histograms for:", df_name, "\n")
-  df <- get(df_name)
-  
-  for (col in setdiff(names(df), "groups")) {
-    
-    # Create PNG file for this histogram
-    png(file.path(folder_path, paste0(col, "_hist.png")))
-    
-    hist(df[[col]],
-         main = paste("Histogram of", col),
-         xlab = col)
-    
-    dev.off()  # Close the PNG device
-  }
-  
-}
-
-
-for (df_name in raw_data_names) {
-  
-  lipid_family <- sub("^raw_data_", "", df_name)
-  folder_path <- file.path("test_data", "outputs", "lipid_families", lipid_family, "histograms")
+  folder_path <- file.path("test_data", "outputs", "lipid_families",         lipid_family, "histograms")
   
   # Ensure output folder exists
   if (!dir.exists(folder_path)) {
