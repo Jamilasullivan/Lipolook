@@ -132,6 +132,30 @@ for (name in raw_data_names) {
 }
 
 ################################################################################
+################### CREATING FOLDERS FOR ALL LIPID FAMILIES ####################
+################################################################################
+
+raw_data_names <- ls(pattern = "^raw_data_")
+raw_data_names <- raw_data_names[sapply(raw_data_names, function(x) {
+  df <- get(x)
+  is.data.frame(df) && all(sapply(df, is.numeric))
+})]
+lipid_families_folder <- file.path("outputs", "lipid_families")
+
+if (!dir.exists(lipid_families_folder)) {
+  dir.create(lipid_families_folder)
+}
+
+for (name in raw_data_names) {
+  cat("Creating folder for:", name, "\n")
+  lipid_family <- sub("^raw_data_", "", name)
+  folder_path <- file.path("outputs/lipid_families", lipid_family)
+  if (!dir.exists(folder_path)) {
+    dir.create(folder_path)
+  }
+}
+
+################################################################################
 ########################## END OF DATA ORGANISATION ############################
 ################################################################################
 ################################################################################
@@ -140,6 +164,93 @@ for (name in raw_data_names) {
 ################################################################################
 ########################## END OF DATA ORGANISATION ############################
 ################################################################################
+
+################################################################################
+############################## TOTAL DATA ANOVA ################################
+################################################################################
+
+raw_data_lipids$Group <- as.factor(raw_data_lipids$Group)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
