@@ -8,6 +8,14 @@ raw_data_file_name <- "raw_data_1.csv"
 
 lipids_tested_file_name <- "lipids_tested_1.csv"
 
+adjustment_method <- "fdr" # options are "holm" = Holm–Bonferroni
+                        #             "hochber" = Hochberg
+                        #             "hommel" = Hommel
+                        #             "bonferroni" = Bonferroni
+                        #             "BH" or "fdr" = Benjamini–Hochberg
+                        #             "BY" = Benjamini–Yekutieli
+                        #             "none" = No adjustment
+
 ################################################################################
 ############################ PACKAGES TO INSTALL ###############################
 ################################################################################
@@ -198,6 +206,8 @@ for (name in raw_data_names) {
 ################################# ANOVA ########################################
 ################################################################################
 
+## for individual lipid families ###############################################
+
 for (name in raw_data_names) {
   cat("Running ANOVA for:", name, "\n")
   df <- get(name)
@@ -211,11 +221,20 @@ for (name in raw_data_names) {
     summary_result <- summary(aov_result)
     p_values[lipid] <- summary_result[[1]][["Pr(>F)"]][1]
   }
+  
+  p_adjusted <- p.adjust(p_values, method = adjustment_method)
 
   output_df <- data.frame(
     lipid = lipid_columns,
-    p_value = p_values
+    p_value = p_values,
+    p_adjusted = p_adjusted
   )
+  output_df$significance <- cut(output_df$p_adjusted,
+                                breaks = c(-Inf, 0.001, 0.01, 0.05, Inf),
+                                labels = c("***", "**", "*", "NO"),
+                                right = TRUE
+  )
+  output_df <- output_df[order(output_df$p_adjusted, decreasing = FALSE), ]
   lipid_family <- sub("^raw_data_", "", name)
   folder_path <- file.path("outputs", "lipid_families", lipid_family)
   
@@ -223,16 +242,12 @@ for (name in raw_data_names) {
     dir.create(folder_path, recursive = TRUE)
   }
   
-  output_df$significance <- cut(output_df$p_value,
-                                breaks = c(-Inf, 0.001, 0.01, 0.05, Inf),
-                                labels = c("***", "**", "*", "NO"),
-                                right = TRUE
-  )
-  output_df <- output_df[order(output_df$p_value, decreasing = FALSE), ]
   csv_file <- file.path(folder_path, paste0(lipid_family, "_anova_pvalues.csv"))
   write.csv(output_df, file = csv_file, row.names = FALSE)
   cat("Saved results to:", csv_file, "\n")
 }
+
+## for all lipids combined #####################################################
 
 raw_data_lipids$Group <- as.factor(raw_data_lipids$Group)
 lipid_columns <- names(raw_data_lipids)[-1]
@@ -240,16 +255,20 @@ p_values <- sapply(lipid_columns, function(lipid) {
   formula <- as.formula(paste(lipid, "~ groups"))
   summary(aov(formula, data = raw_data_lipids))[[1]][["Pr(>F)"]][1]
 })
+p_adjusted <- p.adjust(p_values, method = adjustment_method)
 output_df <- data.frame(
   lipid = lipid_columns,
   p_value = p_values,
-  significance <- ifelse(p_values <= 0.001, "***",
-                         ifelse(p_values <= 0.01, "**",
-                                ifelse(p_values <= 0.05, "*", "NO")))
+  p_adjusted = p_adjusted,
+  significance = ifelse(p_adjusted <= 0.001, "***",
+                        ifelse(p_adjusted <= 0.01, "**",
+                               ifelse(p_adjusted <= 0.05, "*", "NO")))
 )
-output_df <- output_df[order(output_df$p_value, decreasing = FALSE), ]
+output_df <- output_df[order(output_df$p_adjusted, decreasing = FALSE), ]
 print(output_df)
 write.csv(output_df, "outputs/total_lipids/total_lipid_anova_results.csv", row.names = FALSE)
+
+
 
 ################################################################################
 ######################### HISTOGRAMS FOR NORMALITY #############################
