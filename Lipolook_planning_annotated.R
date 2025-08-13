@@ -93,7 +93,7 @@ print(unmatched_cols[1:number_unmatched]) # to tell me what the mismatched colum
 
 ## subset data by lipid family #################################################
 
-lipid_families <- split(lipids_tested$lipid, lipids_tested$family) # split the lipids by their family and save them as such
+lipid_families <- split(lipids_tested$lipid, lipids_tested$family) # split the lipids by their family and save them as such. It's asking for all lipids to be grouped by family
 
 raw_data_by_family <- list() # creating an empty list to store the separated data frames
 
@@ -106,7 +106,7 @@ for(family in names(lipid_families)) {
   
   # Subset raw_data by these columns
   raw_data_by_family[[family]] <- raw_data[, cols, drop = FALSE]
-} # the column numbers (489 added) do not match the number of columns in the raw data (500 columns) because of the mismatched columns previously detected. This means that this program will only separate columns in raw data that are identically found in the list of tested lipids. Anything named any differently will be ignored. Therefore, data could be lost this way and is something to be very careful of.
+} # the column numbers (489 added) do not match the number of columns in the raw data (500 columns) because of the mismatched columns previously detected. This means that this program will only separate columns in raw data that are identically found in the list of tested lipids. Anything named any differently will be ignored. Therefore, data could be lost this way and is something to be very careful of.[] is for a subset, [[]] extracts a whole object.
 
 for(family in names(raw_data_by_family)) {
   assign(paste0("raw_data_", family), raw_data_by_family[[family]])
