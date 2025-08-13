@@ -23,6 +23,24 @@ library(ggplot2)
 setwd(working_directory)
 
 ################################################################################
+####################### CREATING DIRECTORY STRUCTURE ###########################
+################################################################################
+
+if(!dir.exists("outputs")){
+  cat("'Outputs' directory created")
+  dir.create("outputs")
+} else {
+  cat("'Outputs' directory already exists")
+}
+
+if(!dir.exists("outputs/total_lipids")){
+  cat("'total_lipids' directory created")
+  dir.create("outputs/total_lipids", recursive = TRUE)
+} else {
+  cat("'total_lipids' directory already exists")
+}
+
+################################################################################
 ######################### INITIAL DATA TIDYING #################################
 ################################################################################
 
@@ -80,7 +98,22 @@ write.csv(unmatched_cols, "outputs/total_lipids/unmatched_columns.csv", row.name
 
 
 
+raw_data_names <- ls(pattern = "^raw_data_")
 
+raw_data_names <- raw_data_names[sapply(raw_data_names, function(x) {
+  df <- get(x)
+  is.data.frame(df) && all(sapply(df, is.numeric))
+})]
+
+if (!dir.exists("outputs")) {
+  dir.create("outputs")
+} # makes a folder called 'outputs'
+
+lipid_families_folder <- file.path("outputs", "lipid_families")
+
+if (!dir.exists(lipid_families_folder)) {
+  dir.create(lipid_families_folder)
+}
 
 
 
