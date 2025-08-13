@@ -520,7 +520,7 @@ for (i in seq_along(lipid_columns)) {
 }
 
 # Save results
-output_file <- "outputs/lipid_distribution_summary.csv"
+output_file <- "outputs/total_lipids/lipid_distribution_summary.csv"
 dir.create(dirname(output_file), recursive = TRUE, showWarnings = FALSE)
 write.csv(distribution_summary, output_file, row.names = FALSE)
 

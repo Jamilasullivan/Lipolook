@@ -268,7 +268,15 @@ output_df <- output_df[order(output_df$p_adjusted, decreasing = FALSE), ]
 print(output_df)
 write.csv(output_df, "outputs/total_lipids/total_lipid_anova_results.csv", row.names = FALSE)
 
+num_vstrong <- sum(output_df$significance == "***")
+num_strong <- sum(output_df$significance == "**")
+num_significant <- sum(output_df$significance == "*")
+num_not_signif <- sum(output_df$significance == "NO")
 
+cat("Number of very highly significant lipids (***):", num_vstrong, "\n")
+cat("Number of highly significant lipids (**):", num_strong, "\n")
+cat("Number of significant lipids (*):", num_significant, "\n")
+cat("Number of insignificant lipids (NO):", num_not_signif, "\n")
 
 ################################################################################
 ######################### HISTOGRAMS FOR NORMALITY #############################
@@ -291,6 +299,19 @@ for (df_name in raw_data_names) {
     dev.off()
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
