@@ -104,9 +104,32 @@ number_unmatched <- length(unmatched_cols)
 unmatched_cols <- data.frame(Unmatched_columns = unmatched_cols)
 write.csv(unmatched_cols, "outputs/error_files/unmatched_columns.csv", row.names = FALSE)
 
+################################################################################
+######################## SUBSET DATA BY LIPID FAMILY ###########################
+################################################################################
 
+lipid_families <- split(lipids_tested$lipid, lipids_tested$family)
+raw_data_by_family <- list()
 
+for(family in names(lipid_families)) {
+  cols <- lipid_families[[family]]
+  cols <- intersect(cols, colnames(raw_data_lipids))
+  raw_data_by_family[[family]] <- raw_data[, cols, drop = FALSE]
+}
 
+for(family in names(raw_data_by_family)) {
+  assign(paste0("raw_data_", family), raw_data_by_family[[family]])
+}
+
+raw_data_names <- ls(pattern = "^raw_data_")
+
+for (name in raw_data_names) {
+  df <- get(name)
+  if (is.data.frame(df) && ncol(df) == 0) {
+    message("Removing empty data frame: ", name)
+    rm(list = name, envir = .GlobalEnv)
+  }
+}
 
 
 
