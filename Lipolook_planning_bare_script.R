@@ -198,8 +198,58 @@ for (name in raw_data_names) {
 ################################# ANOVA ########################################
 ################################################################################
 
-raw_data_lipids$Group <- as.factor(raw_data_lipids$Group)
+for (name in raw_data_names) {
+  cat("Running ANOVA for:", name, "\n")
+  df <- get(name)
+  lipid_columns <- setdiff(names(df), "groups")
+  p_values <- numeric(length(lipid_columns))
+  names(p_values) <- lipid_columns
+  
+  for (lipid in lipid_columns) {
+    formula <- as.formula(paste(lipid, "~ groups"))
+    aov_result <- aov(formula, data = df)
+    summary_result <- summary(aov_result)
+    p_values[lipid] <- summary_result[[1]][["Pr(>F)"]][1]
+  }
 
+  output_df <- data.frame(
+    lipid = lipid_columns,
+    p_value = p_values
+  )
+  lipid_family <- sub("^raw_data_", "", name)
+  folder_path <- file.path("outputs", "lipid_families", lipid_family)
+  
+  if (!dir.exists(folder_path)) {
+    dir.create(folder_path, recursive = TRUE)
+  }
+  
+  output_df$significance <- cut(output_df$p_value,
+                                breaks = c(-Inf, 0.001, 0.01, 0.05, Inf),
+                                labels = c("***", "**", "*", "NO"),
+                                right = TRUE
+  )
+  output_df <- output_df[order(output_df$p_value, decreasing = FALSE), ]
+  csv_file <- file.path(folder_path, paste0(lipid_family, "_anova_pvalues.csv"))
+  write.csv(output_df, file = csv_file, row.names = FALSE)
+  cat("Saved results to:", csv_file, "\n")
+}
+
+raw_data_lipids$Group <- as.factor(raw_data_lipids$Group)
+lipid_columns <- names(raw_data_lipids)[-1]
+p_values <- sapply(lipid_columns, function(lipid) {
+  formula <- as.formula(paste(lipid, "~ groups"))
+  summary(aov(formula, data = raw_data_lipids))[[1]][["Pr(>F)"]][1]
+})
+output_df <- data.frame(
+  lipid = lipid_columns,
+  p_value = p_values,
+  significance <- ifelse(p_values <= 0.001, "***",
+                         ifelse(p_values <= 0.01, "**",
+                                ifelse(p_values <= 0.05, "*", "NO")))
+)
+output_df <- output_df[order(output_df$p_value, decreasing = FALSE), ]
+print(output_df)
+write.csv(output_df, "outputs/total_lipids/total_lipid_anova_results.csv", row.names = FALSE)
 
 ################################################################################
 ######################### HISTOGRAMS FOR NORMALITY #############################
