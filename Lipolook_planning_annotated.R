@@ -350,6 +350,15 @@ for (name in raw_data_names) {
   cat("Saved results to:", csv_file, "\n")
 }
 
+
+
+
+
+
+
+
+
+
 ## I believe it would also be beneficial to do an ANOVA on the whole data frame to know which lipids change most significantly out of all those tested between groups.
 
 raw_data_lipids$Group <- as.factor(raw_data_lipids$Group) # Make sure groups column is a factor
@@ -442,6 +451,83 @@ for (df_name in raw_data_names) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+########### rough distribution test#############################################
+
+# Load required library
+install.packages("moments")
+library(moments)
+
+# Assuming your data frame is raw_data_lipids
+# First column is Group, remaining columns are lipids
+lipid_columns <- names(raw_data_lipids)[-1]
+
+# Initialize output
+distribution_summary <- data.frame(
+  lipid = lipid_columns,
+  skewness = numeric(length(lipid_columns)),
+  kurtosis = numeric(length(lipid_columns)),
+  shapiro_p = numeric(length(lipid_columns)),
+  normality = character(length(lipid_columns)),
+  stringsAsFactors = FALSE
+)
+
+# Loop through lipids
+for (i in seq_along(lipid_columns)) {
+  lipid <- lipid_columns[i]
+  values <- raw_data_lipids[[lipid]]  # across all samples
+  distribution_summary$skewness[i] <- skewness(values)
+  distribution_summary$kurtosis[i] <- kurtosis(values)
+  
+  # Shapiro-Wilk test (n must be <= 5000)
+  if (length(values) >= 3 & length(values) <= 5000) {
+    shapiro_res <- shapiro.test(values)
+    distribution_summary$shapiro_p[i] <- shapiro_res$p.value
+    distribution_summary$normality[i] <- ifelse(shapiro_res$p.value > 0.05, "Normal", "Non-normal")
+  } else {
+    distribution_summary$shapiro_p[i] <- NA
+    distribution_summary$normality[i] <- "NA"
+  }
+}
+
+# Save results
+output_file <- "outputs/lipid_distribution_summary.csv"
+dir.create(dirname(output_file), recursive = TRUE, showWarnings = FALSE)
+write.csv(distribution_summary, output_file, row.names = FALSE)
+
+cat("Distribution summary saved to:", output_file, "\n")
+
+normal <- sum(distribution_summary$normality == "Normal")
+non_normal <- sum(distribution_summary$normality == "Non-normal")
 
 
 
