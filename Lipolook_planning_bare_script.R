@@ -40,6 +40,13 @@ if(!dir.exists("outputs/total_lipids")){
   cat("'total_lipids' directory already exists")
 }
 
+if(!dir.exists("outputs/error_files")){
+  cat("'error_files' directory created")
+  dir.create("outputs/error_files", recursive = TRUE)
+} else {
+  cat("'error_files' directory already exists")
+}
+
 ################################################################################
 ######################### INITIAL DATA TIDYING #################################
 ################################################################################
@@ -67,6 +74,8 @@ duplicated_columns <- duplicated(as.list(raw_data_lipids))
 any(duplicated_columns)
 duplicated_column_names <- names(raw_data_lipids)[duplicated_columns]
 print(duplicated_column_names)
+duplicated_column_names <- data.frame(duplicated_columns = duplicated_column_names)
+write.csv(duplicated_column_names, "outputs/error_files/duplicated_columns.csv", row.names = FALSE)
 
 ################################################################################
 ######################## LIPIDS TESTED MANIPULATION ############################
@@ -93,27 +102,10 @@ lipids <- lipids_tested$lipid
 unmatched_cols <- setdiff(raw_data_columns, lipids)
 number_unmatched <- length(unmatched_cols)
 unmatched_cols <- data.frame(Unmatched_columns = unmatched_cols)
-write.csv(unmatched_cols, "outputs/total_lipids/unmatched_columns.csv", row.names = FALSE)
+write.csv(unmatched_cols, "outputs/error_files/unmatched_columns.csv", row.names = FALSE)
 
 
 
-
-raw_data_names <- ls(pattern = "^raw_data_")
-
-raw_data_names <- raw_data_names[sapply(raw_data_names, function(x) {
-  df <- get(x)
-  is.data.frame(df) && all(sapply(df, is.numeric))
-})]
-
-if (!dir.exists("outputs")) {
-  dir.create("outputs")
-} # makes a folder called 'outputs'
-
-lipid_families_folder <- file.path("outputs", "lipid_families")
-
-if (!dir.exists(lipid_families_folder)) {
-  dir.create(lipid_families_folder)
-}
 
 
 
