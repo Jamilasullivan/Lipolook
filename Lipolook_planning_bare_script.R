@@ -166,10 +166,40 @@ for (name in raw_data_names) {
 ################################################################################
 
 ################################################################################
-############################## TOTAL DATA ANOVA ################################
+######################## ADDING GROUPS BACK TO DFS #############################
+################################################################################
+
+groups <- raw_data[,3]
+
+for (name in raw_data_names) {
+  cat("Adding 'groups' column to:", name, "\n")
+  df <- get(name)
+  df <- cbind(groups, df)
+  assign(name, df)
+} 
+
+################################################################################
+######################## CALCULATING GROUP AVERGAGES ###########################
+################################################################################
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  folder_path <- file.path("outputs", "lipid_families", lipid_family)
+  cat("Processing group averages for:", name, "\n")
+  df <- get(name)
+  df_avg <- aggregate(. ~ groups, data = df, FUN = mean)
+  new_name <- paste0(name, "_avg")
+  assign(new_name, df_avg)
+  csv_file <- file.path(folder_path, paste0(lipid_family, "_avg.csv"))
+  write.csv(df_avg, file = csv_file, row.names = FALSE)
+}
+
+################################################################################
+################################# ANOVA ########################################
 ################################################################################
 
 raw_data_lipids$Group <- as.factor(raw_data_lipids$Group)
+
 
 ################################################################################
 ######################### HISTOGRAMS FOR NORMALITY #############################
