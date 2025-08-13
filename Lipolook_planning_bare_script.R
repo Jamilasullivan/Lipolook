@@ -171,9 +171,27 @@ for (name in raw_data_names) {
 
 raw_data_lipids$Group <- as.factor(raw_data_lipids$Group)
 
+################################################################################
+######################### HISTOGRAMS FOR NORMALITY #############################
+################################################################################
 
-
-
+for (df_name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", df_name)
+  folder_path <- file.path("outputs", "lipid_families", 
+                           lipid_family, "histograms")
+  if (!dir.exists(folder_path)) {
+    dir.create(folder_path, recursive = T)
+  }
+  cat("Processing histograms for:", df_name, "\n")
+  df <- get(df_name)
+  for (col in setdiff(names(df), "groups")) {
+    png(file.path(folder_path, paste0(col, "_hist.png")))
+    hist(df[[col]],
+         main = paste("Histogram of", col),
+         xlab = col)
+    dev.off()
+  }
+}
 
 
 
