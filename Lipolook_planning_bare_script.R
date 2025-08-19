@@ -175,7 +175,7 @@ if (!dir.exists(top_level_dir)) {
   dir.create(top_level_dir, recursive = TRUE, showWarnings = FALSE)
 }
 
-count <- 1  # start counter
+count <- 1
 
 for (name in raw_data_names) {
   lipid_family <- make.names(sub("^raw_data_", "", name))
