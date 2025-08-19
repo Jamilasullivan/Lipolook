@@ -352,7 +352,7 @@ for (name in raw_data_names) {
     dir.create(folder_path, recursive = TRUE, showWarnings = FALSE)
   }
   
-  dis_csv_file <- file.path(folder_path, paste0(lipid_family, "_distribution_summary.csv"))
+  dis_csv_file <- file.path(folder_path, paste0(lipid_family, "_distribution.csv"))
   write.csv(distribution_summary, file = dis_csv_file, row.names = FALSE)
 }
 
