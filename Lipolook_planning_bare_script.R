@@ -241,7 +241,6 @@ for (name in raw_data_names) {
     next
   }
   
-  # Use existing folder path
   folder_path <- file.path(top_level_dir, category, lipid_family)
   
   cat("Saving averages for:", name, "to folder:", folder_path, "\n")
@@ -250,6 +249,56 @@ for (name in raw_data_names) {
   csv_file <- file.path(folder_path, paste0(lipid_family, "_avg.csv"))
   write.csv(df_avg, file = csv_file, row.names = FALSE)
 }
+
+################################################################################
+######################### HISTOGRAMS FOR NORMALITY #############################
+################################################################################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  
+  hist_folder <- file.path(folder_path, "histograms")
+  if (!dir.exists(hist_folder)) {
+    dir.create(hist_folder, recursive = TRUE, showWarnings = FALSE)
+    message("Created histograms subfolder for: ", lipid_family)
+  }
+  
+  cat("Processing histograms for:", name, "\n")
+  df <- get(name)
+  
+  for (col in setdiff(names(df), "groups")) {
+    png(file.path(hist_folder, paste0(col, "_hist.png")))
+    hist(df[[col]],
+         main = paste("Histogram of", col),
+         xlab = col)
+    dev.off()
+  }
+}
+
+################################################################################
+########################### NORMALITY OUTPUT ###################################
+################################################################################
+
+
+
+
+
+
+
+
+
+
+
 
 ################################################################################
 ################################# ANOVA ########################################
@@ -327,27 +376,7 @@ cat("Number of highly significant lipids (**):", num_strong, "\n")
 cat("Number of significant lipids (*):", num_significant, "\n")
 cat("Number of insignificant lipids (NO):", num_not_signif, "\n")
 
-################################################################################
-######################### HISTOGRAMS FOR NORMALITY #############################
-################################################################################
 
-for (df_name in raw_data_names) {
-  lipid_family <- sub("^raw_data_", "", df_name)
-  folder_path <- file.path("outputs", "lipid_families", 
-                           lipid_family, "histograms")
-  if (!dir.exists(folder_path)) {
-    dir.create(folder_path, recursive = T)
-  }
-  cat("Processing histograms for:", df_name, "\n")
-  df <- get(df_name)
-  for (col in setdiff(names(df), "groups")) {
-    png(file.path(folder_path, paste0(col, "_hist.png")))
-    hist(df[[col]],
-         main = paste("Histogram of", col),
-         xlab = col)
-    dev.off()
-  }
-}
 
 
 
