@@ -16,6 +16,10 @@ adjustment_method <- "fdr" # options are "holm" = Holm–Bonferroni
                         #             "BY" = Benjamini–Yekutieli
                         #             "none" = No adjustment
 
+groups <- ## what is the current name of your column containing groupings in raw data?
+  
+control_group <- ## what is the name of your control group in raw data?
+
 ################################################################################
 ############################ PACKAGES TO INSTALL ###############################
 ################################################################################
