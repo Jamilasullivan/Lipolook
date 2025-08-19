@@ -24,6 +24,8 @@ control_group <- ## what is the name of your control group in raw data?
 ############################ PACKAGES TO INSTALL ###############################
 ################################################################################
 
+##install.packages("moments")
+library(moments)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
@@ -120,7 +122,17 @@ write.csv(unmatched_cols, "outputs/error_files/unmatched_columns.csv", row.names
 ######################## SUBSET DATA BY LIPID FAMILY ###########################
 ################################################################################
 
-lipid_families <- split(lipids_tested$lipid, lipids_tested$family)
+sanitize_name <- function(x) {
+  x <- gsub("[^A-Za-z0-9]+", "_", x)  # replace non-alphanumeric with underscore
+  x <- gsub("_+", "_", x)             # collapse multiple underscores
+  x <- gsub("^_|_$", "", x)           # trim leading/trailing underscores
+  x
+}
+
+lipids_tested$Family_clean <- sanitize_name(lipids_tested$family)
+
+lipid_families <- split(lipids_tested$lipid, lipids_tested$Family_clean)
+
 raw_data_by_family <- list()
 
 for(family in names(lipid_families)) {
@@ -170,8 +182,8 @@ raw_data_names
 
 category_mapping <- read.csv("lipid_categories_1.csv", stringsAsFactors = FALSE)
 
-category_mapping$Family_clean <- make.names(category_mapping$Family)
-category_mapping$Category_clean <- make.names(category_mapping$Category)
+category_mapping$Family_clean   <- sanitize_name(category_mapping$Family)
+category_mapping$Category_clean <- sanitize_name(category_mapping$Category)
 
 top_level_dir <- file.path("outputs", "lipid_categories")
 
@@ -290,6 +302,59 @@ for (name in raw_data_names) {
 ########################### NORMALITY OUTPUT ###################################
 ################################################################################
 
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)  
+  
+  df <- get(name)
+  
+  lipid_columns <- names(df)[-1]
+  
+  distribution_summary <- data.frame(
+    lipid = lipid_columns,
+    skewness = numeric(length(lipid_columns)),
+    kurtosis = numeric(length(lipid_columns)),
+    shapiro_p = numeric(length(lipid_columns)),
+    normality = character(length(lipid_columns)),
+    stringsAsFactors = FALSE
+  )
+  
+  # Loop through lipids
+  for (i in seq_along(lipid_columns)) {
+    lipid <- lipid_columns[i]
+    values <- df[[lipid]]  # across all samples
+    distribution_summary$skewness[i] <- skewness(values)
+    distribution_summary$kurtosis[i] <- kurtosis(values)
+    
+    # Shapiro-Wilk test (n must be <= 5000)
+    if (length(values) >= 3 & length(values) <= 5000) {
+      shapiro_res <- shapiro.test(values)
+      distribution_summary$shapiro_p[i] <- shapiro_res$p.value
+      distribution_summary$normality[i] <- ifelse(shapiro_res$p.value > 0.05, "Normal", "Non-normal")
+    } else {
+      distribution_summary$shapiro_p[i] <- NA
+      distribution_summary$normality[i] <- "NA"
+    }
+  }
+  
+  cat("Saving distribution summary for:", name, "\n")
+  
+  if (!dir.exists(folder_path)) {
+    dir.create(folder_path, recursive = TRUE, showWarnings = FALSE)
+  }
+  
+  dis_csv_file <- file.path(folder_path, paste0(lipid_family, "_distribution_summary.csv"))
+  write.csv(distribution_summary, file = dis_csv_file, row.names = FALSE)
+}
 
 
 
