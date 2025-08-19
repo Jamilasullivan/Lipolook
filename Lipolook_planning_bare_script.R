@@ -140,27 +140,37 @@ for (name in raw_data_names) {
 }
 
 ################################################################################
-################### CREATING FOLDERS FOR ALL LIPID FAMILIES ####################
+########### CREATING FOLDERS FOR ALL LIPID FAMILIES AND CATEGORIES #############
 ################################################################################
 
-raw_data_names <- ls(pattern = "^raw_data_")
-raw_data_names <- raw_data_names[sapply(raw_data_names, function(x) {
-  df <- get(x)
-  is.data.frame(df) && all(sapply(df, is.numeric))
-})]
-lipid_families_folder <- file.path("outputs", "lipid_families")
+category_mapping <- read.csv("lipid_categories_1.csv", stringsAsFactors = FALSE)
 
-if (!dir.exists(lipid_families_folder)) {
-  dir.create(lipid_families_folder)
+category_mapping$Family_clean <- make.names(category_mapping$Family)
+category_mapping$Category_clean <- make.names(category_mapping$Category)
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+if (!dir.exists(top_level_dir)) {
+  dir.create(top_level_dir, recursive = TRUE, showWarnings = FALSE)
 }
 
 for (name in raw_data_names) {
-  cat("Creating folder for:", name, "\n")
-  lipid_family <- sub("^raw_data_", "", name)
-  folder_path <- file.path("outputs/lipid_families", lipid_family)
-  if (!dir.exists(folder_path)) {
-    dir.create(folder_path)
+  lipid_family <- make.names(sub("^raw_data_", "", name))
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    next
   }
+  
+  # Build path: outputs/lipid_categories/category/family
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  
+  if (!dir.exists(folder_path)) {
+    dir.create(folder_path, recursive = TRUE, showWarnings = FALSE)
+  }
+  
+  message("Folder created for: ", folder_path)
 }
 
 ################################################################################
