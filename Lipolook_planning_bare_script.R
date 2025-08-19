@@ -223,20 +223,6 @@ for (name in raw_data_names) {
 ######################## CALCULATING GROUP AVERGAGES ###########################
 ################################################################################
 
-for (name in raw_data_names) {
-  lipid_family <- sub("^raw_data_", "", name)
-  folder_path <- file.path("outputs", "lipid_families", lipid_family)
-  cat("Processing group averages for:", name, "\n")
-  df <- get(name)
-  df_avg <- aggregate(. ~ groups, data = df, FUN = mean)
-  new_name <- paste0(name, "_avg")
-  assign(new_name, df_avg)
-  csv_file <- file.path(folder_path, paste0(lipid_family, "_avg.csv"))
-  write.csv(df_avg, file = csv_file, row.names = FALSE)
-}
-
-## new strucutre including looking for the lipid category
-
 top_level_dir <- file.path("outputs", "lipid_categories")
 
 for (name in raw_data_names) {
@@ -260,7 +246,6 @@ for (name in raw_data_names) {
   csv_file <- file.path(folder_path, paste0(lipid_family, "_avg.csv"))
   write.csv(df_avg, file = csv_file, row.names = FALSE)
 }
-
 
 ################################################################################
 ################################# ANOVA ########################################
