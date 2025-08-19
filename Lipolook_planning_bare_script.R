@@ -136,7 +136,7 @@ for (name in all_raw_data) {
   if (is.data.frame(df) && ncol(df) == 0) {
     message("Removing empty data frame: ", name)
     rm(list = name, envir = .GlobalEnv)
-    raw_data_names <- setdiff(raw_data_names, name)  # remove from vector too
+    all_raw_data <- setdiff(all_raw_data, name)  # remove from vector too
   }
 }
 
@@ -175,6 +175,8 @@ if (!dir.exists(top_level_dir)) {
   dir.create(top_level_dir, recursive = TRUE, showWarnings = FALSE)
 }
 
+count <- 1  # start counter
+
 for (name in raw_data_names) {
   lipid_family <- make.names(sub("^raw_data_", "", name))
   category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
@@ -189,9 +191,9 @@ for (name in raw_data_names) {
   
   if (!dir.exists(folder_path)) {
     dir.create(folder_path, recursive = TRUE, showWarnings = FALSE)
+    message(count, ". Folder created: ", folder_path)
+    count <- count + 1
   }
-  
-  message("Folder created for: ", folder_path)
 }
 
 ################################################################################
