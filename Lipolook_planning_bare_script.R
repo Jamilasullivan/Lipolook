@@ -280,7 +280,8 @@ for (name in raw_data_names) {
     png(file.path(hist_folder, paste0(col, "_hist.png")))
     hist(df[[col]],
          main = paste("Histogram of", col),
-         xlab = col)
+         xlab = col,
+         breaks = 30)
     dev.off()
   }
 }
