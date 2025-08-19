@@ -129,15 +129,36 @@ for(family in names(raw_data_by_family)) {
   assign(paste0("raw_data_", family), raw_data_by_family[[family]])
 }
 
-raw_data_names <- ls(pattern = "^raw_data_")
+all_raw_data <- ls(pattern = "^raw_data_")
 
-for (name in raw_data_names) {
+for (name in all_raw_data) {
   df <- get(name)
   if (is.data.frame(df) && ncol(df) == 0) {
     message("Removing empty data frame: ", name)
     rm(list = name, envir = .GlobalEnv)
+    raw_data_names <- setdiff(raw_data_names, name)  # remove from vector too
   }
 }
+
+raw_data_names <- Filter(function(x) {
+  obj <- get(x)
+  
+  # Must be a data frame
+  if (!is.data.frame(obj)) {
+    message("Excluded for not being a data frame: ", x)
+    return(FALSE)
+  }
+  
+  # Must be fully numeric
+  if (!all(sapply(obj, is.numeric))) {
+    message("Excluded for non-numeric columns: ", x)
+    return(FALSE)
+  }
+  
+  TRUE
+}, all_raw_data)
+
+raw_data_names
 
 ################################################################################
 ########### CREATING FOLDERS FOR ALL LIPID FAMILIES AND CATEGORIES #############
@@ -211,6 +232,33 @@ for (name in raw_data_names) {
   csv_file <- file.path(folder_path, paste0(lipid_family, "_avg.csv"))
   write.csv(df_avg, file = csv_file, row.names = FALSE)
 }
+
+## new strucutre including looking for the lipid category
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+for (name in raw_data_names) {
+  # Extract lipid family
+  lipid_family <- make.names(sub("^raw_data_", "", name))
+  
+  # Look up category
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    next
+  }
+  
+  # Use existing folder path
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  
+  cat("Saving averages for:", name, "to folder:", folder_path, "\n")
+  
+  df_avg <- aggregate(. ~ groups, data = get(name), FUN = mean)
+  csv_file <- file.path(folder_path, paste0(lipid_family, "_avg.csv"))
+  write.csv(df_avg, file = csv_file, row.names = FALSE)
+}
+
 
 ################################################################################
 ################################# ANOVA ########################################

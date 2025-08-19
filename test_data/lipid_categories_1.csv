@@ -5,7 +5,6 @@ Ceramides,sphingolipids
 Cholesterol + cholesteryl esters,sterol_lipids
 Ceramide phospho-ethanolamines,sphingolipids
 Diacyl-glycerols,glycerolipids
-Digalacto-diacylglycerols,glycerolipids
 Ether-PC,glycerophospholipids
 Ether-PE,glycerophospholipids
 Free fatty acids,fatty_acyls
@@ -13,7 +12,6 @@ GB Gangliosides,sphingolipids
 GD Gangliosides,sphingolipids
 GM Gangliosides,sphingolipids
 Hexosyl-ceramides,sphingolipids
-Hexosyl-sphingosine,sphingolipids
 Lactosyl-ceramides,sphingolipids
 Lysophosphatidyl-cholines,glycerophospholipids
 Lysophosphatidy-ethanolamines,glycerophospholipids
