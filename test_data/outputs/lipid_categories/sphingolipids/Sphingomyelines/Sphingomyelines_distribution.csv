@@ -1,4 +1,4 @@
-"lipid","skewness_overall","kurtosis_overall","shapiro_p_overall","shapiro_p_adj_overall","normality_overall"
+"lipid","skewness","kurtosis","shapiro_p","shapiro_p_adj","normality"
 "SM_.30.0.",4.46439716796229,21.6580404487959,1.0869166046033e-15,1.46733741621445e-14,"Non-normal"
 "SM_.30.1.",7.34968415259167,55.0178571428571,8.7329482144046e-17,2.35789601788924e-15,"Non-normal"
 "SM_.32.0.",3.27556804843944,16.4989450412257,5.10690849890433e-10,2.29810882450695e-09,"Non-normal"
