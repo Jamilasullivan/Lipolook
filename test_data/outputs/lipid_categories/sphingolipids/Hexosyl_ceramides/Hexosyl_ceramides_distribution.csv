@@ -1,4 +1,4 @@
-"lipid","skewness_overall","kurtosis_overall","shapiro_p_overall","shapiro_p_adj_overall","normality_overall"
+"lipid","skewness","kurtosis","shapiro_p","shapiro_p_adj","normality"
 "Hex.Cer_.32.0.",4.36722498237009,26.480051579735,6.09734234505349e-12,5.48760811054814e-11,"Non-normal"
 "Hex.Cer_.34.0.OH.",1.44264904511292,4.19298045913844,1.57400909968572e-08,5.66643275886858e-08,"Non-normal"
 "Hex.Cer_.34.1.",1.7124839075412,7.64261010072781,1.83571767386967e-05,3.30429181296541e-05,"Non-normal"

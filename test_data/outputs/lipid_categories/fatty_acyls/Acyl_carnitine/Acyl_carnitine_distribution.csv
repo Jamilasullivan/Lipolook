@@ -1,4 +1,4 @@
-"lipid","skewness_overall","kurtosis_overall","shapiro_p_overall","shapiro_p_adj_overall","normality_overall"
+"lipid","skewness","kurtosis","shapiro_p","shapiro_p_adj","normality"
 "Carnitine_.00.0.",0.995416628118006,3.56733068568377,0.000947384469836894,0.00165792282221456,"Non-normal"
 "Carnitine_.02.0.",1.26806413802445,4.22994692718088,3.52974804816805e-05,0.000123541181685882,"Non-normal"
 "Carnitine_.03.0.",0.76257173987657,3.103640505147,0.0106432610569324,0.0124171378997544,"Non-normal"
