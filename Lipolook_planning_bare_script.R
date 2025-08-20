@@ -357,12 +357,10 @@ for (name in raw_data_names) {
   write.csv(distribution_summary, file = dis_csv_file, row.names = FALSE)
 }
 
-## number of all lipids that reached normality with shapiro-wilk test (plus adjustment)
+## number of all lipids that reached normality with shapiro-wilk test (plus correction for multiple testing)
 
 top_level_dir <- file.path("outputs", "lipid_categories")
-
 all_distribution_csv_files <- list.files(top_level_dir, pattern = "_distribution\\.csv$", full.names = TRUE, recursive = TRUE)
-
 all_lipids_distribution <- list()
 
 for (file in all_distribution_csv_files) {
