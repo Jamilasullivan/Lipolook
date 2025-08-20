@@ -300,7 +300,7 @@ for (name in raw_data_names) {
 }
 
 ################################################################################
-########################### NORMALITY OUTPUT ###################################
+################# NORMALITY OUTPUT FOR ALL SAMPLES COMBINED ####################
 ################################################################################
 
 ## across all samples for each lipid
@@ -378,6 +378,108 @@ distribution_counts_df <- as.data.frame(distribution_counts)
 distribution_total <- sum(distribution_counts)
 distribution_counts_df$percent <- round(100 * distribution_counts_df$Freq / distribution_total, 1)
 distribution_counts_df
+
+################################################################################
+################### NORMALITY OUTPUT FOR INDIVIDUAL GROUPS #####################
+################################################################################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)  
+  df <- get(name)
+  lipid_columns <- names(df)[-1]  # assuming first column is group/sample
+  group_col <- names(df)[1]
+  groups <- unique(df[[group_col]])
+  
+  distribution_summary <- data.frame(
+    lipid = lipid_columns,
+    skewness_overall = numeric(length(lipid_columns)),
+    kurtosis_overall = numeric(length(lipid_columns)),
+    shapiro_p_overall = numeric(length(lipid_columns)),
+    shapiro_p_adj_overall = numeric(length(lipid_columns)),
+    normality_overall = character(length(lipid_columns)),
+    stringsAsFactors = FALSE
+  )
+  
+  per_group_results <- list()
+  
+  for (i in seq_along(lipid_columns)) {
+    lipid <- lipid_columns[i]
+    values <- df[[lipid]]
+    
+    # Overall stats
+    distribution_summary$skewness_overall[i] <- skewness(values)
+    distribution_summary$kurtosis_overall[i] <- kurtosis(values)
+    
+    if (length(values) >= 3 & length(values) <= 5000 && length(unique(values)) > 1) {
+      distribution_summary$shapiro_p_overall[i] <- shapiro.test(values)$p.value
+    } else {
+      distribution_summary$shapiro_p_overall[i] <- NA
+    }
+    
+    # Per-group normality
+    group_p <- c()
+    group_normality <- c()
+    for (g in groups) {
+      vals_g <- df[df[[group_col]] == g, lipid]
+      if (length(vals_g) >= 3 & length(vals_g) <= 5000) {
+        if (length(unique(vals_g)) > 1) {
+          p <- shapiro.test(vals_g)$p.value
+          group_p <- c(group_p, p)
+          group_normality <- c(group_normality, ifelse(p > 0.05, "Normal", "Non-normal"))
+        } else {
+          group_p <- c(group_p, NA)
+          group_normality <- c(group_normality, "All identical")
+        }
+      } else {
+        group_p <- c(group_p, NA)
+        group_normality <- c(group_normality, NA)
+      }
+    }
+    per_group_results[[lipid]] <- data.frame(group = groups, p_value = group_p, normality = group_normality)
+  }
+  
+  # Adjust overall p-values and decide normality
+  distribution_summary$shapiro_p_adj_overall <- p.adjust(distribution_summary$shapiro_p_overall, method = adjustment_method)
+  distribution_summary$normality_overall <- ifelse(distribution_summary$shapiro_p_adj_overall > 0.05, "Normal", "Non-normal")
+  
+  # Reorder columns
+  distribution_summary <- distribution_summary[, c("lipid", "skewness_overall", "kurtosis_overall",
+                                                   "shapiro_p_overall", "shapiro_p_adj_overall",
+                                                   "normality_overall")]
+  
+  # Save overall summary
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE, showWarnings = FALSE)
+  write.csv(distribution_summary, file = file.path(folder_path, paste0(lipid_family, "_distribution.csv")), row.names = FALSE)
+  message("Saving")
+  
+  
+  
+  # Save per-group summaries per lipid
+  for (lipid in names(per_group_results)) {
+    write.csv(per_group_results[[lipid]], file = file.path(folder_path, paste0(lipid, "distribution_group.csv")), row.names = FALSE)
+    message("Saving distribution per group for: ", lipid_family)
+  }
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
