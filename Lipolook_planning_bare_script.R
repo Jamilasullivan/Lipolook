@@ -29,6 +29,7 @@ library(moments)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
+library(stats)
 
 ################################################################################
 ######################### SETTING WORK DIRECTOTY ###############################
@@ -302,6 +303,8 @@ for (name in raw_data_names) {
 ########################### NORMALITY OUTPUT ###################################
 ################################################################################
 
+## across all samples for each lipid
+
 top_level_dir <- file.path("outputs", "lipid_categories")
 
 for (name in raw_data_names) {
@@ -314,11 +317,8 @@ for (name in raw_data_names) {
   }
   
   folder_path <- file.path(top_level_dir, category, lipid_family)  
-  
   df <- get(name)
-  
   lipid_columns <- names(df)[-1]
-  
   distribution_summary <- data.frame(
     lipid = lipid_columns,
     skewness = numeric(length(lipid_columns)),
@@ -328,14 +328,12 @@ for (name in raw_data_names) {
     stringsAsFactors = FALSE
   )
   
-  # Loop through lipids
   for (i in seq_along(lipid_columns)) {
     lipid <- lipid_columns[i]
     values <- df[[lipid]]  # across all samples
     distribution_summary$skewness[i] <- skewness(values)
     distribution_summary$kurtosis[i] <- kurtosis(values)
     
-    # Shapiro-Wilk test (n must be <= 5000)
     if (length(values) >= 3 & length(values) <= 5000) {
       shapiro_res <- shapiro.test(values)
       distribution_summary$shapiro_p[i] <- shapiro_res$p.value
@@ -346,6 +344,9 @@ for (name in raw_data_names) {
     }
   }
   
+  distribution_summary$shapiro_p_adj <- p.adjust(distribution_summary$shapiro_p, method = adjustment_method)
+  distribution_summary$normality <- ifelse(distribution_summary$shapiro_p_adj > 0.05, "Normal", "Non-normal")
+  distribution_summary <- distribution_summary[, c("lipid", "skewness", "kurtosis", "shapiro_p", "shapiro_p_adj", "normality")]
   cat("Saving distribution summary for:", name, "\n")
   
   if (!dir.exists(folder_path)) {
@@ -355,6 +356,68 @@ for (name in raw_data_names) {
   dis_csv_file <- file.path(folder_path, paste0(lipid_family, "_distribution.csv"))
   write.csv(distribution_summary, file = dis_csv_file, row.names = FALSE)
 }
+
+## number of all lipids that reached normality with shapiro-wilk test (plus adjustment)
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+all_distribution_csv_files <- list.files(top_level_dir, pattern = "_distribution\\.csv$", full.names = TRUE, recursive = TRUE)
+
+all_lipids_distribution <- list()
+
+for (file in all_distribution_csv_files) {
+  df <- read.csv(file, header = TRUE)
+  summary_df <- df[, c(1, ncol(df))]
+  summary_df$family <- basename(file)
+  all_lipids_distribution[[length(all_lipids_distribution) + 1]] <- summary_df
+}
+
+combined_summary <- bind_rows(all_lipids_distribution)
+combined_summary <- combined_summary[-3]
+write.csv(combined_summary, file = file.path(top_level_dir,"..","total_lipids", "combined_lipid_normality.csv"), row.names = FALSE)
+distribution_counts <- table(combined_summary$normality)
+distribution_counts_df <- as.data.frame(counts)
+distribution_total <- sum(distribution_counts)
+distribution_counts_df$percent <- round(100 * distribution_counts_df$Freq / distribution_total, 1)
+distribution_counts_df
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ################################################################################
 ################################# ANOVA ########################################
@@ -431,107 +494,3 @@ cat("Number of very highly significant lipids (***):", num_vstrong, "\n")
 cat("Number of highly significant lipids (**):", num_strong, "\n")
 cat("Number of significant lipids (*):", num_significant, "\n")
 cat("Number of insignificant lipids (NO):", num_not_signif, "\n")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
