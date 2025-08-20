@@ -1,2 +1,2 @@
-"lipid","skewness","kurtosis","shapiro_p","shapiro_p_adj","normality"
+"lipid","skewness_overall","kurtosis_overall","shapiro_p_overall","shapiro_p_adj_overall","normality_overall"
 "Sph_.20.1.",0.512919575841438,2.53223151702751,0.0726012681741678,0.0726012681741678,"Normal"

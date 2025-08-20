@@ -1,4 +1,4 @@
-"lipid","skewness","kurtosis","shapiro_p","shapiro_p_adj","normality"
+"lipid","skewness_overall","kurtosis_overall","shapiro_p_overall","shapiro_p_adj_overall","normality_overall"
 "Lacto.cer_.34.1.",1.83036835770518,6.68863458841775,1.72389483151015e-07,2.41345276411421e-07,"Non-normal"
 "Lacto.cer_.34.2.",1.8704116371956,5.1926657322469,6.88107764712602e-12,2.40837717649411e-11,"Non-normal"
 "Lacto.cer_.40.0.",3.54667697018426,15.8083326918293,6.34579236595031e-14,4.44205465616522e-13,"Non-normal"

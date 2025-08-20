@@ -1,4 +1,4 @@
-"lipid","skewness","kurtosis","shapiro_p","shapiro_p_adj","normality"
+"lipid","skewness_overall","kurtosis_overall","shapiro_p_overall","shapiro_p_adj_overall","normality_overall"
 "Cholesterol",5.66601730157346,37.9086444889844,3.7189766962765e-14,1.67353951332443e-13,"Non-normal"
 "CE_.16.0.",1.54442755806238,4.63830549469112,1.46010626459921e-09,3.28523909534822e-09,"Non-normal"
 "CE_.16.1.",0.565430004401012,3.42348291606582,0.0911373446548167,0.117176585984764,"Normal"
