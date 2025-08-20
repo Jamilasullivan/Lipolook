@@ -374,7 +374,7 @@ combined_summary <- bind_rows(all_lipids_distribution)
 combined_summary <- combined_summary[-3]
 write.csv(combined_summary, file = file.path(top_level_dir,"..","total_lipids", "combined_lipid_normality.csv"), row.names = FALSE)
 distribution_counts <- table(combined_summary$normality)
-distribution_counts_df <- as.data.frame(counts)
+distribution_counts_df <- as.data.frame(distribution_counts)
 distribution_total <- sum(distribution_counts)
 distribution_counts_df$percent <- round(100 * distribution_counts_df$Freq / distribution_total, 1)
 distribution_counts_df
