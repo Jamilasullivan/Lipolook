@@ -413,7 +413,6 @@ for (name in raw_data_names) {
   
   for (i in seq_along(lipid_columns)) {
     lipid <- lipid_columns[i]
-    values <- df[[lipid]]
     
     group_p <- c()
     group_normality <- c()
@@ -434,12 +433,27 @@ for (name in raw_data_names) {
         group_normality <- c(group_normality, NA)
       }
     }
-    per_group_results[[lipid]] <- data.frame(group = groups, p_value = group_p, normality = group_normality)
+    
+    # adjust all p-values for this lipid (not inside the loop)
+    group_p_adj <- p.adjust(group_p, method = adjustment_method)
+    group_normality <- ifelse(group_p_adj > 0.05, "Normal", "Non-normal")
+    
+    per_group_results[[lipid]] <- data.frame(
+      group = groups, 
+      p_value = group_p, 
+      p_value_adj = group_p_adj, 
+      normality = group_normality
+    )
   }
   
+  # save all per-group results
   for (lipid in names(per_group_results)) {
-    write.csv(per_group_results[[lipid]], file = file.path(folder_path, paste0(lipid, "distribution_groups.csv")), row.names = FALSE)
-    message("Saving distribution per group for: ", lipid_family)
+    write.csv(
+      per_group_results[[lipid]], 
+      file = file.path(folder_path, paste0(lipid, "_distribution_groups.csv")), 
+      row.names = FALSE
+    )
+    message("Saving distribution per group for: ", lipid_family, " -> ", lipid)
   }
 }
 
@@ -447,7 +461,7 @@ for (name in raw_data_names) {
 
 top_level_dir <- file.path("outputs", "lipid_categories")
 
-all_files <- list.files(top_level_dir, pattern = ".distribution_group\\.csv$", full.names = TRUE, recursive = T)
+all_files <- list.files(top_level_dir, pattern = "_distribution_groups\\.csv$", full.names = TRUE, recursive = T)
 
 combined_df <- NULL
 
@@ -481,7 +495,7 @@ for (cat in names(counts)) {
 }
 
 ################################################################################
-################# LOG TRANSFORMATION AND NORMALITY OUTPUTS #####################
+############### 16. LOG TRANSFORMATION AND NORMALITY OUTPUTS ###################
 ################################################################################
 
 ## For all lipids combined #####################################################
