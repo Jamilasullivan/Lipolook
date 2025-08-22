@@ -505,7 +505,7 @@ for (cat in names(counts)) {
 }
 
 ################################################################################
-############### 16. LOG TRANSFORMATION AND NORMALITY OUTPUTS ###################
+##### 16. LOG TRANSFORMATION AND NORMALITY OUTPUTS FOR ALL SAMPLES COMBINED ####
 ################################################################################
 
 ## For all lipids combined #####################################################
@@ -567,7 +567,116 @@ for (name in raw_data_names) {
   write.csv(distribution_summary, file = dis_csv_file, row.names = FALSE)
 }
 
+################################################################################
+###### 16. LOG TRANSFORMATION AND NORMALITY OUTPUTS FOR INDIVIDUAL GROUPS ######
+################################################################################
 
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)  
+  df <- get(name)
+  lipid_columns <- names(df)[-1]
+  group_col <- names(df)[1]
+  groups <- unique(df[[group_col]])
+  
+  per_group_results <- list()
+  
+  for (i in seq_along(lipid_columns)) {
+    lipid <- lipid_columns[i]
+    
+    group_p <- c()
+    group_normality <- c()
+    
+    for (g in groups) {
+      vals_g <- df[df[[group_col]] == g, lipid]
+      
+      # log-transform values (safe with zeros)
+      vals_g <- log1p(vals_g)  # replace with log(vals_g) if all > 0
+      
+      if (length(vals_g) >= 3 & length(vals_g) <= 5000) {
+        if (length(unique(vals_g)) > 1) {
+          p <- shapiro.test(vals_g)$p.value
+          group_p <- c(group_p, p)
+          group_normality <- c(group_normality, ifelse(p > 0.05, "Normal", "Non-normal"))
+        } else {
+          group_p <- c(group_p, NA)
+          group_normality <- c(group_normality, "All identical")
+        }
+      } else {
+        group_p <- c(group_p, NA)
+        group_normality <- c(group_normality, NA)
+      }
+    }
+    
+    # adjust all p-values for this lipid (not inside the loop)
+    group_p_adj <- p.adjust(group_p, method = adjustment_method)
+    group_normality <- ifelse(group_p_adj > 0.05, "Normal", "Non-normal")
+    
+    per_group_results[[lipid]] <- data.frame(
+      group = groups, 
+      p_value = group_p, 
+      p_value_adj = group_p_adj, 
+      normality = group_normality
+    )
+  }
+  
+  # save all per-group results
+  for (lipid in names(per_group_results)) {
+    write.csv(
+      per_group_results[[lipid]], 
+      file = file.path(folder_path, paste0(lipid, "_log_distribution_groups.csv")), 
+      row.names = FALSE
+    )
+    message("Saving *log-transformed* distribution per group for: ", lipid_family, " -> ", lipid)
+  }
+}
+
+## combining normality of all lipids across groups #############################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+all_files <- list.files(top_level_dir, pattern = "_log_distribution_groups\\.csv$", full.names = TRUE, recursive = T)
+
+combined_df <- NULL
+
+for (file in all_files) {
+  df <- read.csv(file)
+  
+  # Assume first column is group, last column is normality
+  lipid_name <- sub("_log_distribution_groups\\.csv$", "", basename(file))
+  df_lipid <- df[, c(1, ncol(df))]
+  colnames(df_lipid) <- c("Group", lipid_name)  # rename normality column to lipid name
+  
+  if (is.null(combined_df)) {
+    combined_df <- df_lipid
+  } else {
+    combined_df <- merge(combined_df, df_lipid, by = "Group", all = TRUE)
+  }
+}
+
+# save combined normality results
+write.csv(combined_df, file = file.path(top_level_dir,"..","total_lipids", "combined_log_per_group_normality.csv"), row.names = FALSE)
+
+normality_per_group <- read.csv("outputs/total_lipids/combined_log_per_group_normality.csv", row.names = 1)
+all_values <- unlist(normality_per_group)
+table(all_values)
+total <- length(all_values)
+counts <- table(all_values)
+percentages <- round(100 * counts / total, 1)
+write.csv(percentages,file = file.path(top_level_dir,"..","total_lipids", "combined_log_per_group_normality_percentages.csv"), row.names = FALSE)
+
+for (cat in names(counts)) {
+  cat(cat, ":", counts[cat], "(", percentages[cat], "%)\n")
+}
 
 
 
