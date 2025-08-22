@@ -153,7 +153,7 @@ for (name in all_raw_data) {
   if (is.data.frame(df) && ncol(df) == 0) {
     message("Removing empty data frame: ", name)
     rm(list = name, envir = .GlobalEnv)
-    all_raw_data <- setdiff(all_raw_data, name)  # remove from vector too
+    all_raw_data <- setdiff(all_raw_data, name)  
   }
 }
 
@@ -172,6 +172,16 @@ raw_data_names <- Filter(function(x) {
 
   TRUE
 }, all_raw_data)
+
+raw_data_CPEs <- raw_data_Ceramide_phospho_ethanolamines
+rm(raw_data_Ceramide_phospho_ethanolamines)
+raw_data_Chol_CEs <- raw_data_Cholesterol_cholesteryl_esters
+rm(raw_data_Cholesterol_cholesteryl_esters)
+raw_data_LPEs <- raw_data_Lysophosphatidy_ethanolamines
+rm(raw_data_Lysophosphatidy_ethanolamines)
+
+raw_data_names <- c(raw_data_names, c("raw_data_CPEs", "raw_data_Chol_CEs", "raw_data_LPEs"))
+raw_data_names <- raw_data_names[!raw_data_names %in% c("raw_data_Ceramide_phospho_ethanolamines", "raw_data_Cholesterol_cholesteryl_esters", "raw_data_Lysophosphatidy_ethanolamines")]
 
 raw_data_names
 
@@ -500,7 +510,7 @@ for (cat in names(counts)) {
 
 ## For all lipids combined #####################################################
 
-top_level_dir <- file.path("outputs","lipid_categories")
+top_level_dir <- file.path("outputs", "lipid_categories_log")
 
 for (name in raw_data_names) {
   lipid_family <- sub("^raw_data_", "", name)
@@ -511,11 +521,9 @@ for (name in raw_data_names) {
     next
   }
   
-  folder_path <- file.path(top_level_dir, category, lipid_family)
-  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE, showWarnings = FALSE)
-  
+  folder_path <- file.path(top_level_dir, category, lipid_family)  
   df <- get(name)
-  lipid_columns <- names(df)[-1]  # exclude group/first column
+  lipid_columns <- names(df)[-1]
   
   distribution_summary <- data.frame(
     lipid = lipid_columns,
@@ -528,21 +536,14 @@ for (name in raw_data_names) {
   
   for (i in seq_along(lipid_columns)) {
     lipid <- lipid_columns[i]
-    values <- as.numeric(df[[lipid]])
     
-    # Log-transform non-negative values
-    if (all(values >= 0, na.rm = TRUE)) {
-      values <- log1p(values)
-    } else {
-      warning(paste("Lipid", lipid, "has negative values; skipping log transform"))
-    }
+    # log-transform the values
+    values <- log1p(df[[lipid]])  
     
-    # Compute skewness and kurtosis
-    distribution_summary$skewness[i] <- skewness(values, na.rm = TRUE)
-    distribution_summary$kurtosis[i] <- kurtosis(values, na.rm = TRUE)
+    distribution_summary$skewness[i] <- skewness(values)
+    distribution_summary$kurtosis[i] <- kurtosis(values)
     
-    # Shapiro-Wilk test
-    if (length(values) >= 3 & length(values) <= 5000 && length(unique(values)) > 1) {
+    if (length(values) >= 3 & length(values) <= 5000) {
       shapiro_res <- shapiro.test(values)
       distribution_summary$shapiro_p[i] <- shapiro_res$p.value
       distribution_summary$normality[i] <- ifelse(shapiro_res$p.value > 0.05, "Normal", "Non-normal")
@@ -552,39 +553,19 @@ for (name in raw_data_names) {
     }
   }
   
-  # Multiple testing correction
   distribution_summary$shapiro_p_adj <- p.adjust(distribution_summary$shapiro_p, method = adjustment_method)
   distribution_summary$normality <- ifelse(distribution_summary$shapiro_p_adj > 0.05, "Normal", "Non-normal")
   distribution_summary <- distribution_summary[, c("lipid", "skewness", "kurtosis", "shapiro_p", "shapiro_p_adj", "normality")]
   
-  # Save per-family CSV
-  dis_csv_file <- file.path(folder_path, paste0(lipid_family, "_log.csv"))
+  cat("Saving log-transformed distribution summary for:", name, "\n")
+  
+  if (!dir.exists(folder_path)) {
+    dir.create(folder_path, recursive = TRUE, showWarnings = FALSE)
+  }
+  
+  dis_csv_file <- file.path(folder_path, paste0(lipid_family, "_distrib_log.csv"))
   write.csv(distribution_summary, file = dis_csv_file, row.names = FALSE)
 }
-
-# Combine all distributions
-all_distribution_csv_files <- list.files(top_level_dir, pattern = "_log\\.csv$", full.names = TRUE, recursive = TRUE)
-all_lipids_distribution <- list()
-
-for (file in all_distribution_csv_files) {
-  df <- read.csv(file, header = TRUE)
-  summary_df <- df[, c("lipid", "normality")]
-  summary_df$family <- sub("_log_distribution\\.csv$", "", basename(file))
-  all_lipids_distribution[[length(all_lipids_distribution) + 1]] <- summary_df
-}
-
-combined_summary <- bind_rows(all_lipids_distribution)
-write.csv(combined_summary, file = file.path(total_level_dir, "total_lipids", "combined_lipid_log_normality.csv"), row.names = FALSE)
-
-# Normality summary
-distribution_counts <- table(combined_summary$normality)
-distribution_counts_df <- as.data.frame(distribution_counts)
-distribution_counts_df$percent <- round(100 * distribution_counts_df$Freq / sum(distribution_counts_df$Freq), 1)
-distribution_counts_df
-write.csv(distribution_counts_df, file = file.path(total_lipids_dir,"..","total_lipids", "combined_lipid_log_normality.csv"), row.names = FALSE)
-
-
-
 
 
 
