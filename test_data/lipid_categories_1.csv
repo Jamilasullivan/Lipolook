@@ -2,8 +2,8 @@ Family,Category
 Acyl-carnitine,fatty_acyls
 Cardiolipins,glycerophospholipids
 Ceramides,sphingolipids
-Cholesterol + cholesteryl esters,sterol_lipids
-Ceramide phospho-ethanolamines,sphingolipids
+Chol_CEs,sterol_lipids
+CPEs,sphingolipids
 Diacyl-glycerols,glycerolipids
 Ether-PC,glycerophospholipids
 Ether-PE,glycerophospholipids
@@ -14,7 +14,7 @@ GM Gangliosides,sphingolipids
 Hexosyl-ceramides,sphingolipids
 Lactosyl-ceramides,sphingolipids
 Lysophosphatidyl-cholines,glycerophospholipids
-Lysophosphatidy-ethanolamines,glycerophospholipids
+LPEs,glycerophospholipids
 Lysophosphatidyl-inositols,glycerophospholipids
 Platelet-activating factor,glycerophospholipids
 Monoacyl-glycerols,glycerolipids
