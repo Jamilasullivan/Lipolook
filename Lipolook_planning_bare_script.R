@@ -510,7 +510,7 @@ for (cat in names(counts)) {
 
 ## For all lipids combined #####################################################
 
-top_level_dir <- file.path("outputs", "lipid_categories_log")
+top_level_dir <- file.path("outputs", "lipid_categories")
 
 for (name in raw_data_names) {
   lipid_family <- sub("^raw_data_", "", name)
@@ -563,7 +563,7 @@ for (name in raw_data_names) {
     dir.create(folder_path, recursive = TRUE, showWarnings = FALSE)
   }
   
-  dis_csv_file <- file.path(folder_path, paste0(lipid_family, "_distrib_log.csv"))
+  dis_csv_file <- file.path(folder_path, paste0(lipid_family, "_distribution_log.csv"))
   write.csv(distribution_summary, file = dis_csv_file, row.names = FALSE)
 }
 
