@@ -568,7 +568,7 @@ for (name in raw_data_names) {
 }
 
 ################################################################################
-###### 16. LOG TRANSFORMATION AND NORMALITY OUTPUTS FOR INDIVIDUAL GROUPS ######
+###### 17. LOG TRANSFORMATION AND NORMALITY OUTPUTS FOR INDIVIDUAL GROUPS ######
 ################################################################################
 
 top_level_dir <- file.path("outputs", "lipid_categories")
