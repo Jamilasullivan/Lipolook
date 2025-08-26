@@ -19,6 +19,8 @@ It requires minimal inputs or alterations to run. However, further versions of t
 
 Here, we will look at how the pipeline runs in an explanitory fashion and provide users with assistance on their inputs to the pipeline. We will look at each section of the *Lipolook_planning_bare_script.R* file, in accordance with its numbered sections. This will provide a detailed explaination of how the script works and make it more managable for those less familiar with reading R Studio code.
 
+THe *Lipolook_planning_annotated.R* script also provides a script with included descriptions of individual coding tasks, for those more confortable with reading R Studio code or interesting the tasks completed by each section.
+
 For any further queries, errors or if anything is unclear, please contact: sullivan-al-kadhomiyj@cardiff.ac.uk
 
 # Variables For The User To Complete
