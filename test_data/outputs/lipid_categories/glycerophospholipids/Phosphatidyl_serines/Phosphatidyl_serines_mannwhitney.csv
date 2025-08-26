@@ -1,7 +1,7 @@
-"lipid","p_value","p_value_adj"
-"PS_.37.2.",0.0765225004750592,0.12
-"PS_.37.3.",0.1,0.12
-"PS_.37.4.",0.2,0.2
-"PS_.38.3.",0.1,0.12
-"PS_.40.4.",0.1,0.12
-"PS_.40.7.",0.1,0.12
+"lipid","p_value","p_value_adj","significance"
+"PS_.37.2.",0.0765225004750592,0.12,"not significant"
+"PS_.37.3.",0.1,0.12,"not significant"
+"PS_.37.4.",0.2,0.2,"not significant"
+"PS_.38.3.",0.1,0.12,"not significant"
+"PS_.40.4.",0.1,0.12,"not significant"
+"PS_.40.7.",0.1,0.12,"not significant"
