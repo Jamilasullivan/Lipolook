@@ -39,20 +39,20 @@ This section provides the user with optional preferences that will then be used 
 #### Working Directory
 
 ```{r}
-working_directory <- "path"
+working_directory <- "test_data"
 ```
 
-In this case `"path"` refers to the directory in which your raw data is held. For clear organisation, aim to have this directory free of anything else. If you are unsure on this path, navigate to the files tab in R Studio, access the file in which your data is stored, click the 'more' drop down menu at the top of the files pane and select 'Copy Folder Path to Clipboard'. You should then be able to past this directly into the script between the speech marks.
+In this case `"test_data"` refers to the directory in which your raw data is held. For clear organisation, aim to have this directory free of anything else. If you are unsure on this path, navigate to the files tab in R Studio, access the file in which your data is stored, click the 'more' drop down menu at the top of the files pane and select 'Copy Folder Path to Clipboard'. You should then be able to past this directly into the script between the speech marks.
 
 \
 
 #### Raw Data
 
 ```{r}
-raw_data_file_name <- "file_name"
+raw_data_file_name <- "raw_data_1.csv"
 ```
 
-Here, `"file_name"` refers to the raw lipid data that the pipeline requires to run. This will be provided to you. The name of the file should be given exactly as it is named on your PC. Any spaces or special characters should be replaced with '_' before completing this step. Furthermore, this excel sheet should be saved as a .csv file and this suffix added to the "file_name". An example of how this file should be laid out is given below. The essential part is that all metadata should be given before the start of the lipid data and one metadata column must include groupings. The lipids in this file should include all the lipid results combined. The sample numbers (not IDs) should be equivalent to the row numbers, to make results traceable. 
+Here, `"raw_data_1.csv"` refers to the raw lipid data that the pipeline requires to run. This will be provided to you. The name of the file should be given exactly as it is named on your PC. Any spaces or special characters should be replaced with '_' before completing this step. Furthermore, this excel sheet should be saved as a .csv file and this suffix added to the "file_name". An example of how this file should be laid out is given below. The essential part is that all metadata should be given before the start of the lipid data and one metadata column must include groupings. The lipids in this file should include all the lipid results combined. The sample numbers (not IDs) should be equivalent to the row numbers, to make results traceable. 
 
 | Sample | Metadata 1 | Metadata 2 | Metadata 3 | Metadata *n* | Lipid 1 | Lipid 2 | Lipid 3 | Lipid *n* |
 |:-------|:-----------|:-----------|:-----------|:-------------|:--------|:--------|:--------|:----------|
@@ -67,10 +67,10 @@ Here, `"file_name"` refers to the raw lipid data that the pipeline requires to r
 #### Lipids Tested
 
 ```{r}
-lipids_tested_file_name <- "file_name"
+lipids_tested_file_name <- "lipids_tested_1.csv"
 ```
 
-Here, `"file_name"` refers to the document containing details of which lipids were tested when running the LC-MS method. This will be provided to you as the second sheet of the raw data sreadsheet. You should save this second sheet as a separate .csv file. The name of the file should be given exactly as it is named on your PC. Any spaces or special characters should be replaced with '_' before completing this step. Furthermore, this excel sheet should be saved as a .csv file and this suffix added to the "file_name". An example of how this file should be laid out is given below. The important part is that lipid family names should be the head of columns and all lipids included in that family should be given in rows below it. 
+Here, `"lipids_tested_1.csv"` refers to the document containing details of which lipids were tested when running the LC-MS method. This will be provided to you as the second sheet of the raw data sreadsheet. You should save this second sheet as a separate .csv file. The name of the file should be given exactly as it is named on your PC. Any spaces or special characters should be replaced with '_' before completing this step. Furthermore, this excel sheet should be saved as a .csv file and this suffix added to the "file_name". An example of how this file should be laid out is given below. The important part is that lipid family names should be the head of columns and all lipids included in that family should be given in rows below it. 
 
 | Family A  | Family B  | Family C  | Family *n*  |
 |:----------|:----------|:----------|:------------|
@@ -85,18 +85,82 @@ Here, `"file_name"` refers to the document containing details of which lipids we
 #### Adjustment Method
 
 ```{r}
-adjustment_method <- "method" # options are "holm" = Holm–Bonferroni
-                              #             "hochber" = Hochberg
-                              #             "hommel" = Hommel
-                              #             "bonferroni" = Bonferroni
-                              #             "BH" or "fdr" = Benjamini–Hochberg
-                              #             "BY" = Benjamini–Yekutieli
-                              #             "none" = No adjustment
+adjustment_method <- "fdr" # options are "holm" = Holm–Bonferroni
+                           #             "hochber" = Hochberg
+                           #             "hommel" = Hommel
+                           #             "bonferroni" = Bonferroni
+                           #             "BH" or "fdr" = Benjamini–Hochberg
+                           #             "BY" = Benjamini–Yekutieli
+                           #             "none" = No adjustment
 ```
 
-Here, `"method"` refers to which adjustment method you would like to use to account for multiple testing for correction. As can be seen above, the options available are given in the code. The method chosen, will be used throughout all subsequent code unless the subsequent code is adjusted.
+Here, `"fdr"` refers to which adjustment method you would like to use to account for multiple testing for correction. As can be seen above, the options available are given in the code. The method chosen, will be used throughout all subsequent code unless the subsequent code is adjusted.
 
+\
 
 ## Data Organisation
+
+### 2. Packages to install
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+packages <- c("moments", "tidyr", "dplyr", "ggplot2", "stats")
+
+for (pkg in packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    install.packages(pkg)
+  }
+}
+
+lapply(packages, library, character.only = TRUE)
+
+library(moments)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(stats)
+```
+
+This block of code will conditionally install (if not already present) and load all packages required for the pipeline. Version control of these packages can be found in the linked GitHub repository.
+
+### 3. Setting Work Directory
+
+### 4. Creating Directory Structure
+
+### 5. Initial Data Tidying
+
+### 6. Raw Data Manipulation
+
+### 7. Lipids Tested File Manipulation
+
+### 8. Checking For Mismatched Columns
+
+### 9. Subset Data By Lipid Family
+
+### 10. Creating directories For All Lipid Families and Categories
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
