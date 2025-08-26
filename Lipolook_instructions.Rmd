@@ -1,7 +1,6 @@
 ---
-title: "Lipolook 0.1.0 Instructions"
-author: "Jamila"
-date: "2025-07-07"
+title: "Lipolook 0.1.0"
+author: "Jamila Sullivan-Al-Kadhomiy"
 output: html_document
 ---
 
@@ -9,7 +8,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Lipolook introduction
+# Introduction
 
 Lipolook 0.1.0 is a currently a basic pipeline for exploration of lipidomics data. It is able to provide statistical outputs and visualisations recommended by those working in the field. 
 
@@ -17,16 +16,87 @@ It does this using simple inputs and organises the outputs into a logical direct
 
 It requires minimal inputs or alterations to run. However, further versions of this pipeline plan to further refine this feature. 
 
-Here, we will look at how the pipeline runs in an explanitory fashion and provide users with assistance on their inputs to the pipeline. We will look at each section of the *Lipolook_planning_bare_script.R* file, in accordance with its numbered sections. This will provide a detailed explaination of how the script works and make it more managable for those less familiar with reading R Studio code.
+Here, we will look at how the pipeline runs in an explanitory fashion and provide users with assistance on their inputs to the pipeline. We will look at each section of the *Lipolook_planning_bare_script.R*  file, in accordance with its numbered sections. This will provide a detailed explaination of how the script works and make it more managable for those less familiar with reading R Studio code.
 
-THe *Lipolook_planning_annotated.R* script also provides a script with included descriptions of individual coding tasks, for those more confortable with reading R Studio code or interesting the tasks completed by each section.
+THe *Lipolook_planning_annotated.R* script also provides a script with included descriptions of individual coding tasks, for those more comfortable with reading R Studio code or interesting the tasks completed by each section.
 
 For any further queries, errors or if anything is unclear, please contact: sullivan-al-kadhomiyj@cardiff.ac.uk
 
-# Variables For The User To Complete
+\
+
+# Instructions
+
+\
+
+## Variables
+
+### 1. Variables For The User To Complete 
+
+This section provides the user with optional preferences that will then be used in later Lipolook code. These fields should be completed manually before running the code. This process should be quick and simple.
+
+\
+
+#### Working Directory
+
+```{r}
+working_directory <- "path"
+```
+
+In this case `"path"` refers to the directory in which your raw data is held. For clear organisation, aim to have this directory free of anything else. If you are unsure on this path, navigate to the files tab in R Studio, access the file in which your data is stored, click the 'more' drop down menu at the top of the files pane and select 'Copy Folder Path to Clipboard'. You should then be able to past this directly into the script between the speech marks.
+
+\
+
+#### Raw Data
+
+```{r}
+raw_data_file_name <- "file_name"
+```
+
+Here, `"file_name"` refers to the raw lipid data that the pipeline requires to run. This will be provided to you. The name of the file should be given exactly as it is named on your PC. Any spaces or special characters should be replaced with '_' before completing this step. Furthermore, this excel sheet should be saved as a .csv file and this suffix added to the "file_name". An example of how this file should be laid out is given below. The essential part is that all metadata should be given before the start of the lipid data and one metadata column must include groupings. The lipids in this file should include all the lipid results combined. The sample numbers (not IDs) should be equivalent to the row numbers, to make results traceable. 
+
+| Sample | Metadata 1 | Metadata 2 | Metadata 3 | Metadata *n* | Lipid 1 | Lipid 2 | Lipid 3 | Lipid *n* |
+|:-------|:-----------|:-----------|:-----------|:-------------|:--------|:--------|:--------|:----------|
+| S1     | A          | X          | 12         | ...          | data    | data    | data    | ...       |
+| S2     | B          | Y          | 15         | ...          | data    | data    | data    | ...       |
+| S3     | C          | Z          | 18         | ...          | data    | data    | data    | ...       |
+| S4     | D          | W          | 20         | ...          | data    | data    | data    | ...       |
+| S5     | E          | V          | 22         | ...          | data    | data    | data    | ...       |
+
+\
+
+#### Lipids Tested
+
+```{r}
+lipids_tested_file_name <- "file_name"
+```
+
+Here, `"file_name"` refers to the document containing details of which lipids were tested when running the LC-MS method. This will be provided to you as the second sheet of the raw data sreadsheet. You should save this second sheet as a separate .csv file. The name of the file should be given exactly as it is named on your PC. Any spaces or special characters should be replaced with '_' before completing this step. Furthermore, this excel sheet should be saved as a .csv file and this suffix added to the "file_name". An example of how this file should be laid out is given below. The important part is that lipid family names should be the head of columns and all lipids included in that family should be given in rows below it. 
+
+| Family A  | Family B  | Family C  | Family *n*  |
+|:----------|:----------|:----------|:------------|
+| Lipid A1  | Lipid B1  | Lipid C1  | Lipid *n*1  |
+| Lipid A2  | Lipid B2  | Lipid C2  | Lipid *n*2  |
+| Lipid A3  | Lipid B3  | Lipid C3  |             |
+| Lipid A4  | Lipid B4  |           |             |
+|           | Lipid B5  |           |             |
+
+\
+
+#### Adjustment Method
+
+```{r}
+adjustment_method <- "method" # options are "holm" = Holm–Bonferroni
+                              #             "hochber" = Hochberg
+                              #             "hommel" = Hommel
+                              #             "bonferroni" = Bonferroni
+                              #             "BH" or "fdr" = Benjamini–Hochberg
+                              #             "BY" = Benjamini–Yekutieli
+                              #             "none" = No adjustment
+```
+
+Here, `"method"` refers to which adjustment method you would like to use to account for multiple testing for correction. As can be seen above, the options available are given in the code. The method chosen, will be used throughout all subsequent code unless the subsequent code is adjusted.
 
 
-
-# Data Organisation
+## Data Organisation
 
 
