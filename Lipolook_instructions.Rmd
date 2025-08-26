@@ -1,5 +1,5 @@
 ---
-title: "Lipolook Instructions"
+title: "Lipolook 0.1.0 Instructions"
 author: "Jamila"
 date: "2025-07-07"
 output: html_document
@@ -9,4 +9,22 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-##
+# Lipolook introduction
+
+Lipolook 0.1.0 is a currently a basic pipeline for exploration of lipidomics data. It is able to provide statistical outputs and visualisations recommended by those working in the field. 
+
+It does this using simple inputs and organises the outputs into a logical directory system, within your local files. 
+
+It requires minimal inputs or alterations to run. However, further versions of this pipeline plan to further refine this feature. 
+
+Here, we will look at how the pipeline runs in an explanitory fashion and provide users with assistance on their inputs to the pipeline. We will look at each section of the *Lipolook_planning_bare_script.R* file, in accordance with its numbered sections. This will provide a detailed explaination of how the script works and make it more managable for those less familiar with reading R Studio code.
+
+For any further queries, errors or if anything is unclear, please contact: sullivan-al-kadhomiyj@cardiff.ac.uk
+
+# Variables For The User To Complete
+
+
+
+# Data Organisation
+
+
