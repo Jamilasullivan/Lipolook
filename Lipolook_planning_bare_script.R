@@ -35,12 +35,13 @@ for (pkg in packages) {
 }
 
 lapply(packages, library, character.only = TRUE)
-
+if (!require(dunn.test)) install.packages("dunn.test")
 library(moments)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(stats)
+library(dunn.test)
 
 ################################################################################
 ######################## 3. SETTING WORK DIRECTOTY #############################
@@ -182,12 +183,40 @@ raw_data_names <- Filter(function(x) {
   TRUE
 }, all_raw_data)
 
+#1
 raw_data_CPEs <- raw_data_Ceramide_phospho_ethanolamines
 rm(raw_data_Ceramide_phospho_ethanolamines)
+#2
 raw_data_Chol_CEs <- raw_data_Cholesterol_cholesteryl_esters
 rm(raw_data_Cholesterol_cholesteryl_esters)
+#3
 raw_data_LPEs <- raw_data_Lysophosphatidy_ethanolamines
 rm(raw_data_Lysophosphatidy_ethanolamines)
+#4
+raw_data_Carnitine <- raw_data_Acyl_carnitine
+rm(raw_data_Acyl_carnitine)
+#5
+raw_data_CL <- raw_data_Cardiolipins
+rm(raw_data_Cardiolipins)
+#6
+raw_data_Cer <- raw_data_Ceramides
+rm(raw_data_Ceramides)
+#7
+raw_data_DG <- raw_data_Diacyl_glycerols
+rm(raw_data_Diacyl_glycerols)
+#8 
+raw_data_TG <- raw_data_Triacyl_glycerols
+rm(raw_data_Triacyl_glycerols)
+#9
+raw_data_lacto_cer <- raw_data_Lactosyl_ceramides
+rm(raw_data_Lactosyl_ceramides)
+#10
+raw_data_mono_lyso <- raw_data_Mono_lysocardiolipins
+rm(raw_data_Mono_lysocardiolipins)
+#11
+raw_data_S <- raw_data_Sulfatides
+rm(raw_data_Sulfatides)
+
 
 raw_data_names <- c(raw_data_names, c("raw_data_CPEs", "raw_data_Chol_CEs", "raw_data_LPEs"))
 raw_data_names <- raw_data_names[!raw_data_names %in% c("raw_data_Ceramide_phospho_ethanolamines", "raw_data_Cholesterol_cholesteryl_esters", "raw_data_Lysophosphatidy_ethanolamines")]
@@ -706,6 +735,8 @@ for (name in raw_data_names) {
   }
   
   folder_path <- file.path(top_level_dir, category, lipid_family)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
   df <- get(name)
   
   lipid_columns <- names(df)[-1]   # exclude 'groups'
@@ -715,6 +746,7 @@ for (name in raw_data_names) {
     lipid = lipid_columns,
     p_value = NA,
     p_value_adj = NA,
+    significance = NA,
     stringsAsFactors = FALSE
   )
   
@@ -741,11 +773,31 @@ for (name in raw_data_names) {
     }
   }
   
+  # adjust p-values
   mw_results$p_value_adj <- p.adjust(mw_results$p_value, method = adjustment_method)
   
-  write.csv(mw_results, file = file.path(folder_path, paste0(lipid_family, "_mannwhitney.csv")), row.names = FALSE)
-  message(count, ". Mann–Whitney results saved for family: ", lipid_family)
+  # assign significance stars
+  mw_results$significance <- sapply(mw_results$p_value_adj, function(p) {
+    if (is.na(p)) {
+      "not significant"
+    } else if (p < 0.001) {
+      "***"
+    } else if (p < 0.01) {
+      "**"
+    } else if (p < 0.05) {
+      "*"
+    } else {
+      "not significant"
+    }
+  })
   
+  write.csv(
+    mw_results, 
+    file = file.path(folder_path, paste0(lipid_family, "_mannwhitney.csv")), 
+    row.names = FALSE
+  )
+  
+  message(count, ". Mann–Whitney results saved for family: ", lipid_family)
   count <- count + 1
 }
 
@@ -753,7 +805,163 @@ for (name in raw_data_names) {
 ############### 19. KRUSKAL-WALLIS H TEST - >2 INDEPENDENT GROUPS ##############
 ################################################################################
 
+top_level_dir <- file.path("outputs", "lipid_categories")
 
+count <- 1  # counter for families
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message(count, ". Skipping (no category): ", lipid_family)
+    count <- count + 1
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  df <- get(name)
+  
+  lipid_columns <- names(df)[-1]   # exclude 'groups' column
+  group_col <- names(df)[1]
+  
+  kw_results <- data.frame(
+    lipid = lipid_columns,
+    p_value = NA,
+    p_value_adj = NA,
+    significance = NA,
+    stringsAsFactors = FALSE
+  )
+  
+  for (i in seq_along(lipid_columns)) {
+    lipid <- lipid_columns[i]
+    
+    # remove NA values
+    df_subset <- df[!is.na(df[[lipid]]), c(group_col, lipid)]
+    
+    # run Kruskal-Wallis if at least 2 groups exist
+    if (length(unique(df_subset[[group_col]])) > 1) {
+      test_res <- kruskal.test(df_subset[[lipid]] ~ df_subset[[group_col]])
+      kw_results$p_value[i] <- test_res$p.value
+    }
+  }
+  
+  # adjust p-values
+  kw_results$p_value_adj <- p.adjust(kw_results$p_value, method = adjustment_method)
+  
+  # assign significance stars
+  kw_results$significance <- sapply(kw_results$p_value_adj, function(p) {
+    if (is.na(p)) {
+      "not significant"
+    } else if (p < 0.001) {
+      "***"
+    } else if (p < 0.01) {
+      "**"
+    } else if (p < 0.05) {
+      "*"
+    } else {
+      "not significant"
+    }
+  })
+  
+  write.csv(
+    kw_results, 
+    file = file.path(folder_path, paste0(lipid_family, "_kruskalwallis.csv")), 
+    row.names = FALSE
+  )
+  
+  message(count, ". Kruskal–Wallis results saved for family: ", lipid_family)
+  count <- count + 1
+}
+
+################################################################################
+######################## 12. DUNN'S TEST - POST HOC ############################
+################################################################################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+count <- 1  # counter for families
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message(count, ". Skipping (no category): ", lipid_family)
+    count <- count + 1
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  df <- get(name)
+  lipid_columns <- names(df)[-1]   # exclude 'groups' column
+  group_col <- names(df)[1]
+  
+  for (i in seq_along(lipid_columns)) {
+    lipid <- lipid_columns[i]
+    df_subset <- df[!is.na(df[[lipid]]), c(group_col, lipid)]
+    
+    # Skip lipids with all identical values
+    if (length(unique(df_subset[[lipid]])) <= 1) {
+      message("Skipping lipid ", lipid, " (all values identical)")
+      next
+    }
+    
+    # Count non-NA observations per group
+    group_counts <- table(df_subset[[group_col]])
+    
+    # Only run Dunn if at least 2 groups have ≥1 value
+    if (sum(group_counts > 0) >= 2) {
+      # Run Dunn quietly
+      dunn_res <- suppressMessages(
+        dunn.test(df_subset[[lipid]], df_subset[[group_col]], method = "bonferroni", alpha = 0.05, altp = TRUE)
+      )
+      
+      # Only create results if valid
+      if (!is.null(dunn_res$comparisons) && length(dunn_res$comparisons) > 0 &&
+          !is.null(dunn_res$P) && length(dunn_res$P) == length(dunn_res$comparisons) &&
+          !is.null(dunn_res$P.adjusted) && length(dunn_res$P.adjusted) == length(dunn_res$comparisons)) {
+        
+        results_df <- data.frame(
+          comparison = dunn_res$comparisons,
+          p_value = dunn_res$P,
+          p_value_adj = dunn_res$P.adjusted,
+          significance = sapply(dunn_res$P.adjusted, function(p) {
+            if (is.na(p)) {
+              "not significant"
+            } else if (p < 0.001) {
+              "***"
+            } else if (p < 0.01) {
+              "**"
+            } else if (p < 0.05) {
+              "*"
+            } else {
+              "not significant"
+            }
+          }),
+          stringsAsFactors = FALSE
+        )
+        
+        write.csv(
+          results_df,
+          file = file.path(folder_path, paste0(lipid_family, "_", lipid, "_dunn.csv")),
+          row.names = FALSE
+        )
+      } else {
+        message("Skipping lipid ", lipid, " (Dunn test returned no valid comparisons)")
+      }
+      
+    } else {
+      message("Skipping lipid ", lipid, " (less than 2 groups with data)")
+    }
+  }
+  
+  message(count, ". Dunn's post hoc results saved for family: ", lipid_family)
+  count <- count + 1
+}
 
 ################################################################################
 #################### 20. SPEARMAN'S RHO - CORRELATION ##########################
