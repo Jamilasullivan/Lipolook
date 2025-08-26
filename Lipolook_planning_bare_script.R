@@ -26,7 +26,16 @@ glm_variables <-
 ########################## 2. PACKAGES TO INSTALL ##############################
 ################################################################################
 
-##install.packages("moments")
+packages <- c("moments", "tidyr", "dplyr", "ggplot2", "stats")
+
+for (pkg in packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    install.packages(pkg)
+  }
+}
+
+lapply(packages, library, character.only = TRUE)
+
 library(moments)
 library(tidyr)
 library(dplyr)
