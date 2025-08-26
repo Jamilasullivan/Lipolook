@@ -18,7 +18,7 @@ adjustment_method <- "fdr" # options are "holm" = Holm–Bonferroni
 
 groups <- ## what is the current name of your column containing groupings in raw data?
   
-control_group <- ## what is the name of your control group in raw data?
+control_group <- "A" ## the name of your control group in your raw data file
   
 glm_variables <- 
 
@@ -691,7 +691,63 @@ for (cat in names(counts)) {
 ############### 18. MANN-WHITNEY U TEST - TWO INDEPENDENT GROUPS ###############
 ################################################################################
 
+top_level_dir <- file.path("outputs", "lipid_categories")
 
+count <- 1  # counter for families
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message(count, ". Skipping (no category): ", lipid_family)
+    count <- count + 1
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  df <- get(name)
+  
+  lipid_columns <- names(df)[-1]   # exclude 'groups'
+  group_col <- names(df)[1]
+  
+  mw_results <- data.frame(
+    lipid = lipid_columns,
+    p_value = NA,
+    p_value_adj = NA,
+    stringsAsFactors = FALSE
+  )
+  
+  for (i in seq_along(lipid_columns)) {
+    lipid <- lipid_columns[i]
+    control_vals <- df[df[[group_col]] == control_group, lipid]
+    other_groups <- setdiff(unique(df[[group_col]]), control_group)
+    
+    pvals <- c()
+    for (g in other_groups) {
+      test_vals <- df[df[[group_col]] == g, lipid]
+      if (length(control_vals) > 0 & length(test_vals) > 0) {
+        test_res <- wilcox.test(control_vals, test_vals)
+        pvals <- c(pvals, test_res$p.value)
+      } else {
+        pvals <- c(pvals, NA)
+      }
+    }
+    
+    if (all(is.na(pvals))) {
+      mw_results$p_value[i] <- NA
+    } else {
+      mw_results$p_value[i] <- min(pvals, na.rm = TRUE)
+    }
+  }
+  
+  mw_results$p_value_adj <- p.adjust(mw_results$p_value, method = adjustment_method)
+  
+  write.csv(mw_results, file = file.path(folder_path, paste0(lipid_family, "_mannwhitney.csv")), row.names = FALSE)
+  message(count, ". Mann–Whitney results saved for family: ", lipid_family)
+  
+  count <- count + 1
+}
 
 ################################################################################
 ############### 19. KRUSKAL-WALLIS H TEST - >2 INDEPENDENT GROUPS ##############
