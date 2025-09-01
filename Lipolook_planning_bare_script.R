@@ -20,7 +20,7 @@ groups <- ## what is the current name of your column containing groupings in raw
   
 control_group <- "A" ## the name of your control group in your raw data file
   
-glm_variables <- 
+glm_variables <- c("","","") ## include the names of columns with metadata to be included
 
 ################################################################################
 ########################## 2. PACKAGES TO INSTALL ##############################
