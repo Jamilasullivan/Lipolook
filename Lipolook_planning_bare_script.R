@@ -464,6 +464,137 @@ for (name in raw_data_names) {
 
 
 
+
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+counter <- 1
+total_families <- length(raw_data_names)
+
+for (name in raw_data_names) {
+  
+  # Determine lipid family
+  lipid_family <- sub("^raw_data_", "", name)
+  message("Processing family ", counter, " of ", total_families, ": ", lipid_family)
+  
+  # Determine category folder
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    counter <- counter + 1
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  # Get total data frame
+  total_name <- paste0("total_", lipid_family)
+  if (!exists(total_name)) {
+    message("No total data frame found for: ", lipid_family)
+    counter <- counter + 1
+    next
+  }
+  
+  df_total <- get(total_name)  # must have columns: group, total
+  group_col <- "group"
+  
+  # Ensure numeric
+  df_total$total <- as.numeric(df_total$total)
+  
+  # Compute summary per group
+  summary_df <- df_total %>%
+    group_by(.data[[group_col]]) %>%
+    summarize(
+      mean_total = mean(total, na.rm = TRUE),
+      sd_total = sd(total, na.rm = TRUE),
+      n = n(),
+      se_total = sd_total / sqrt(n),
+      .groups = "drop"
+    )
+  
+  # Check control group exists
+  if (!control_group %in% summary_df[[group_col]]) {
+    message("Control group not found for ", lipid_family, " — skipping plot")
+    counter <- counter + 1
+    next
+  }
+  
+  # Compute difference from control
+  control_mean <- summary_df$mean_total[summary_df[[group_col]] == control_group]
+  summary_df <- summary_df %>%
+    mutate(diff_from_control = mean_total - control_mean)
+  
+  # Exclude control from plotted points
+  plot_df <- summary_df %>% filter(.data[[group_col]] != control_group)
+  
+  # Create traditional forest plot
+  plot <- ggplot(plot_df, aes(y = .data[[group_col]], x = diff_from_control)) +
+    geom_point(size = 3, color = "blue") +
+    geom_errorbarh(aes(
+      xmin = diff_from_control - se_total,
+      xmax = diff_from_control + se_total
+    ), height = 0.2, color = "blue") +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
+    labs(
+      title = paste("Forest plot (relative to Control):", lipid_family),
+      x = "Difference from Control (sum of lipids)",
+      y = "Group"
+    ) +
+    theme_bw()
+  
+  # Save plot
+  ggsave(
+    filename = file.path(folder_path, paste0(lipid_family, "_forest_plot.png")),
+    plot = plot,
+    width = 6,
+    height = 4
+  )
+  
+  message("Saved forest plot for: ", lipid_family)
+  counter <- counter + 1
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ################################################################################
 ############### 14. NORMALITY OUTPUT FOR ALL SAMPLES COMBINED ##################
 ################################################################################
