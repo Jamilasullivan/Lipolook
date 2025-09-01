@@ -36,6 +36,7 @@ for (pkg in packages) {
 
 lapply(packages, library, character.only = TRUE)
 if (!require(dunn.test)) install.packages("dunn.test")
+
 library(moments)
 library(tidyr)
 library(dplyr)
@@ -79,16 +80,17 @@ if(!dir.exists("outputs/error_files")){
 ################################################################################
 
 raw_data <- read.csv(raw_data_file_name, header = T)
-names(raw_data)[c(1,2,3,4,5)] <- c("Filename", "CMaLL Sample Name", "Group", "code", "Cell Count")
+metadata <- raw_data[ , grep("^X", names(raw_data))]
+colnames(metadata) <- as.character(unlist(metadata[1, ]))
+metadata <- metadata[-1,]
+groups <- metadata[,"Group"]
+raw_data <- raw_data[ , !grepl("^X", names(raw_data))]
+concentration <- raw_data[1,1]
 raw_data <- raw_data[-1,]
-raw_data$code <- NULL
-raw_data$`Cell Count` <- NULL
 str(raw_data)
-raw_data[, 4:ncol(raw_data)] <- lapply(raw_data[, 4:ncol(raw_data)], function(x)
-  as.numeric(as.character(x)))
-sum(is.na(raw_data[, 4:ncol(raw_data)]))
+raw_data[] <- lapply(raw_data, function(x) as.numeric(as.character(x)))
 str(raw_data)
-sapply(raw_data, is.numeric)
+sum(is.na(raw_data[,ncol(raw_data)]))
 
 ################################################################################
 ######################### 6. RAW DATA MANIPULATION #############################
@@ -192,31 +194,6 @@ rm(raw_data_Cholesterol_cholesteryl_esters)
 #3
 raw_data_LPEs <- raw_data_Lysophosphatidy_ethanolamines
 rm(raw_data_Lysophosphatidy_ethanolamines)
-#4
-raw_data_Carnitine <- raw_data_Acyl_carnitine
-rm(raw_data_Acyl_carnitine)
-#5
-raw_data_CL <- raw_data_Cardiolipins
-rm(raw_data_Cardiolipins)
-#6
-raw_data_Cer <- raw_data_Ceramides
-rm(raw_data_Ceramides)
-#7
-raw_data_DG <- raw_data_Diacyl_glycerols
-rm(raw_data_Diacyl_glycerols)
-#8 
-raw_data_TG <- raw_data_Triacyl_glycerols
-rm(raw_data_Triacyl_glycerols)
-#9
-raw_data_lacto_cer <- raw_data_Lactosyl_ceramides
-rm(raw_data_Lactosyl_ceramides)
-#10
-raw_data_mono_lyso <- raw_data_Mono_lysocardiolipins
-rm(raw_data_Mono_lysocardiolipins)
-#11
-raw_data_S <- raw_data_Sulfatides
-rm(raw_data_Sulfatides)
-
 
 raw_data_names <- c(raw_data_names, c("raw_data_CPEs", "raw_data_Chol_CEs", "raw_data_LPEs"))
 raw_data_names <- raw_data_names[!raw_data_names %in% c("raw_data_Ceramide_phospho_ethanolamines", "raw_data_Cholesterol_cholesteryl_esters", "raw_data_Lysophosphatidy_ethanolamines")]
@@ -271,8 +248,6 @@ for (name in raw_data_names) {
 ################################################################################
 ###################### 11. ADDING GROUPS BACK TO DFS ###########################
 ################################################################################
-
-groups <- raw_data[,3]
 
 for (name in raw_data_names) {
   cat("Adding 'groups' column to:", name, "\n")
