@@ -332,6 +332,8 @@ for (name in raw_data_names) {
 ################# 14. FOREST PLOTS - GROUPS WITHIN A FAMILIY ###################
 ################################################################################
 
+#### SAVING TOTALS FOR EACH FAMILY #############################################
+
 counter <- 1
 total_families <- length(raw_data_names)
 
@@ -362,109 +364,7 @@ for (name in raw_data_names) {
   counter <- counter + 1
 }
 
-## forest plots ##
-
-top_level_dir <- file.path("outputs", "lipid_categories")
-
-# Loop over lipid families
-counter <- 1
-total_families <- length(raw_data_names)
-
-for (name in raw_data_names) {
-  lipid_family <- sub("^raw_data_", "", name)
-  message("Processing family ", counter, " of ", total_families, ": ", lipid_family)
-  
-  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
-  if (is.na(category) || length(category) == 0) {
-    message("No category found for family: ", lipid_family)
-    counter <- counter + 1
-    next
-  }
-  
-  folder_path <- file.path(top_level_dir, category, lipid_family)
-  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
-  
-  total_name <- paste0("total_", lipid_family)
-  if (!exists(total_name)) {
-    message("No total data frame found for: ", lipid_family)
-    counter <- counter + 1
-    next
-  }
-  
-  df_total <- get(total_name)  # must have columns: group, total
-  group_col <- "group"
-  
-  # Clean total column in case of non-numeric issues
-  df_total$total <- as.numeric(df_total$total)
-  
-  # Compute summary per group
-  summary_df <- df_total %>%
-    group_by(.data[[group_col]]) %>%
-    summarize(
-      mean_total = mean(total, na.rm = TRUE),
-      sd_total = sd(total, na.rm = TRUE),
-      n = n(),
-      se_total = sd_total / sqrt(n),
-      .groups = "drop"
-    )
-  
-  # Check Control group
-  if (!control_group %in% summary_df[[group_col]]) {
-    message("No Control group found for: ", lipid_family)
-    control_mean <- NA
-  } else {
-    control_mean <- summary_df$mean_total[summary_df[[group_col]] == "Control"]
-  }
-  
-  # Create forest-style plot with mean ± SE and no jitters
-  plot <- ggplot(summary_df, aes(y = .data[[group_col]], x = mean_total)) +
-    geom_point(size = 3, color = "blue") +  # group means
-    geom_errorbarh(                          # horizontal error bars
-      aes(xmin = mean_total - se_total, xmax = mean_total + se_total),
-      height = 0.2, color = "blue"
-    ) +
-    geom_vline(xintercept = control_mean, linetype = "dashed", color = "red") +  # control line
-    labs(
-      title = paste("Total", lipid_family, "per group"),
-      x = "Sum of lipids",
-      y = "Group"
-    ) +
-    theme_bw()
-  
-  ggsave(
-    filename = file.path(folder_path, paste0(lipid_family, "_forest_plot.png")),
-    plot = plot,
-    width = 6,
-    height = 4
-  )
-  
-  message("Saved forest plot for: ", lipid_family)
-  counter <- counter + 1
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+##### FOREST PLOTS #############################################################
 
 top_level_dir <- file.path("outputs", "lipid_categories")
 counter <- 1
@@ -553,38 +453,6 @@ for (name in raw_data_names) {
   message("Saved forest plot for: ", lipid_family)
   counter <- counter + 1
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
