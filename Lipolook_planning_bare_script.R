@@ -427,32 +427,99 @@ for (name in raw_data_names) {
   # Exclude control from plotted points
   plot_df <- summary_df %>% filter(.data[[group_col]] != control_group)
   
-  # Create traditional forest plot
+  # Determine symmetric x-axis limits around 0
+  max_diff <- max(abs(plot_df$diff_from_control + plot_df$se_total), 
+                  abs(plot_df$diff_from_control - plot_df$se_total), na.rm = TRUE)
+  
+  # Traditional forest plot with 0 central
   plot <- ggplot(plot_df, aes(y = .data[[group_col]], x = diff_from_control)) +
-    geom_point(size = 3, color = "blue") +
+    geom_point(size = 3, color = "#990101") +
     geom_errorbarh(aes(
       xmin = diff_from_control - se_total,
       xmax = diff_from_control + se_total
-    ), height = 0.2, color = "blue") +
-    geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
+    ), height = 0.1, color = "#990101") +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "#747373") +
     labs(
       title = paste("Forest plot (relative to Control):", lipid_family),
       x = "Difference from Control (sum of lipids)",
       y = "Group"
     ) +
-    theme_bw()
+    theme_bw() +
+    coord_cartesian(xlim = c(-max_diff, max_diff))
   
   # Save plot
   ggsave(
     filename = file.path(folder_path, paste0(lipid_family, "_forest_plot.png")),
     plot = plot,
     width = 6,
-    height = 4
+    height = 8
   )
   
   message("Saved forest plot for: ", lipid_family)
   counter <- counter + 1
 }
+
+
+################################################################################
+################ 15. FOREST PLOTS - GROUPS WITHIN A CATEGORY ###################
+################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
