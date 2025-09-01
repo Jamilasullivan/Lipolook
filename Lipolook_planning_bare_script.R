@@ -18,7 +18,7 @@ adjustment_method <- "fdr" # options are "holm" = Holm–Bonferroni
 
 groups <- ## what is the current name of your column containing groupings in raw data?
   
-control_group <- "A" ## the name of your control group in your raw data file
+control_group <- "A" ## the name of your control group in your raw data file. what is your control group called?
   
 glm_variables <- c("","","") ## include the names of columns with metadata to be included
 
