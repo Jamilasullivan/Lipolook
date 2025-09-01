@@ -329,6 +329,142 @@ for (name in raw_data_names) {
 }
 
 ################################################################################
+################# 14. FOREST PLOTS - GROUPS WITHIN A FAMILIY ###################
+################################################################################
+
+counter <- 1
+total_families <- length(raw_data_names)
+
+for (name in raw_data_names) {
+  # Display progress
+  lipid_family <- sub("^raw_data_", "", name)
+  message("Processing family ", counter, " of ", total_families, ": ", lipid_family)
+  
+  # Get the data frame
+  df <- get(name)
+  group_col <- names(df)[1]
+  lipid_columns <- names(df)[-1]
+  
+  # Convert lipid columns to numeric safely
+  df[, lipid_columns] <- lapply(df[, lipid_columns, drop = FALSE], function(x) as.numeric(as.character(x)))
+  
+  # Compute total per sample
+  total_df <- data.frame(
+    group = df[[group_col]],
+    total = rowSums(df[, lipid_columns, drop = FALSE], na.rm = TRUE)
+  )
+  
+  # Assign the new data frame in the environment
+  total_name <- paste0("total_", lipid_family)
+  assign(total_name, total_df)
+  
+  # Increment counter
+  counter <- counter + 1
+}
+
+## forest plots ##
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+# Loop over lipid families
+counter <- 1
+total_families <- length(raw_data_names)
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  message("Processing family ", counter, " of ", total_families, ": ", lipid_family)
+  
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    counter <- counter + 1
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  total_name <- paste0("total_", lipid_family)
+  if (!exists(total_name)) {
+    message("No total data frame found for: ", lipid_family)
+    counter <- counter + 1
+    next
+  }
+  
+  df_total <- get(total_name)  # must have columns: group, total
+  group_col <- "group"
+  
+  # Clean total column in case of non-numeric issues
+  df_total$total <- as.numeric(df_total$total)
+  
+  # Compute summary per group
+  summary_df <- df_total %>%
+    group_by(.data[[group_col]]) %>%
+    summarize(
+      mean_total = mean(total, na.rm = TRUE),
+      sd_total = sd(total, na.rm = TRUE),
+      n = n(),
+      se_total = sd_total / sqrt(n),
+      .groups = "drop"
+    )
+  
+  # Check Control group
+  if (!control_group %in% summary_df[[group_col]]) {
+    message("No Control group found for: ", lipid_family)
+    control_mean <- NA
+  } else {
+    control_mean <- summary_df$mean_total[summary_df[[group_col]] == "Control"]
+  }
+  
+  # Create forest-style vertical plot with solid background
+  plot <- ggplot(df_total, aes(y = .data[[group_col]], x = total)) +  # swap axes
+    geom_jitter(height = 0.1, size = 2) +                             # jitter points vertically
+    geom_point(data = summary_df, aes(y = .data[[group_col]], x = mean_total), size = 3, color = "blue") +
+    geom_errorbarh(                                                   # horizontal error bars
+      data = summary_df,
+      aes(y = .data[[group_col]], xmin = mean_total - se_total, xmax = mean_total + se_total),
+      height = 0.2,
+      color = "blue"
+    ) +
+    geom_vline(xintercept = control_mean, linetype = "dashed", color = "red") +
+    labs(
+      title = paste("Total", lipid_family, "per group"),
+      x = "Sum of lipids",
+      y = "Group"
+    ) +
+    theme_classic()
+  
+  message("Saved forest plot for: ", lipid_family)
+  counter <- counter + 1
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
 ############### 14. NORMALITY OUTPUT FOR ALL SAMPLES COMBINED ##################
 ################################################################################
 
@@ -954,115 +1090,6 @@ for (name in raw_data_names) {
 
 
 
-################################################################################
-################# 23. FOREST PLOTS - GROUPS WITHIN A FAMILIY ###################
-################################################################################
-
-counter <- 1
-total_families <- length(raw_data_names)
-
-for (name in raw_data_names) {
-  # Display progress
-  lipid_family <- sub("^raw_data_", "", name)
-  message("Processing family ", counter, " of ", total_families, ": ", lipid_family)
-  
-  # Get the data frame
-  df <- get(name)
-  group_col <- names(df)[1]
-  lipid_columns <- names(df)[-1]
-  
-  # Convert lipid columns to numeric safely
-  df[, lipid_columns] <- lapply(df[, lipid_columns, drop = FALSE], function(x) as.numeric(as.character(x)))
-  
-  # Compute total per sample
-  total_df <- data.frame(
-    group = df[[group_col]],
-    total = rowSums(df[, lipid_columns, drop = FALSE], na.rm = TRUE)
-  )
-  
-  # Assign the new data frame in the environment
-  total_name <- paste0("total_", lipid_family)
-  assign(total_name, total_df)
-  
-  # Increment counter
-  counter <- counter + 1
-}
-
-## forest plots ##
-
-top_level_dir <- file.path("outputs", "lipid_categories")
-
-# Loop over lipid families
-counter <- 1
-total_families <- length(raw_data_names)
-
-for (name in raw_data_names) {
-  lipid_family <- sub("^raw_data_", "", name)
-  message("Processing family ", counter, " of ", total_families, ": ", lipid_family)
-  
-  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
-  if (is.na(category) || length(category) == 0) {
-    message("No category found for family: ", lipid_family)
-    counter <- counter + 1
-    next
-  }
-  
-  folder_path <- file.path(top_level_dir, category, lipid_family)
-  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
-  
-  total_name <- paste0("total_", lipid_family)
-  if (!exists(total_name)) {
-    message("No total data frame found for: ", lipid_family)
-    counter <- counter + 1
-    next
-  }
-  
-  df_total <- get(total_name)  # must have columns: group, total
-  group_col <- "group"
-  
-  # Clean total column in case of non-numeric issues
-  df_total$total <- as.numeric(df_total$total)
-  
-  # Compute summary per group
-  summary_df <- df_total %>%
-    group_by(.data[[group_col]]) %>%
-    summarize(
-      mean_total = mean(total, na.rm = TRUE),
-      sd_total = sd(total, na.rm = TRUE),
-      n = n(),
-      se_total = sd_total / sqrt(n),
-      .groups = "drop"
-    )
-  
-  # Check Control group
-  if (!control_group %in% summary_df[[group_col]]) {
-    message("No Control group found for: ", lipid_family)
-    control_mean <- NA
-  } else {
-    control_mean <- summary_df$mean_total[summary_df[[group_col]] == "Control"]
-  }
-  
-  # Create forest-style vertical plot with solid background
-  plot <- ggplot(df_total, aes(y = .data[[group_col]], x = total)) +  # swap axes
-    geom_jitter(height = 0.1, size = 2) +                             # jitter points vertically
-    geom_point(data = summary_df, aes(y = .data[[group_col]], x = mean_total), size = 3, color = "blue") +
-    geom_errorbarh(                                                   # horizontal error bars
-      data = summary_df,
-      aes(y = .data[[group_col]], xmin = mean_total - se_total, xmax = mean_total + se_total),
-      height = 0.2,
-      color = "blue"
-    ) +
-    geom_vline(xintercept = control_mean, linetype = "dashed", color = "red") +
-    labs(
-      title = paste("Total", lipid_family, "per group"),
-      x = "Sum of lipids",
-      y = "Group"
-    ) +
-    theme_minimal()
-  
-  message("Saved forest plot for: ", lipid_family)
-  counter <- counter + 1
-}
 
 
 
