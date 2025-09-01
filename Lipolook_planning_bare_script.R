@@ -416,11 +416,14 @@ for (name in raw_data_names) {
     control_mean <- summary_df$mean_total[summary_df[[group_col]] == "Control"]
   }
   
-  # Create forest-style vertical plot with solid background
-  plot <- ggplot(df_total, aes(y = .data[[group_col]], x = total)) +  # swap axes
-    geom_jitter(height = 0.1, size = 2) +                             # jitter points vertically
-    geom_point(data = summary_df, aes(y = .data[[group_col]], x = mean_total), size = 3, color = "blue") +
-    geom_vline(xintercept = control_mean, linetype = "dashed", color = "red") +
+  # Create forest-style plot with mean ± SE and no jitters
+  plot <- ggplot(summary_df, aes(y = .data[[group_col]], x = mean_total)) +
+    geom_point(size = 3, color = "blue") +  # group means
+    geom_errorbarh(                          # horizontal error bars
+      aes(xmin = mean_total - se_total, xmax = mean_total + se_total),
+      height = 0.2, color = "blue"
+    ) +
+    geom_vline(xintercept = control_mean, linetype = "dashed", color = "red") +  # control line
     labs(
       title = paste("Total", lipid_family, "per group"),
       x = "Sum of lipids",
