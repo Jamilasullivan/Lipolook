@@ -420,27 +420,24 @@ for (name in raw_data_names) {
   plot <- ggplot(df_total, aes(y = .data[[group_col]], x = total)) +  # swap axes
     geom_jitter(height = 0.1, size = 2) +                             # jitter points vertically
     geom_point(data = summary_df, aes(y = .data[[group_col]], x = mean_total), size = 3, color = "blue") +
-    geom_errorbarh(                                                   # horizontal error bars
-      data = summary_df,
-      aes(y = .data[[group_col]], xmin = mean_total - se_total, xmax = mean_total + se_total),
-      height = 0.2,
-      color = "blue"
-    ) +
     geom_vline(xintercept = control_mean, linetype = "dashed", color = "red") +
     labs(
       title = paste("Total", lipid_family, "per group"),
       x = "Sum of lipids",
       y = "Group"
     ) +
-    theme_classic()
+    theme_bw()
+  
+  ggsave(
+    filename = file.path(folder_path, paste0(lipid_family, "_forest_plot.png")),
+    plot = plot,
+    width = 6,
+    height = 4
+  )
   
   message("Saved forest plot for: ", lipid_family)
   counter <- counter + 1
 }
-
-
-
-
 
 
 
