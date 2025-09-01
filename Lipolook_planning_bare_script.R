@@ -18,7 +18,7 @@ adjustment_method <- "fdr" # options are "holm" = Holm–Bonferroni
 
 groups <- ## what is the current name of your column containing groupings in raw data?
   
-control_group <- "A" ## the name of your control group in your raw data file. what is your control group called?
+control_group <- "E" ## the name of your control group in your raw data file. what is your control group called?
   
 glm_variables <- c("","","") ## include the names of columns with metadata to be included
 
@@ -988,75 +988,81 @@ for (name in raw_data_names) {
   counter <- counter + 1
 }
 
+## forest plots ##
 
 top_level_dir <- file.path("outputs", "lipid_categories")
 
+# Loop over lipid families
+counter <- 1
+total_families <- length(raw_data_names)
+
 for (name in raw_data_names) {
   lipid_family <- sub("^raw_data_", "", name)
-  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  message("Processing family ", counter, " of ", total_families, ": ", lipid_family)
   
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
   if (is.na(category) || length(category) == 0) {
     message("No category found for family: ", lipid_family)
+    counter <- counter + 1
     next
   }
   
   folder_path <- file.path(top_level_dir, category, lipid_family)
   if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
   
-  df <- get(name)
-  lipid_columns <- names(df)[-1]  # all lipid columns
-  group_col <- names(df)[1]       # first column = group
-  groups <- unique(df[[group_col]])
+  total_name <- paste0("total_", lipid_family)
+  if (!exists(total_name)) {
+    message("No total data frame found for: ", lipid_family)
+    counter <- counter + 1
+    next
+  }
   
-  # Sum lipid family per sample
-  df$total <- rowSums(df[, lipid_columns])
+  df_total <- get(total_name)  # must have columns: group, total
+  group_col <- "group"
   
-  # Prepare group summaries
-  summary_df <- df %>%
+  # Clean total column in case of non-numeric issues
+  df_total$total <- as.numeric(df_total$total)
+  
+  # Compute summary per group
+  summary_df <- df_total %>%
     group_by(.data[[group_col]]) %>%
     summarize(
-      mean_total = mean(total),
-      sd_total = sd(total),
+      mean_total = mean(total, na.rm = TRUE),
+      sd_total = sd(total, na.rm = TRUE),
       n = n(),
-      se_total = sd_total / sqrt(n)
+      se_total = sd_total / sqrt(n),
+      .groups = "drop"
     )
   
-  # Forest-plot style: each replicate as dot, control mean as dashed line
-  control_mean <- summary_df$mean_total[summary_df[[group_col]] == "Control"]
+  # Check Control group
+  if (!control_group %in% summary_df[[group_col]]) {
+    message("No Control group found for: ", lipid_family)
+    control_mean <- NA
+  } else {
+    control_mean <- summary_df$mean_total[summary_df[[group_col]] == "Control"]
+  }
   
-  plot <- ggplot(df, aes(x = .data[[group_col]], y = total)) +
-    geom_jitter(width = 0.1, size = 2) +
-    geom_point(data = summary_df, aes(y = mean_total), size = 3, color = "blue") +
-    geom_errorbar(
+  # Create forest-style vertical plot with solid background
+  plot <- ggplot(df_total, aes(y = .data[[group_col]], x = total)) +  # swap axes
+    geom_jitter(height = 0.1, size = 2) +                             # jitter points vertically
+    geom_point(data = summary_df, aes(y = .data[[group_col]], x = mean_total), size = 3, color = "blue") +
+    geom_errorbarh(                                                   # horizontal error bars
       data = summary_df,
-      aes(ymin = mean_total - se_total, ymax = mean_total + se_total),
-      width = 0.2,
+      aes(y = .data[[group_col]], xmin = mean_total - se_total, xmax = mean_total + se_total),
+      height = 0.2,
       color = "blue"
     ) +
-    geom_hline(yintercept = control_mean, linetype = "dashed", color = "red") +
+    geom_vline(xintercept = control_mean, linetype = "dashed", color = "red") +
     labs(
       title = paste("Total", lipid_family, "per group"),
-      x = "Group",
-      y = "Sum of lipids"
+      x = "Sum of lipids",
+      y = "Group"
     ) +
     theme_minimal()
   
-  # Save plot
-  ggsave(
-    filename = file.path(folder_path, paste0(lipid_family, "_forest_plot.png")),
-    plot = plot,
-    width = 6,
-    height = 4
-  )
-  
   message("Saved forest plot for: ", lipid_family)
+  counter <- counter + 1
 }
-
-
-
-
-
-
 
 
 
