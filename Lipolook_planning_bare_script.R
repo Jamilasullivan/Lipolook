@@ -254,7 +254,7 @@ for (name in raw_data_names) {
   df <- get(name)
   df <- cbind(groups, df)
   assign(name, df)
-} 
+} # only run once!!
 
 for (name in raw_data_names) {
   lipid_family <- make.names(sub("^raw_data_", "", name))
@@ -269,7 +269,6 @@ for (name in raw_data_names) {
   cat("Saving raw data for:", name, "\n")
   df <- get(name)
   write.csv(df, file = file.path(folder_path, paste0(lipid_family, "_raw_data.csv")), row.names = FALSE)
-  
 }
 
 ################################################################################
