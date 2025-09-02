@@ -80,13 +80,18 @@ if(!dir.exists("outputs/error_files")){
 ################################################################################
 
 raw_data <- read.csv(raw_data_file_name, header = T)
-metadata <- raw_data[ , grep("^X", names(raw_data))]
-colnames(metadata) <- as.character(unlist(metadata[1, ]))
-metadata <- metadata[-1,]
+
+raw_data_lipids <- raw_data
+duplicated_columns <- duplicated(as.list(raw_data_lipids))
+any(duplicated_columns)
+duplicated_column_names <- names(raw_data_lipids)[duplicated_columns]
+print(duplicated_column_names)
+duplicated_column_names <- data.frame(duplicated_columns = duplicated_column_names)
+write.csv(duplicated_column_names, "outputs/error_files/duplicated_columns.csv", row.names = FALSE)
+
+metadata <- raw_data[ , !(grepl("\\.$", names(raw_data)) | names(raw_data) == "Cholesterol")]
 groups <- metadata[,"Group"]
-raw_data <- raw_data[ , !grepl("^X", names(raw_data))]
-concentration <- raw_data[1,1]
-raw_data <- raw_data[-1,]
+raw_data <- raw_data[ , grepl("\\.$", names(raw_data)) | names(raw_data) == "Cholesterol"]
 str(raw_data)
 raw_data[] <- lapply(raw_data, function(x) as.numeric(as.character(x)))
 str(raw_data)
@@ -96,13 +101,7 @@ sum(is.na(raw_data[,ncol(raw_data)]))
 ######################### 6. RAW DATA MANIPULATION #############################
 ################################################################################
 
-raw_data_lipids <- raw_data
-duplicated_columns <- duplicated(as.list(raw_data_lipids))
-any(duplicated_columns)
-duplicated_column_names <- names(raw_data_lipids)[duplicated_columns]
-print(duplicated_column_names)
-duplicated_column_names <- data.frame(duplicated_columns = duplicated_column_names)
-write.csv(duplicated_column_names, "outputs/error_files/duplicated_columns.csv", row.names = FALSE)
+
 
 ################################################################################
 ####################### 7. LIPIDS TESTED MANIPULATION ##########################
