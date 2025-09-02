@@ -505,7 +505,7 @@ for (category in unique_categories) {
   counter <- counter + 1
 }
 
-#### FOREST PLOTS ##############################################################
+#### FOREST PLOTS (ABSOLUTE DIFFERENCE FROM MEAN) ##############################
 
 top_level_dir <- file.path("outputs", "lipid_categories")
 counter <- 1
@@ -568,7 +568,96 @@ for (category in names(category_dfs)) {
   if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
 
   ggsave(
-    filename = file.path(folder_path, paste0(category, "_forest_plot.png")),
+    filename = file.path(folder_path, paste0(category, "_absolute_change_forest_plot.png")),
+    plot = plot,
+    width = 6,
+    height = 8
+  )
+  
+  message("Saved forest plot for category: ", category)
+  counter <- counter + 1
+}
+
+#### FOREST PLOTS (LOG2 FOLD CHANGE DIFFERENCE FROM MEAN) ######################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+counter <- 1
+total_categories <- length(category_dfs)  # category_dfs from previous step
+
+for (category in names(category_dfs)) {
+  message("Processing category ", counter, " of ", total_categories, ": ", category)
+  
+  # Get category data frame
+  df_category <- category_dfs[[category]]  # must have 'group' and 'total'
+  
+  # Ensure numeric
+  df_category$total <- as.numeric(df_category$total)
+  
+  # Compute summary per group
+  summary_df <- df_category %>%
+    group_by(group) %>%
+    summarize(
+      mean_total = mean(total, na.rm = TRUE),
+      sd_total = sd(total, na.rm = TRUE),
+      n = n(),
+      se_total = sd_total / sqrt(n),
+      .groups = "drop"
+    )
+  
+  # Skip if control group is missing
+  if (!control_group %in% summary_df$group) {
+    message("Control group not found for category ", category, " — skipping plot")
+    counter <- counter + 1
+    next
+  }
+  
+  # Compute fold change relative to control
+  control_mean <- summary_df$mean_total[summary_df$group == control_group]
+  summary_df <- summary_df %>%
+    mutate(
+      fold_change = mean_total / control_mean,
+      log2_fold_change = log2(fold_change)
+    )
+  
+  # Exclude control group from plotting
+  plot_df <- summary_df %>% filter(group != control_group)
+  
+  if (nrow(plot_df) == 0) {
+    message("No groups to plot for category ", category, " — skipping plot")
+    counter <- counter + 1
+    next
+  }
+  
+  # Determine symmetric x-axis limits using SEs from plot_df only
+  max_abs_log2 <- max(
+    abs(plot_df$log2_fold_change + (plot_df$se_total / (control_mean * log(2)))),
+    abs(plot_df$log2_fold_change - (plot_df$se_total / (control_mean * log(2)))),
+    na.rm = TRUE
+  )
+  
+  # Forest plot using log2 fold change
+  plot <- ggplot(plot_df, aes(y = group, x = log2_fold_change)) +
+    geom_point(size = 3, color = "#990101") +
+    geom_errorbarh(aes(
+      xmin = log2_fold_change - (se_total / (control_mean * log(2))),
+      xmax = log2_fold_change + (se_total / (control_mean * log(2)))
+    ), height = 0.1, color = "#990101") +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "#747373") +
+    labs(
+      title = paste("Category-level Forest Plot (log2 fold change):", category),
+      x = "Log2 Fold Change from Control",
+      y = "Group"
+    ) +
+    theme_bw() +
+    coord_cartesian(xlim = c(-max_abs_log2, max_abs_log2))
+  
+  # Create category folder if it doesn't exist
+  folder_path <- file.path(top_level_dir, category)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  # Save the forest plot
+  ggsave(
+    filename = file.path(folder_path, paste0(category, "_log2_change_forest_plot.png")),
     plot = plot,
     width = 6,
     height = 8
