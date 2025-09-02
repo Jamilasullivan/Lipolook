@@ -371,13 +371,10 @@ counter <- 1
 total_families <- length(raw_data_names)
 
 for (name in raw_data_names) {
-  
-  # Determine lipid family
   lipid_family <- sub("^raw_data_", "", name)
   message("Processing family ", counter, " of ", total_families, ": ", lipid_family)
-  
-  # Determine category folder
   category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
   if (is.na(category) || length(category) == 0) {
     message("No category found for family: ", lipid_family)
     counter <- counter + 1
@@ -387,7 +384,6 @@ for (name in raw_data_names) {
   folder_path <- file.path(top_level_dir, category, lipid_family)
   if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
   
-  # Get total data frame
   total_name <- paste0("total_", lipid_family)
   if (!exists(total_name)) {
     message("No total data frame found for: ", lipid_family)
@@ -398,10 +394,8 @@ for (name in raw_data_names) {
   df_total <- get(total_name)  # must have columns: group, total
   group_col <- "group"
   
-  # Ensure numeric
   df_total$total <- as.numeric(df_total$total)
   
-  # Compute summary per group
   summary_df <- df_total %>%
     group_by(.data[[group_col]]) %>%
     summarize(
@@ -412,26 +406,21 @@ for (name in raw_data_names) {
       .groups = "drop"
     )
   
-  # Check control group exists
   if (!control_group %in% summary_df[[group_col]]) {
     message("Control group not found for ", lipid_family, " — skipping plot")
     counter <- counter + 1
     next
   }
   
-  # Compute difference from control
   control_mean <- summary_df$mean_total[summary_df[[group_col]] == control_group]
   summary_df <- summary_df %>%
     mutate(diff_from_control = mean_total - control_mean)
-  
-  # Exclude control from plotted points
+
   plot_df <- summary_df %>% filter(.data[[group_col]] != control_group)
-  
-  # Determine symmetric x-axis limits around 0
+
   max_diff <- max(abs(plot_df$diff_from_control + plot_df$se_total), 
                   abs(plot_df$diff_from_control - plot_df$se_total), na.rm = TRUE)
-  
-  # Traditional forest plot with 0 central
+
   plot <- ggplot(plot_df, aes(y = .data[[group_col]], x = diff_from_control)) +
     geom_point(size = 3, color = "#990101") +
     geom_errorbarh(aes(
@@ -447,7 +436,6 @@ for (name in raw_data_names) {
     theme_bw() +
     coord_cartesian(xlim = c(-max_diff, max_diff))
   
-  # Save plot
   ggsave(
     filename = file.path(folder_path, paste0(lipid_family, "_forest_plot.png")),
     plot = plot,
@@ -458,7 +446,6 @@ for (name in raw_data_names) {
   message("Saved forest plot for: ", lipid_family)
   counter <- counter + 1
 }
-
 
 ################################################################################
 ################ 15. FOREST PLOTS - GROUPS WITHIN A CATEGORY ###################
@@ -471,15 +458,12 @@ unique_categories <- unique(category_mapping$Category_clean)
 counter <- 1
 total_categories <- length(unique_categories)
 
-category_dfs <- list()  # store category data frames
+category_dfs <- list()  
 
 for (category in unique_categories) {
   message("Processing category ", counter, " of ", total_categories, ": ", category)
-  
-  # Get families in this category
   families_in_cat <- category_mapping$Family_clean[category_mapping$Category_clean == category]
   
-  # Collect total data frames for these families
   family_dfs <- list()
   for (family in families_in_cat) {
     total_name <- paste0("total_", family)
@@ -494,33 +478,25 @@ for (category in unique_categories) {
     next
   }
   
-  # Extract only total columns
   totals_only <- lapply(family_dfs, function(df) df$total)
   
-  # Combine totals into a data frame
   if (length(totals_only) == 1) {
-    # Only one family -> just use it as a column
     category_df <- data.frame(
       group = family_dfs[[1]]$group
     )
     category_df[[paste0("total_", names(family_dfs))]] <- totals_only[[1]]
     
-    # Total column is same as that family's total
     category_df$total <- totals_only[[1]]
     
   } else {
-    # Multiple families -> cbind
     category_df <- data.frame(
       group = family_dfs[[1]]$group,
       do.call(cbind, totals_only)
     )
     names(category_df)[-1] <- paste0("total_", names(family_dfs))
-    
-    # Sum across families
     category_df$total <- rowSums(category_df[,-1], na.rm = TRUE)
   }
   
-  # Assign to environment
   assign(paste0("category_", category), category_df)
   category_dfs[[category]] <- category_df
   
@@ -533,18 +509,15 @@ for (category in unique_categories) {
 
 top_level_dir <- file.path("outputs", "lipid_categories")
 counter <- 1
-total_categories <- length(category_dfs)  # from previous step
+total_categories <- length(category_dfs)
 
 for (category in names(category_dfs)) {
   message("Processing category ", counter, " of ", total_categories, ": ", category)
   
-  # Get the category data frame
-  df_category <- category_dfs[[category]]  # must have 'group' and 'total'
+  df_category <- category_dfs[[category]]
   
-  # Ensure numeric
   df_category$total <- as.numeric(df_category$total)
   
-  # Compute summary per group
   summary_df <- df_category %>%
     group_by(group) %>%
     summarize(
@@ -555,19 +528,16 @@ for (category in names(category_dfs)) {
       .groups = "drop"
     )
   
-  # Check control group exists
   if (!control_group %in% summary_df$group) {
     message("Control group not found for category ", category, " — skipping plot")
     counter <- counter + 1
     next
   }
   
-  # Compute difference from control
   control_mean <- summary_df$mean_total[summary_df$group == control_group]
   summary_df <- summary_df %>%
     mutate(diff_from_control = mean_total - control_mean)
-  
-  # Exclude control from plotted points
+
   plot_df <- summary_df %>% filter(group != control_group)
   
   if (nrow(plot_df) == 0) {
@@ -575,12 +545,10 @@ for (category in names(category_dfs)) {
     counter <- counter + 1
     next
   }
-  
-  # Determine symmetric x-axis limits around 0
+
   max_diff <- max(abs(plot_df$diff_from_control + plot_df$se_total), 
                   abs(plot_df$diff_from_control - plot_df$se_total), na.rm = TRUE)
-  
-  # Forest plot
+
   plot <- ggplot(plot_df, aes(y = group, x = diff_from_control)) +
     geom_point(size = 3, color = "#990101") +
     geom_errorbarh(aes(
@@ -595,12 +563,10 @@ for (category in names(category_dfs)) {
     ) +
     theme_bw() +
     coord_cartesian(xlim = c(-max_diff, max_diff))
-  
-  # Create folder if it doesn't exist
+
   folder_path <- file.path(top_level_dir, category)
   if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
-  
-  # Save plot
+
   ggsave(
     filename = file.path(folder_path, paste0(category, "_forest_plot.png")),
     plot = plot,
