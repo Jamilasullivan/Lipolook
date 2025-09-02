@@ -91,17 +91,11 @@ write.csv(duplicated_column_names, "outputs/error_files/duplicated_columns.csv",
 
 metadata <- raw_data[ , !(grepl("\\.$", names(raw_data)) | names(raw_data) == "Cholesterol")]
 groups <- metadata[,"Group"]
-raw_data <- raw_data[ , grepl("\\.$", names(raw_data)) | names(raw_data) == "Cholesterol"]
-str(raw_data)
-raw_data[] <- lapply(raw_data, function(x) as.numeric(as.character(x)))
-str(raw_data)
-sum(is.na(raw_data[,ncol(raw_data)]))
-
-################################################################################
-######################### 6. RAW DATA MANIPULATION #############################
-################################################################################
-
-
+raw_data_lipids <- raw_data[ , grepl("\\.$", names(raw_data)) | names(raw_data) == "Cholesterol"]
+str(raw_data_lipids)
+raw_data_lipids[] <- lapply(raw_data_lipids, function(x) as.numeric(as.character(x)))
+str(raw_data_lipids)
+sum(is.na(raw_data_lipids[,ncol(raw_data_lipids)]))
 
 ################################################################################
 ####################### 7. LIPIDS TESTED MANIPULATION ##########################
