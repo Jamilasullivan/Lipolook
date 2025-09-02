@@ -1,33 +1,35 @@
-Family,Category
-Acyl-carnitine,fatty_acyls
-Cardiolipins,glycerophospholipids
-Ceramides,sphingolipids
-Chol_CEs,sterol_lipids
-CPEs,sphingolipids
-Diacyl-glycerols,glycerolipids
-Ether-PC,glycerophospholipids
-Ether-PE,glycerophospholipids
-Free fatty acids,fatty_acyls
-GB Gangliosides,sphingolipids
-GD Gangliosides,sphingolipids
-GM Gangliosides,sphingolipids
-Hexosyl-ceramides,sphingolipids
-Lactosyl-ceramides,sphingolipids
-Lysophosphatidyl-cholines,glycerophospholipids
-LPEs,glycerophospholipids
-Lysophosphatidyl-inositols,glycerophospholipids
-Platelet-activating factor,glycerophospholipids
-Monoacyl-glycerols,glycerolipids
-Monogalacto-diacylglycerols,glycerolipids
-Mono-lysocardiolipins,glycerophospholipids
-Phosphatidic acid,glycerophospholipids
-Phosphatidy-cholines,glycerophospholipids
-Phosphatidy-ethanolamines,glycerophospholipids
-Phosphatidyl-glycerols,glycerophospholipids
-Phosphatidyl-inositiols,glycerophospholipids
-Phosphatidyl-serines,glycerophospholipids
-Sulfatides,sphingolipids
-Sphingosine 1 phosphate,sphingolipids
-Sphingomyelines,sphingolipids
-Sphingosine,sphingolipids
-Triacyl-glycerols,glycerolipids
+"Family"
+"Acyl_carnitine"
+"Cardiolipins"
+"Ceramide_phospho_ethanolamines"
+"Ceramides"
+"Cholesterol_cholesteryl_esters"
+"Diacyl_glycerols"
+"Digalacto_diacylglycerols"
+"Ether_PC"
+"Ether_PE"
+"Free_fatty_acids"
+"GB_Gangliosides"
+"GD_Gangliosides"
+"GM_Gangliosides"
+"Hexosyl_ceramides"
+"Hexosyl_sphingosine"
+"Lactosyl_ceramides"
+"Lysophosphatidy_ethanolamines"
+"Lysophosphatidyl_cholines"
+"Lysophosphatidyl_inositols"
+"Mono_lysocardiolipins"
+"Monoacyl_glycerols"
+"Monogalacto_diacylglycerols"
+"Phosphatidic_acid"
+"Phosphatidy_cholines"
+"Phosphatidy_ethanolamines"
+"Phosphatidyl_glycerols"
+"Phosphatidyl_inositiols"
+"Phosphatidyl_serines"
+"Platelet_activating_factor"
+"Sphingomyelines"
+"Sphingosine"
+"Sphingosine_1_phosphate"
+"Sulfatides"
+"Triacyl_glycerols"
