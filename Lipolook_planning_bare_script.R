@@ -364,7 +364,7 @@ for (name in raw_data_names) {
   counter <- counter + 1
 }
 
-##### FOREST PLOTS #############################################################
+##### FOREST PLOTS (ABSOLUTE DIFFERENCE) #######################################
 
 top_level_dir <- file.path("outputs", "lipid_categories")
 counter <- 1
@@ -444,6 +444,100 @@ for (name in raw_data_names) {
   )
   
   message("Saved forest plot for: ", lipid_family)
+  counter <- counter + 1
+}
+
+#### FOREST PLOTS (LOG2 FOLD CHANGE) ###########################################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+counter <- 1
+total_families <- length(raw_data_names)
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  message("Processing family ", counter, " of ", total_families, ": ", lipid_family)
+  
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    counter <- counter + 1
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  total_name <- paste0("total_", lipid_family)
+  if (!exists(total_name)) {
+    message("No total data frame found for: ", lipid_family)
+    counter <- counter + 1
+    next
+  }
+  
+  df_total <- get(total_name)  # must have columns: group, total
+  df_total$total <- as.numeric(df_total$total)
+  group_col <- "group"
+  
+  # Summary per group
+  summary_df <- df_total %>%
+    group_by(.data[[group_col]]) %>%
+    summarize(
+      mean_total = mean(total, na.rm = TRUE),
+      sd_total = sd(total, na.rm = TRUE),
+      n = n(),
+      se_total = sd_total / sqrt(n),
+      .groups = "drop"
+    )
+  
+  # Skip if control group not present
+  if (!control_group %in% summary_df[[group_col]]) {
+    message("Control group not found for ", lipid_family, " — skipping plot")
+    counter <- counter + 1
+    next
+  }
+  
+  # Compute log2 fold change relative to control
+  control_mean <- summary_df$mean_total[summary_df[[group_col]] == control_group]
+  summary_df <- summary_df %>%
+    mutate(
+      fold_change = mean_total / control_mean,
+      log2_fold_change = log2(fold_change),
+      log2_se = se_total / (control_mean * log(2))  # approximate SE on log2 scale
+    )
+  
+  # Exclude control group from plotting
+  plot_df <- summary_df %>% filter(.data[[group_col]] != control_group)
+  
+  # Determine symmetric x-axis limits
+  max_abs_log2 <- max(abs(plot_df$log2_fold_change + plot_df$log2_se),
+                      abs(plot_df$log2_fold_change - plot_df$log2_se),
+                      na.rm = TRUE)
+  
+  # Forest plot
+  plot <- ggplot(plot_df, aes(y = .data[[group_col]], x = log2_fold_change)) +
+    geom_point(size = 3, color = "#05016F") +
+    geom_errorbarh(aes(
+      xmin = log2_fold_change - log2_se,
+      xmax = log2_fold_change + log2_se
+    ), height = 0.1, color = "#05016F") +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "#747373") +
+    labs(
+      title = paste("Forest plot (log2 fold change vs Control):", lipid_family),
+      x = "Log2 Fold Change from Control",
+      y = "Group"
+    ) +
+    theme_bw() +
+    coord_cartesian(xlim = c(-max_abs_log2, max_abs_log2))
+  
+  # Save plot
+  ggsave(
+    filename = file.path(folder_path, paste0(lipid_family, "_log2_fold_change_forest_plot.png")),
+    plot = plot,
+    width = 6,
+    height = 8
+  )
+  
+  message("Saved log2 fold change forest plot for: ", lipid_family)
   counter <- counter + 1
 }
 
