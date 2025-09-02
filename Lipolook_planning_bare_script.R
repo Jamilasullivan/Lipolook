@@ -117,12 +117,12 @@ lipids_tested$lipid <- make.names(lipids_tested$lipid)
 ########################## WAS NO RESULTANT DATA FOR ###########################
 ################################################################################
 
-raw_data_columns <- colnames(raw_data_lipids[2:ncol(raw_data_lipids)])
+raw_data_columns <- colnames(raw_data_lipids[ncol(raw_data_lipids)])
 lipids <- lipids_tested$lipid
 unmatched_cols <- setdiff(raw_data_columns, lipids)
 number_unmatched <- length(unmatched_cols)
 unmatched_cols <- data.frame(Unmatched_columns = unmatched_cols)
-write.csv(unmatched_cols, "outputs/error_files/unmatched_columns.csv", row.names = FALSE)
+write.csv(unmatched_cols, "outputs/error_files/unmatched_columns.csv", row.names = FALSE) # this should be empty because the mismatched columns now end up in the metadata object
 
 ################################################################################
 ####################### 9. SUBSET DATA BY LIPID FAMILY #########################
@@ -187,7 +187,7 @@ raw_data_LPEs <- raw_data_Lysophosphatidy_ethanolamines
 rm(raw_data_Lysophosphatidy_ethanolamines)
 
 raw_data_names <- c(raw_data_names, c("raw_data_CPEs", "raw_data_Chol_CEs", "raw_data_LPEs"))
-raw_data_names <- raw_data_names[!raw_data_names %in% c("raw_data_Ceramide_phospho_ethanolamines", "raw_data_Cholesterol_cholesteryl_esters", "raw_data_Lysophosphatidy_ethanolamines")]
+raw_data_names <- raw_data_names[!raw_data_names %in% c("raw_data_Ceramide_phospho_ethanolamines", "raw_data_Cholesterol_cholesteryl_esters", "raw_data_Lysophosphatidy_ethanolamines")] # this section of code is redundant for the results and this should be considered going forwards. The input should be standardized before being given to the client to save this problem in the future.
 
 raw_data_names <- raw_data_names[raw_data_names != "raw_data_lipids"]
 raw_data_names
@@ -196,7 +196,13 @@ raw_data_names
 ######### 10. CREATING FOLDERS FOR ALL LIPID FAMILIES AND CATEGORIES ###########
 ################################################################################
 
-category_mapping <- read.csv("lipid_categories_1.csv", stringsAsFactors = FALSE)
+write.csv(
+  data.frame(Family = names(lipid_families)),
+  "lipid_categories_1.csv",
+  row.names = FALSE
+) ## THIS NEEDS TO BE FILLED IN BY THE CLIENT AND SAVED AS 'complete_lipid_categories.csv'
+
+category_mapping <- read.csv("complete_lipid_categories.csv", stringsAsFactors = FALSE)
 
 category_mapping$Family_clean   <- sanitize_name(category_mapping$Family)
 category_mapping$Category_clean <- sanitize_name(category_mapping$Category)
