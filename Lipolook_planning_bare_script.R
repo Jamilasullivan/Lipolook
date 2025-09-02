@@ -529,62 +529,88 @@ for (category in unique_categories) {
   counter <- counter + 1
 }
 
+#### FOREST PLOTS ##############################################################
 
+top_level_dir <- file.path("outputs", "lipid_categories")
+counter <- 1
+total_categories <- length(category_dfs)  # from previous step
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+for (category in names(category_dfs)) {
+  message("Processing category ", counter, " of ", total_categories, ": ", category)
+  
+  # Get the category data frame
+  df_category <- category_dfs[[category]]  # must have 'group' and 'total'
+  
+  # Ensure numeric
+  df_category$total <- as.numeric(df_category$total)
+  
+  # Compute summary per group
+  summary_df <- df_category %>%
+    group_by(group) %>%
+    summarize(
+      mean_total = mean(total, na.rm = TRUE),
+      sd_total = sd(total, na.rm = TRUE),
+      n = n(),
+      se_total = sd_total / sqrt(n),
+      .groups = "drop"
+    )
+  
+  # Check control group exists
+  if (!control_group %in% summary_df$group) {
+    message("Control group not found for category ", category, " — skipping plot")
+    counter <- counter + 1
+    next
+  }
+  
+  # Compute difference from control
+  control_mean <- summary_df$mean_total[summary_df$group == control_group]
+  summary_df <- summary_df %>%
+    mutate(diff_from_control = mean_total - control_mean)
+  
+  # Exclude control from plotted points
+  plot_df <- summary_df %>% filter(group != control_group)
+  
+  if (nrow(plot_df) == 0) {
+    message("No groups to plot for category ", category, " — skipping plot")
+    counter <- counter + 1
+    next
+  }
+  
+  # Determine symmetric x-axis limits around 0
+  max_diff <- max(abs(plot_df$diff_from_control + plot_df$se_total), 
+                  abs(plot_df$diff_from_control - plot_df$se_total), na.rm = TRUE)
+  
+  # Forest plot
+  plot <- ggplot(plot_df, aes(y = group, x = diff_from_control)) +
+    geom_point(size = 3, color = "#990101") +
+    geom_errorbarh(aes(
+      xmin = diff_from_control - se_total,
+      xmax = diff_from_control + se_total
+    ), height = 0.1, color = "#990101") +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "#747373") +
+    labs(
+      title = paste("Forest plot (relative to Control):", category),
+      x = "Difference from Control (sum of lipids)",
+      y = "Group"
+    ) +
+    theme_bw() +
+    coord_cartesian(xlim = c(-max_diff, max_diff))
+  
+  # Create folder if it doesn't exist
+  folder_path <- file.path(top_level_dir, category)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  # Save plot
+  ggsave(
+    filename = file.path(folder_path, paste0(category, "_forest_plot.png")),
+    plot = plot,
+    width = 6,
+    height = 8
+  )
+  
+  message("Saved forest plot for category: ", category)
+  counter <- counter + 1
+}
 
 ################################################################################
 ############### 14. NORMALITY OUTPUT FOR ALL SAMPLES COMBINED ##################
