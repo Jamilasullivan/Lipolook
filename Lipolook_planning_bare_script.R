@@ -464,13 +464,14 @@ for (name in raw_data_names) {
 ################ 15. FOREST PLOTS - GROUPS WITHIN A CATEGORY ###################
 ################################################################################
 
+#### SAVING TOTALS FOR EACH CATEGORY ###########################################
+
 top_level_dir <- file.path("outputs", "lipid_categories")
 unique_categories <- unique(category_mapping$Category_clean)
 counter <- 1
 total_categories <- length(unique_categories)
 
-# List to store all category data frames in the environment
-category_dfs <- list()
+category_dfs <- list()  # store category data frames
 
 for (category in unique_categories) {
   message("Processing category ", counter, " of ", total_categories, ": ", category)
@@ -493,31 +494,40 @@ for (category in unique_categories) {
     next
   }
   
-  # Extract only total columns and combine
+  # Extract only total columns
   totals_only <- lapply(family_dfs, function(df) df$total)
-  category_df <- data.frame(
-    group = family_dfs[[1]]$group,
-    do.call(cbind, totals_only)
-  )
   
-  # Rename columns to include family names
-  names(category_df)[-1] <- paste0("total_", names(family_dfs))
+  # Combine totals into a data frame
+  if (length(totals_only) == 1) {
+    # Only one family -> just use it as a column
+    category_df <- data.frame(
+      group = family_dfs[[1]]$group
+    )
+    category_df[[paste0("total_", names(family_dfs))]] <- totals_only[[1]]
+    
+    # Total column is same as that family's total
+    category_df$total <- totals_only[[1]]
+    
+  } else {
+    # Multiple families -> cbind
+    category_df <- data.frame(
+      group = family_dfs[[1]]$group,
+      do.call(cbind, totals_only)
+    )
+    names(category_df)[-1] <- paste0("total_", names(family_dfs))
+    
+    # Sum across families
+    category_df$total <- rowSums(category_df[,-1], na.rm = TRUE)
+  }
   
   # Assign to environment
   assign(paste0("category_", category), category_df)
   category_dfs[[category]] <- category_df
   
-  message("Category data frame created with ", nrow(category_df), " rows and ", ncol(category_df), " columns")
+  message("Category data frame created with ", nrow(category_df), " rows and ", ncol(category_df), " columns (including total column)")
   
   counter <- counter + 1
 }
-
-
-
-
-
-
-
 
 
 
