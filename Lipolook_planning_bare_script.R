@@ -1207,7 +1207,8 @@ for (name in raw_data_names) {
 }
 
 ################################################################################
-############### 20. KRUSKAL-WALLIS H TEST - >2 INDEPENDENT GROUPS ##############
+############### 20. KRUSKAL-WALLIS H TEST (>2 INDEPENDENT GROUPS) ##############
+########################## AND DUNN'S POST HOC TEST ############################
 ################################################################################
 
 top_level_dir <- file.path("outputs", "lipid_categories")
@@ -1240,6 +1241,15 @@ for (name in raw_data_names) {
     stringsAsFactors = FALSE
   )
   
+  dunn_results_all <- data.frame(
+    lipid = character(),
+    comparison = character(),
+    p_value = numeric(),
+    p_value_adj = numeric(),
+    significance = character(),
+    stringsAsFactors = FALSE
+  )
+  
   for (i in seq_along(lipid_columns)) {
     lipid <- lipid_columns[i]
     
@@ -1250,91 +1260,21 @@ for (name in raw_data_names) {
     if (length(unique(df_subset[[group_col]])) > 1) {
       test_res <- kruskal.test(df_subset[[lipid]] ~ df_subset[[group_col]])
       kw_results$p_value[i] <- test_res$p.value
-    }
-  }
-  
-  # adjust p-values
-  kw_results$p_value_adj <- p.adjust(kw_results$p_value, method = adjustment_method)
-  
-  # assign significance stars
-  kw_results$significance <- sapply(kw_results$p_value_adj, function(p) {
-    if (is.na(p)) {
-      "not significant"
-    } else if (p < 0.001) {
-      "***"
-    } else if (p < 0.01) {
-      "**"
-    } else if (p < 0.05) {
-      "*"
-    } else {
-      "not significant"
-    }
-  })
-  
-  write.csv(
-    kw_results, 
-    file = file.path(folder_path, paste0(lipid_family, "_kruskalwallis.csv")), 
-    row.names = FALSE
-  )
-  
-  message(count, ". Kruskal–Wallis results saved for family: ", lipid_family)
-  count <- count + 1
-}
-
-################################################################################
-######################## 21. DUNN'S TEST - POST HOC ############################
-################################################################################
-
-top_level_dir <- file.path("outputs", "lipid_categories")
-count <- 1  # counter for families
-
-for (name in raw_data_names) {
-  lipid_family <- sub("^raw_data_", "", name)
-  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
-  
-  if (is.na(category) || length(category) == 0) {
-    message(count, ". Skipping (no category): ", lipid_family)
-    count <- count + 1
-    next
-  }
-  
-  folder_path <- file.path(top_level_dir, category, lipid_family)
-  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
-  
-  df <- get(name)
-  lipid_columns <- names(df)[-1]   # exclude 'groups' column
-  group_col <- names(df)[1]
-  
-  for (i in seq_along(lipid_columns)) {
-    lipid <- lipid_columns[i]
-    df_subset <- df[!is.na(df[[lipid]]), c(group_col, lipid)]
-    
-    # Skip lipids with all identical values
-    if (length(unique(df_subset[[lipid]])) <= 1) {
-      message("Skipping lipid ", lipid, " (all values identical)")
-      next
-    }
-    
-    # Count non-NA observations per group
-    group_counts <- table(df_subset[[group_col]])
-    
-    # Only run Dunn if at least 2 groups have ≥1 value
-    if (sum(group_counts > 0) >= 2) {
-      # Run Dunn quietly
-      dunn_res <- suppressMessages(
-        dunn.test(df_subset[[lipid]], df_subset[[group_col]], method = "bonferroni", alpha = 0.05, altp = TRUE)
-      )
       
-      # Only create results if valid
-      if (!is.null(dunn_res$comparisons) && length(dunn_res$comparisons) > 0 &&
-          !is.null(dunn_res$P) && length(dunn_res$P) == length(dunn_res$comparisons) &&
-          !is.null(dunn_res$P.adjusted) && length(dunn_res$P.adjusted) == length(dunn_res$comparisons)) {
+      # Run Dunn's test if Kruskal-Wallis p < 0.05
+      if (test_res$p.value < 0.05) {
+        # Run Dunn's test
+        dunn_res <- dunn.test(df_subset[[lipid]], g = df_subset[[group_col]], method = "none", kw = FALSE, altp = FALSE)
         
-        results_df <- data.frame(
-          comparison = dunn_res$comparisons,
-          p_value = dunn_res$P,
-          p_value_adj = dunn_res$P.adjusted,
-          significance = sapply(dunn_res$P.adjusted, function(p) {
+        if (length(dunn_res$P) > 0) {
+          # manually create pairwise comparison names
+          group_levels <- unique(df_subset[[group_col]])
+          comparisons <- combn(group_levels, 2, FUN = function(x) paste(x[1], "vs", x[2]))
+          
+          pvals <- dunn_res$P
+          pvals_adj <- p.adjust(pvals, method = adjustment_method)
+          
+          significance <- sapply(pvals_adj, function(p) {
             if (is.na(p)) {
               "not significant"
             } else if (p < 0.001) {
@@ -1346,27 +1286,83 @@ for (name in raw_data_names) {
             } else {
               "not significant"
             }
-          }),
-          stringsAsFactors = FALSE
-        )
-        
-        write.csv(
-          results_df,
-          file = file.path(folder_path, paste0(lipid_family, "_", lipid, "_dunn.csv")),
-          row.names = FALSE
-        )
-      } else {
-        message("Skipping lipid ", lipid, " (Dunn test returned no valid comparisons)")
+          })
+          
+          dunn_results_all <- rbind(dunn_results_all,
+                                    data.frame(
+                                      lipid = lipid,
+                                      comparison = comparisons,
+                                      p_value = pvals,
+                                      p_value_adj = pvals_adj,
+                                      significance = significance,
+                                      stringsAsFactors = FALSE
+                                    ))
+        }
       }
-      
-    } else {
-      message("Skipping lipid ", lipid, " (less than 2 groups with data)")
     }
   }
+  # write Kruskal-Wallis results
+  write.csv(
+    kw_results, 
+    file = file.path(folder_path, paste0(lipid_family, "_kruskalwallis.csv")), 
+    row.names = FALSE
+  )
   
-  message(count, ". Dunn's post hoc results saved for family: ", lipid_family)
+  # write Dunn test results if any
+  if (nrow(dunn_results_all) > 0) {
+    write.csv(
+      dunn_results_all, 
+      file = file.path(folder_path, paste0(lipid_family, "_dunn.csv")), 
+      row.names = FALSE
+    )
+  }
+  
+  message(count, ". Kruskal–Wallis (+Dunn if significant) results saved for family: ", lipid_family)
   count <- count + 1
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ################################################################################
 #################### 20. SPEARMAN'S RHO - CORRELATION ##########################
