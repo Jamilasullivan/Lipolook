@@ -98,7 +98,7 @@ str(raw_data_lipids)
 sum(is.na(raw_data_lipids[,ncol(raw_data_lipids)]))
 
 ################################################################################
-####################### 7. LIPIDS TESTED MANIPULATION ##########################
+####################### 6. LIPIDS TESTED MANIPULATION ##########################
 ################################################################################
 
 lipids_tested <- read.csv(lipids_tested_file_name, header = T)
@@ -112,7 +112,7 @@ lipids_tested <- lipids_tested[!(is.na(lipids_tested$lipid) | lipids_tested$lipi
 lipids_tested$lipid <- make.names(lipids_tested$lipid)
 
 ################################################################################
-###################### 8. CHECKING FOR MISMATCHED COLUMNS ######################
+###################### 7. CHECKING FOR MISMATCHED COLUMNS ######################
 ######################## I.E. COLUMNS TESTED THAT THERE ########################
 ########################## WAS NO RESULTANT DATA FOR ###########################
 ################################################################################
@@ -125,7 +125,7 @@ unmatched_cols <- data.frame(Unmatched_columns = unmatched_cols)
 write.csv(unmatched_cols, "outputs/error_files/unmatched_columns.csv", row.names = FALSE) # this should be empty because the mismatched columns now end up in the metadata object
 
 ################################################################################
-####################### 9. SUBSET DATA BY LIPID FAMILY #########################
+####################### 8. SUBSET DATA BY LIPID FAMILY #########################
 ################################################################################
 
 sanitize_name <- function(x) {
@@ -193,7 +193,7 @@ raw_data_names <- raw_data_names[raw_data_names != "raw_data_lipids"]
 raw_data_names
 
 ################################################################################
-######### 10. CREATING FOLDERS FOR ALL LIPID FAMILIES AND CATEGORIES ###########
+######### 9. CREATING FOLDERS FOR ALL LIPID FAMILIES AND CATEGORIES ############
 ################################################################################
 
 write.csv(
@@ -244,7 +244,7 @@ for (name in raw_data_names) {
 ################################################################################
 
 ################################################################################
-###################### 11. ADDING GROUPS BACK TO DFS ###########################
+###################### 10. ADDING GROUPS BACK TO DFS ###########################
 ################################################################################
 
 for (name in raw_data_names) {
@@ -270,7 +270,7 @@ for (name in raw_data_names) {
 }
 
 ################################################################################
-###################### 12. CALCULATING GROUP AVERGAGES #########################
+###################### 11. CALCULATING GROUP AVERGAGES #########################
 ################################################################################
 
 top_level_dir <- file.path("outputs", "lipid_categories")
@@ -292,7 +292,7 @@ for (name in raw_data_names) {
 }
 
 ################################################################################
-####################### 13. HISTOGRAMS FOR NORMALITY ###########################
+####################### 12. HISTOGRAMS FOR NORMALITY ###########################
 ################################################################################
 
 top_level_dir <- file.path("outputs", "lipid_categories")
@@ -328,7 +328,7 @@ for (name in raw_data_names) {
 }
 
 ################################################################################
-################# 14. FOREST PLOTS - GROUPS WITHIN A FAMILIY ###################
+################# 13. FOREST PLOTS - GROUPS WITHIN A FAMILIY ###################
 ################################################################################
 
 #### SAVING TOTALS FOR EACH FAMILY #############################################
@@ -541,7 +541,7 @@ for (name in raw_data_names) {
 }
 
 ################################################################################
-################ 15. FOREST PLOTS - GROUPS WITHIN A CATEGORY ###################
+################ 14. FOREST PLOTS - GROUPS WITHIN A CATEGORY ###################
 ################################################################################
 
 #### SAVING TOTALS FOR EACH CATEGORY ###########################################
@@ -761,7 +761,7 @@ for (category in names(category_dfs)) {
 }
 
 ################################################################################
-############### 14. NORMALITY OUTPUT FOR ALL SAMPLES COMBINED ##################
+############### 15. NORMALITY OUTPUT FOR ALL SAMPLES COMBINED ##################
 ################################################################################
 
 ## across all samples for each lipid ###########################################
@@ -842,7 +842,7 @@ distribution_counts_df
 write.csv(distribution_counts_df, file = file.path(top_level_dir,"..","total_lipids", "combined_lipid_normality_summary.csv"), row.names = FALSE)
 
 ################################################################################
-################# 15. NORMALITY OUTPUT FOR INDIVIDUAL GROUPS ###################
+################# 16. NORMALITY OUTPUT FOR INDIVIDUAL GROUPS ###################
 ################################################################################
 
 top_level_dir <- file.path("outputs", "lipid_categories")
@@ -948,7 +948,7 @@ for (cat in names(counts)) {
 }
 
 ################################################################################
-##### 16. LOG TRANSFORMATION AND NORMALITY OUTPUTS FOR ALL SAMPLES COMBINED ####
+##### 17. LOG TRANSFORMATION AND NORMALITY OUTPUTS FOR ALL SAMPLES COMBINED ####
 ################################################################################
 
 ## For all lipids combined #####################################################
@@ -1011,7 +1011,7 @@ for (name in raw_data_names) {
 }
 
 ################################################################################
-###### 17. LOG TRANSFORMATION AND NORMALITY OUTPUTS FOR INDIVIDUAL GROUPS ######
+###### 18. LOG TRANSFORMATION AND NORMALITY OUTPUTS FOR INDIVIDUAL GROUPS ######
 ################################################################################
 
 top_level_dir <- file.path("outputs", "lipid_categories")
@@ -1122,7 +1122,7 @@ for (cat in names(counts)) {
 }
 
 ################################################################################
-############### 18. MANN-WHITNEY U TEST - TWO INDEPENDENT GROUPS ###############
+############### 19. MANN-WHITNEY U TEST - TWO INDEPENDENT GROUPS ###############
 ################################################################################
 
 top_level_dir <- file.path("outputs", "lipid_categories")
@@ -1207,7 +1207,7 @@ for (name in raw_data_names) {
 }
 
 ################################################################################
-############### 19. KRUSKAL-WALLIS H TEST - >2 INDEPENDENT GROUPS ##############
+############### 20. KRUSKAL-WALLIS H TEST - >2 INDEPENDENT GROUPS ##############
 ################################################################################
 
 top_level_dir <- file.path("outputs", "lipid_categories")
@@ -1282,7 +1282,7 @@ for (name in raw_data_names) {
 }
 
 ################################################################################
-######################## 12. DUNN'S TEST - POST HOC ############################
+######################## 21. DUNN'S TEST - POST HOC ############################
 ################################################################################
 
 top_level_dir <- file.path("outputs", "lipid_categories")
