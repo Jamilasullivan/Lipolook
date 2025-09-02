@@ -464,7 +464,53 @@ for (name in raw_data_names) {
 ################ 15. FOREST PLOTS - GROUPS WITHIN A CATEGORY ###################
 ################################################################################
 
+top_level_dir <- file.path("outputs", "lipid_categories")
+unique_categories <- unique(category_mapping$Category_clean)
+counter <- 1
+total_categories <- length(unique_categories)
 
+# List to store all category data frames in the environment
+category_dfs <- list()
+
+for (category in unique_categories) {
+  message("Processing category ", counter, " of ", total_categories, ": ", category)
+  
+  # Get families in this category
+  families_in_cat <- category_mapping$Family_clean[category_mapping$Category_clean == category]
+  
+  # Collect total data frames for these families
+  family_dfs <- list()
+  for (family in families_in_cat) {
+    total_name <- paste0("total_", family)
+    if (exists(total_name)) {
+      family_dfs[[family]] <- get(total_name)
+    }
+  }
+  
+  if (length(family_dfs) == 0) {
+    message("No family data found for category: ", category)
+    counter <- counter + 1
+    next
+  }
+  
+  # Extract only total columns and combine
+  totals_only <- lapply(family_dfs, function(df) df$total)
+  category_df <- data.frame(
+    group = family_dfs[[1]]$group,
+    do.call(cbind, totals_only)
+  )
+  
+  # Rename columns to include family names
+  names(category_df)[-1] <- paste0("total_", names(family_dfs))
+  
+  # Assign to environment
+  assign(paste0("category_", category), category_df)
+  category_dfs[[category]] <- category_df
+  
+  message("Category data frame created with ", nrow(category_df), " rows and ", ncol(category_df), " columns")
+  
+  counter <- counter + 1
+}
 
 
 
