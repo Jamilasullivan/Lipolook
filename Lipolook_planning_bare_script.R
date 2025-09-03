@@ -45,6 +45,9 @@ library(ggplot2)
 library(stats)
 library(dunn.test)
 
+install.packages("corrplot")  
+library(corrplot)
+
 ################################################################################
 ######################## 3. SETTING WORK DIRECTOTY #############################
 ################################################################################
@@ -1323,6 +1326,58 @@ for (name in raw_data_names) {
 }
 
 ################################################################################
+########################## SPEARMAN CORRELATION TEST ###########################
+################################################################################
+
+#### FOR ALL LIPIDS COMBINED ###################################################
+
+cor_mat <- cor(raw_data_lipids, use = "pairwise.complete.obs", method = "spearman")
+
+range(cor_mat, na.rm = TRUE)
+
+output_folder <- "outputs/total_lipids"
+if (!dir.exists(output_folder)) dir.create(output_folder, recursive = TRUE)
+
+csv_file <- file.path(output_folder, "lipid_spearman_correlation.csv")
+write.csv(cor_mat, file = csv_file, row.names = TRUE)
+
+message("Spearman correlation CSV saved to: ", csv_file)
+
+#### FOR EACH LIPID CATEGORY ###################################################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+if (!dir.exists(top_level_dir)) dir.create(top_level_dir, recursive = TRUE)
+
+count <- 1
+
+for (category in unique(category_mapping$Category_clean)) {
+
+  families_in_cat <- category_mapping$Family_clean[category_mapping$Category_clean == category]
+
+  lipid_species <- unlist(lapply(families_in_cat, function(fam) {
+    lipid_families[[fam]] 
+  }))
+
+  lipid_species <- lipid_species[lipid_species %in% colnames(cor_mat)]
+  
+  if (length(lipid_species) < 2) {
+    message("Not enough lipids for category ", category, " — skipping")
+    next
+  }
+
+  cor_sub <- cor_mat[lipid_species, lipid_species]
+  
+  folder_path <- file.path(top_level_dir, category)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  csv_file <- file.path(folder_path, paste0(category, "_spearman_correlation.csv"))
+  write.csv(cor_sub, file = csv_file, row.names = TRUE)
+  
+  message(count, ". Saved Spearman correlation CSV for category: ", category)
+  count <- count + 1
+}
+
+################################################################################
 ############################ EXTRA VISUALISATIONS ##############################
 ################################################################################
 
@@ -1407,125 +1462,165 @@ ggsave(file.path(top_level_dir, "..", "total_lipids/category_log_averages.png"),
        plot = cat_avg_log,
        width = 10, height = 6, dpi = 300)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ################################################################################
-#################### 20. SPEARMAN'S RHO - CORRELATION ##########################
+################### CORRELATION MATRIX FOR EACH CATEGORY #######################
 ################################################################################
 
+category_folders <- list.dirs(top_level_dir, recursive = FALSE)
+
+for (category_folder in category_folders) {
+  
+  csv_file <- list.files(category_folder, pattern = "_spearman_correlation\\.csv$", full.names = TRUE)
+  
+  if (length(csv_file) == 0) {
+    message("No CSV found in folder: ", category_folder, " — skipping")
+    next
+  }
+  
+  cor_mat <- as.matrix(read.csv(csv_file, row.names = 1, check.names = FALSE))
+  
+  if (ncol(cor_mat) < 2) {
+    message("Not enough lipids in correlation matrix for folder: ", category_folder, " — skipping")
+    next
+  }
+  
+  heatmap_file <- file.path(category_folder, paste0(basename(category_folder), "_correlation_heatmap.png"))
+
+  png(filename = heatmap_file, width = 3000, height = 3000, res = 300)
+  
+  pheatmap(
+    cor_mat,
+    color = colorRampPalette(c("blue", "white", "red"))(200),
+    cluster_rows = TRUE,
+    cluster_cols = TRUE,
+    show_rownames = TRUE,
+    show_colnames = TRUE,
+    main = paste("Spearman Correlation:", basename(category_folder))
+  )
+  
+  dev.off()
+  message("Saved heatmap for category: ", basename(category_folder))
+}
+
+#### FOR ALL LIPIDS COMBINED ###################################################
+
+cor_mat <- cor(raw_data_lipids, use = "pairwise.complete.obs", method = "spearman")
+
+write.csv(cor_mat, file = "outputs/total_lipids/complete_lipid_correlation.csv", row.names = TRUE)
+
+range(cor_mat, na.rm = TRUE)
+
+col_palette <- colorRampPalette(c("blue", "white", "red"))(200)
+
+png("outputs/total_lipids/complete_lipid_correlation_heatmap.png",
+    width = 4000, height = 4000, res = 300)
+
+corrplot(
+  cor_mat,
+  method = "color",        
+  type = "upper",          
+  order = "hclust",        
+  tl.cex = 0.4,            
+  tl.col = "black",
+  addCoef.col = NA,        
+  col = col_palette,       
+  na.label = " ",          
+  cl.pos = "r"             
+)
+
+dev.off()
 
 
-################################################################################
-##################### 21. KENDALL'S TAU - CORRELATION ##########################
-################################################################################
 
 
 
-################################################################################
-####################### 22. GENERALISED LINEAR MODEL ###########################
-################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
