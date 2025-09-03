@@ -70,7 +70,7 @@ top_level_dir <- file.path("outputs", "lipid_categories")
 counter <- 1
 total_categories <- length(category_dfs)
 
-plots_list <- list()  
+plots_list <- list() 
 
 for (category in names(category_dfs)) {
   message("Processing category ", counter, " of ", total_categories, ": ", category)
