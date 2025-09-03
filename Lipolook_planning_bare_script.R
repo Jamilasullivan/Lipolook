@@ -16,7 +16,7 @@ adjustment_method <- "fdr" # options are "holm" = Holm–Bonferroni
                         #             "BY" = Benjamini–Yekutieli
                         #             "none" = No adjustment
 
-groups <- ## what is the current name of your column containing groupings in raw data?
+groups <- "Group" ## what is the current name of your column containing groupings in raw data?
   
 control_group <- "E" ## the name of your control group in your raw data file. what is your control group called?
   
@@ -37,6 +37,7 @@ for (pkg in packages) {
 lapply(packages, library, character.only = TRUE)
 if (!require(dunn.test)) install.packages("dunn.test")
 
+library(rmarkdown)
 library(moments)
 library(tidyr)
 library(dplyr)
@@ -1321,6 +1322,153 @@ for (name in raw_data_names) {
   count <- count + 1
 }
 
+################################################################################
+############################ EXTRA VISUALISATIONS ##############################
+################################################################################
+
+################################################################################
+####################### AVERAGES BAR CHART FOR CATEGORIES ######################
+################################################################################
+
+#### GETTING AVERAGES PER CATEGORY #############################################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+all_objs <- ls()
+
+pattern_end <- paste0(category_mapping$Category_clean, collapse = "|")
+
+lipid_categories <- grep(paste0("^category_.*(", pattern_end, ")$"), 
+                      all_objs, 
+                      value = TRUE)
+
+all_avg <- data.frame() 
+
+for (name in lipid_categories) {
+  
+  df <- get(name)
+  cat_total <- df[, c(1, ncol(df))]
+  colnames(cat_total) <- c("group", "total")
+  cat_avg <- aggregate(total ~ group, data = cat_total, FUN = mean)
+  cat_avg$category <- name
+  all_avg <- rbind(all_avg, cat_avg)
+}
+
+all_avg$category <- factor(all_avg$category)
+all_avg$group <- factor(all_avg$group)
+
+category_colors <- c(
+  "category_fatty_acyls" = "#D56401",
+  "category_glycerolipids" = "#7F0101",
+  "category_glycerophospholipids" = "#017B7F",
+  "category_sphingolipids" = "#057F01",
+  "category_sterol_lipids" = "#7F0163"
+)
+
+cat_avg <- ggplot(all_avg, aes(x = group, y = total, fill = category)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  labs(title = "Average by Group Across Lipid Categories",
+       x = "Group",
+       y = "Average Value") +
+  theme_classic() +
+  scale_fill_manual(values = category_colors)
+
+ggsave(file.path(top_level_dir, "..", "total_lipids/category_averages.png"),
+       plot = cat_avg,
+       width = 10, height = 6, dpi = 300)
+
+#### SAME BUT LOG TRANSFORMED ##################################################
+
+all_avg <- data.frame()  
+
+for (name in lipid_categories) {
+  
+  df <- get(name)
+  cat_total <- df[, c(1, ncol(df))]
+  colnames(cat_total) <- c("group", "total")
+  cat_total$total <- log10(cat_total$total + 1e-6)
+  cat_avg <- aggregate(total ~ group, data = cat_total, FUN = mean)
+  cat_avg$category <- name
+  all_avg <- rbind(all_avg, cat_avg)
+}
+
+all_avg$category <- factor(all_avg$category)
+all_avg$group <- factor(all_avg$group)
+
+cat_avg_log <- ggplot(all_avg, aes(x = group, y = total, fill = category)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  labs(title = "Average by Group Across Lipid Categories",
+       x = "Group",
+       y = "Average Value") +
+  theme_classic() +
+  scale_fill_manual(values = category_colors)
+
+ggsave(file.path(top_level_dir, "..", "total_lipids/category_log_averages.png"),
+       plot = cat_avg_log,
+       width = 10, height = 6, dpi = 300)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1388,9 +1536,11 @@ for (name in raw_data_names) {
 
 
 
+################################################################################
+############################## HTML RESULTS ####################################
+################################################################################
 
-
-
+render("Lipolook_results_summary.Rmd")
 
 
 
