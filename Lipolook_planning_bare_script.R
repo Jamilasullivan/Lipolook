@@ -47,6 +47,7 @@ library(dunn.test)
 
 install.packages("corrplot")  
 library(corrplot)
+library(pheatmap)
 
 ################################################################################
 ######################## 3. SETTING WORK DIRECTOTY #############################
@@ -1508,27 +1509,25 @@ cor_mat <- cor(raw_data_lipids, use = "pairwise.complete.obs", method = "spearma
 
 write.csv(cor_mat, file = "outputs/total_lipids/complete_lipid_correlation.csv", row.names = TRUE)
 
-range(cor_mat, na.rm = TRUE)
+print(range(cor_mat, na.rm = TRUE))
 
 col_palette <- colorRampPalette(c("blue", "white", "red"))(200)
 
 png("outputs/total_lipids/complete_lipid_correlation_heatmap.png",
     width = 4000, height = 4000, res = 300)
 
-corrplot(
+pheatmap(
   cor_mat,
-  method = "color",        
-  type = "upper",          
-  order = "hclust",        
-  tl.cex = 0.4,            
-  tl.col = "black",
-  addCoef.col = NA,        
-  col = col_palette,       
-  na.label = " ",          
-  cl.pos = "r"             
+  color = col_palette,
+  cluster_rows = TRUE,
+  cluster_cols = TRUE,
+  show_rownames = TRUE,
+  show_colnames = TRUE,
+  main = "Complete Spearman Correlation (All Lipids)"
 )
 
 dev.off()
+
 
 
 
