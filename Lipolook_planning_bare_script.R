@@ -1241,9 +1241,11 @@ for (name in raw_data_names) {
 ############### 20. KRUSKAL-WALLIS H TEST (>2 INDEPENDENT GROUPS) ##############
 ########################## AND DUNN'S POST HOC TEST ############################
 ################################################################################
-
 top_level_dir <- file.path("outputs", "lipid_categories")
 count <- 1  # counter for families
+
+# Prepare a list to store KW results per category
+kw_category_list <- list()
 
 for (name in raw_data_names) {
   lipid_family <- sub("^raw_data_", "", name)
@@ -1271,101 +1273,61 @@ for (name in raw_data_names) {
     stringsAsFactors = FALSE
   )
   
-  dunn_results_all <- data.frame(
-    lipid = character(),
-    comparison = character(),
-    p_value = numeric(),
-    p_value_adj = numeric(),
-    significance = character(),
-    stringsAsFactors = FALSE
-  )
-  
   for (i in seq_along(lipid_columns)) {
     lipid <- lipid_columns[i]
     
-    # remove NA values
     df_subset <- df[!is.na(df[[lipid]]), c(group_col, lipid)]
     
-    # must have at least 2 groups with >=3 observations
     if (length(unique(df_subset[[group_col]])) > 1 &&
         all(table(df_subset[[group_col]]) >= 3) &&
         length(unique(df_subset[[lipid]])) > 1) {
       
-      # Kruskal–Wallis
       test_res <- kruskal.test(df_subset[[lipid]] ~ df_subset[[group_col]])
       kw_results$p_value[i] <- test_res$p.value
-      
-      # Run Dunn’s test only if KW is significant
-      if (test_res$p.value < 0.05) {
-        dunn_res <- dunn.test(df_subset[[lipid]], g = df_subset[[group_col]], method = "none", kw = FALSE)
-        
-        if (length(dunn_res$P) > 0) {
-          comparisons <- dunn_res$comparisons
-          pvals <- dunn_res$P
-          pvals_adj <- p.adjust(pvals, method = adjustment_method)
-          
-          significance <- sapply(pvals_adj, function(p) {
-            if (is.na(p)) {
-              "not significant"
-            } else if (p < 0.001) {
-              "***"
-            } else if (p < 0.01) {
-              "**"
-            } else if (p < 0.05) {
-              "*"
-            } else {
-              "not significant"
-            }
-          })
-          
-          dunn_results_all <- rbind(
-            dunn_results_all,
-            data.frame(
-              lipid = lipid,
-              comparison = comparisons,
-              p_value = pvals,
-              p_value_adj = pvals_adj,
-              significance = significance,
-              stringsAsFactors = FALSE
-            )
-          )
-        }
-      }
     }
   }
   
-  # Adjust KW p-values across all lipids in this family
+  # Adjust KW p-values for the family
   kw_results$p_value_adj <- p.adjust(kw_results$p_value, method = adjustment_method)
-  kw_results$significance <- sapply(kw_results$p_value_adj, function(p) {
-    if (is.na(p)) {
-      "not significant"
-    } else if (p < 0.001) {
-      "***"
-    } else if (p < 0.01) {
-      "**"
-    } else if (p < 0.05) {
-      "*"
-    } else {
-      "not significant"
-    }
-  })
+  get_significance <- function(p) {
+    if (is.na(p)) return("not significant")
+    if (p < 0.001) return("***")
+    if (p < 0.01) return("**")
+    if (p < 0.05) return("*")
+    return("not significant")
+  }
+  kw_results$significance <- sapply(kw_results$p_value_adj, get_significance)
   
-  # write Kruskal–Wallis results
+  # Save family-level results
   write.csv(
     kw_results, 
     file = file.path(folder_path, paste0(lipid_family, "_kruskalwallis.csv")), 
     row.names = FALSE
   )
   
-  # write Dunn results (even if empty)
+  # Store KW results in category list
+  kw_results$family <- lipid_family  # add family info
+  if (!category %in% names(kw_category_list)) {
+    kw_category_list[[category]] <- kw_results
+  } else {
+    kw_category_list[[category]] <- rbind(kw_category_list[[category]], kw_results)
+  }
+  
+  message(count, ". Kruskal–Wallis results saved for family: ", lipid_family)
+  count <- count + 1
+}
+
+# Save combined category-level KW results
+for (cat_name in names(kw_category_list)) {
+  cat_folder <- file.path(top_level_dir, cat_name)
+  if (!dir.exists(cat_folder)) dir.create(cat_folder, recursive = TRUE)
+  
   write.csv(
-    dunn_results_all, 
-    file = file.path(folder_path, paste0(lipid_family, "_dunn.csv")), 
+    kw_category_list[[cat_name]],
+    file = file.path(cat_folder, paste0(cat_name, "_kruskalwallis_combined.csv")),
     row.names = FALSE
   )
-  
-  message(count, ". Kruskal–Wallis (+Dunn if significant) results saved for family: ", lipid_family)
-  count <- count + 1
+  message("Combined Kruskal–Wallis results saved for category: ", cat_name)
 }
 
 ################################################################################
@@ -1577,6 +1539,10 @@ pheatmap(
 )
 
 dev.off()
+
+################################################################################
+##################### KRUSKAL-WALLIS AND DUNN'S RESULTS ########################
+################################################################################
 
 
 
