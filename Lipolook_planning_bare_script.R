@@ -181,15 +181,12 @@ raw_data_names <- Filter(function(x) {
 #1
 raw_data_CPEs <- raw_data_Ceramide_phospho_ethanolamines
 rm(raw_data_Ceramide_phospho_ethanolamines)
-#2
-raw_data_Chol_CEs <- raw_data_Cholesterol_cholesteryl_esters
-rm(raw_data_Cholesterol_cholesteryl_esters)
 #3
 raw_data_LPEs <- raw_data_Lysophosphatidy_ethanolamines
 rm(raw_data_Lysophosphatidy_ethanolamines)
 
-raw_data_names <- c(raw_data_names, c("raw_data_CPEs", "raw_data_Chol_CEs", "raw_data_LPEs"))
-raw_data_names <- raw_data_names[!raw_data_names %in% c("raw_data_Ceramide_phospho_ethanolamines", "raw_data_Cholesterol_cholesteryl_esters", "raw_data_Lysophosphatidy_ethanolamines")] # this section of code is redundant for the results and this should be considered going forwards. The input should be standardized before being given to the client to save this problem in the future.
+raw_data_names <- c(raw_data_names, c("raw_data_CPEs", "raw_data_LPEs"))
+raw_data_names <- raw_data_names[!raw_data_names %in% c("raw_data_Ceramide_phospho_ethanolamines", "raw_data_Lysophosphatidy_ethanolamines")] # this section of code is redundant for the results and this should be considered going forwards. The input should be standardized before being given to the client to save this problem in the future.
 
 raw_data_names <- raw_data_names[raw_data_names != "raw_data_lipids"]
 raw_data_names
@@ -1272,11 +1269,11 @@ for (name in raw_data_names) {
   lipid_columns <- names(df)[-1]   # exclude 'groups' column
   group_col <- names(df)[1]
   
-  # Family-level results
+  # Family-level results (KW)
   kw_results <- data.frame(
     family = lipid_family,
     lipid = lipid_columns,
-    p_value = NA,
+    p_value_raw = NA,
     p_value_adj = NA,
     significance = NA,
     stringsAsFactors = FALSE
@@ -1286,7 +1283,7 @@ for (name in raw_data_names) {
     family = character(),
     lipid = character(),
     comparison = character(),
-    p_value = numeric(),
+    p_value_raw = numeric(),
     p_value_adj = numeric(),
     significance = character(),
     stringsAsFactors = FALSE
@@ -1298,18 +1295,41 @@ for (name in raw_data_names) {
     df_subset <- df[!is.na(df[[lipid]]), c(group_col, lipid)]
     
     if (length(unique(df_subset[[group_col]])) > 1) {
+      # Kruskal–Wallis test
       test_res <- kruskal.test(df_subset[[lipid]] ~ df_subset[[group_col]])
-      kw_results$p_value[i] <- test_res$p.value
+      kw_results$p_value_raw[i] <- test_res$p.value
+      kw_results$p_value_adj[i] <- p.adjust(test_res$p.value, method = "fdr")
       
+      # Significance for KW
+      if (!is.na(kw_results$p_value_adj[i])) {
+        if (kw_results$p_value_adj[i] < 0.001) {
+          kw_results$significance[i] <- "***"
+        } else if (kw_results$p_value_adj[i] < 0.01) {
+          kw_results$significance[i] <- "**"
+        } else if (kw_results$p_value_adj[i] < 0.05) {
+          kw_results$significance[i] <- "*"
+        } else {
+          kw_results$significance[i] <- "not significant"
+        }
+      }
+      
+      # Run Dunn’s test only if KW raw p < 0.05
       if (test_res$p.value < 0.05) {
-        dunn_res <- dunn.test(df_subset[[lipid]], g = df_subset[[group_col]], method = "none", kw = FALSE, altp = FALSE)
+        dunn_res <- dunn.test(df_subset[[lipid]], g = df_subset[[group_col]],
+                              method = "none", kw = FALSE, altp = FALSE)
         
-        if (length(dunn_res$P) > 0) {
+        # Pick correct slot for raw p-values
+        if (!is.null(dunn_res$P.unadj)) {
+          pvals_raw <- dunn_res$P.unadj
+        } else {
+          pvals_raw <- dunn_res$P
+        }
+        
+        if (length(pvals_raw) > 0) {
           group_levels <- unique(df_subset[[group_col]])
           comparisons <- combn(group_levels, 2, FUN = function(x) paste(x[1], "vs", x[2]))
           
-          pvals <- dunn_res$P
-          pvals_adj <- p.adjust(pvals, method = adjustment_method)
+          pvals_adj <- p.adjust(pvals_raw, method = "fdr")
           
           significance <- sapply(pvals_adj, function(p) {
             if (is.na(p)) {
@@ -1330,7 +1350,7 @@ for (name in raw_data_names) {
                                       family = lipid_family,
                                       lipid = lipid,
                                       comparison = comparisons,
-                                      p_value = pvals,
+                                      p_value_raw = pvals_raw,
                                       p_value_adj = pvals_adj,
                                       significance = significance,
                                       stringsAsFactors = FALSE
@@ -1355,7 +1375,7 @@ for (name in raw_data_names) {
   kw_category_list[[category]] <- rbind(kw_category_list[[category]], kw_results)
   dunn_category_list[[category]] <- rbind(dunn_category_list[[category]], dunn_results_all)
   
-  message(count, ". Kruskal–Wallis (+Dunn if significant) results saved for family: ", lipid_family)
+  message(count, ". Kruskal–Wallis (+Dunn if KW significant) results saved for family: ", lipid_family)
   count <- count + 1
 }
 
@@ -1403,20 +1423,20 @@ if (!dir.exists(top_level_dir)) dir.create(top_level_dir, recursive = TRUE)
 count <- 1
 
 for (category in unique(category_mapping$Category_clean)) {
-
+  
   families_in_cat <- category_mapping$Family_clean[category_mapping$Category_clean == category]
-
+  
   lipid_species <- unlist(lapply(families_in_cat, function(fam) {
     lipid_families[[fam]] 
   }))
-
+  
   lipid_species <- lipid_species[lipid_species %in% colnames(cor_mat)]
   
   if (length(lipid_species) < 2) {
     message("Not enough lipids for category ", category, " — skipping")
     next
   }
-
+  
   cor_sub <- cor_mat[lipid_species, lipid_species]
   
   folder_path <- file.path(top_level_dir, category)
