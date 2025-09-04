@@ -1247,11 +1247,12 @@ for (name in raw_data_names) {
 ################################################################################
 
 top_level_dir <- file.path("outputs", "lipid_categories")
-count <- 1  # counter for families
 
-# Prepare lists to store KW and Dunn results per category
+# Initialize lists to hold results per category
 kw_category_list <- list()
 dunn_category_list <- list()
+
+count <- 1  # counter for families
 
 for (name in raw_data_names) {
   lipid_family <- sub("^raw_data_", "", name)
@@ -1263,15 +1264,17 @@ for (name in raw_data_names) {
     next
   }
   
+  # Create family folder
   folder_path <- file.path(top_level_dir, category, lipid_family)
   if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
   
   df <- get(name)
-  lipid_columns <- names(df)[-1]   # exclude 'group' column
+  lipid_columns <- names(df)[-1]   # exclude 'groups' column
   group_col <- names(df)[1]
   
-  # Initialize results
+  # Family-level results
   kw_results <- data.frame(
+    family = lipid_family,
     lipid = lipid_columns,
     p_value = NA,
     p_value_adj = NA,
@@ -1280,6 +1283,7 @@ for (name in raw_data_names) {
   )
   
   dunn_results_all <- data.frame(
+    family = character(),
     lipid = character(),
     comparison = character(),
     p_value = numeric(),
@@ -1288,95 +1292,90 @@ for (name in raw_data_names) {
     stringsAsFactors = FALSE
   )
   
-  get_significance <- function(p) {
-    if (is.na(p)) return("not significant")
-    if (p < 0.001) return("***")
-    if (p < 0.01) return("**")
-    if (p < 0.05) return("*")
-    return("not significant")
-  }
-  
-  # Loop over lipids
   for (i in seq_along(lipid_columns)) {
     lipid <- lipid_columns[i]
+    
     df_subset <- df[!is.na(df[[lipid]]), c(group_col, lipid)]
     
-    if (length(unique(df_subset[[group_col]])) > 1 &&
-        all(table(df_subset[[group_col]]) >= 3) &&
-        length(unique(df_subset[[lipid]])) > 1) {
-      
-      # Kruskal–Wallis
+    if (length(unique(df_subset[[group_col]])) > 1) {
       test_res <- kruskal.test(df_subset[[lipid]] ~ df_subset[[group_col]])
       kw_results$p_value[i] <- test_res$p.value
       
-      # Dunn test if significant
       if (test_res$p.value < 0.05) {
-        dunn_res <- dunn.test(df_subset[[lipid]], g = df_subset[[group_col]], method = "none", kw = FALSE)
+        dunn_res <- dunn.test(df_subset[[lipid]], g = df_subset[[group_col]], method = "none", kw = FALSE, altp = FALSE)
+        
         if (length(dunn_res$P) > 0) {
-          pvals <- dunn_res$P
-          comparisons <- dunn_res$comparisons
-          pvals_adj <- p.adjust(pvals, method = adjustment_method)
-          significance <- sapply(pvals_adj, get_significance)
+          group_levels <- unique(df_subset[[group_col]])
+          comparisons <- combn(group_levels, 2, FUN = function(x) paste(x[1], "vs", x[2]))
           
-          dunn_results_all <- rbind(
-            dunn_results_all,
-            data.frame(
-              lipid = lipid,
-              comparison = comparisons,
-              p_value = pvals,
-              p_value_adj = pvals_adj,
-              significance = significance,
-              stringsAsFactors = FALSE
-            )
-          )
+          pvals <- dunn_res$P
+          pvals_adj <- p.adjust(pvals, method = adjustment_method)
+          
+          significance <- sapply(pvals_adj, function(p) {
+            if (is.na(p)) {
+              "not significant"
+            } else if (p < 0.001) {
+              "***"
+            } else if (p < 0.01) {
+              "**"
+            } else if (p < 0.05) {
+              "*"
+            } else {
+              "not significant"
+            }
+          })
+          
+          dunn_results_all <- rbind(dunn_results_all,
+                                    data.frame(
+                                      family = lipid_family,
+                                      lipid = lipid,
+                                      comparison = comparisons,
+                                      p_value = pvals,
+                                      p_value_adj = pvals_adj,
+                                      significance = significance,
+                                      stringsAsFactors = FALSE
+                                    ))
         }
       }
     }
   }
   
-  # Adjust KW p-values for family
-  kw_results$p_value_adj <- p.adjust(kw_results$p_value, method = adjustment_method)
-  kw_results$significance <- sapply(kw_results$p_value_adj, get_significance)
-  
   # Save family-level results
-  write.csv(kw_results, file = file.path(folder_path, paste0(lipid_family, "_kruskalwallis.csv")), row.names = FALSE)
-  write.csv(dunn_results_all, file = file.path(folder_path, paste0(lipid_family, "_dunn.csv")), row.names = FALSE)
+  write.csv(kw_results,
+            file = file.path(folder_path, paste0(lipid_family, "_kruskalwallis.csv")),
+            row.names = FALSE)
   
-  # Add family info for category aggregation
-  kw_results$family <- lipid_family
-  dunn_results_all$family <- lipid_family
-  
-  # Append to category lists
-  if (!category %in% names(kw_category_list)) {
-    kw_category_list[[category]] <- kw_results
-    dunn_category_list[[category]] <- dunn_results_all
-  } else {
-    kw_category_list[[category]] <- rbind(kw_category_list[[category]], kw_results)
-    dunn_category_list[[category]] <- rbind(dunn_category_list[[category]], dunn_results_all)
+  if (nrow(dunn_results_all) > 0) {
+    write.csv(dunn_results_all,
+              file = file.path(folder_path, paste0(lipid_family, "_dunn.csv")),
+              row.names = FALSE)
   }
   
-  message(count, ". KW + Dunn results saved for family: ", lipid_family)
+  # Append to category-level lists
+  kw_category_list[[category]] <- rbind(kw_category_list[[category]], kw_results)
+  dunn_category_list[[category]] <- rbind(dunn_category_list[[category]], dunn_results_all)
+  
+  message(count, ". Kruskal–Wallis (+Dunn if significant) results saved for family: ", lipid_family)
   count <- count + 1
 }
 
 # Save combined category-level results
-for (cat_name in names(kw_category_list)) {
-  cat_folder <- file.path(top_level_dir, cat_name)
-  if (!dir.exists(cat_folder)) dir.create(cat_folder, recursive = TRUE)
+for (category in names(kw_category_list)) {
+  folder_path <- file.path(top_level_dir, category)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
   
-  # Combined KW
-  write.csv(kw_category_list[[cat_name]],
-            file = file.path(cat_folder, paste0(cat_name, "_kruskalwallis_combined.csv")),
+  write.csv(kw_category_list[[category]],
+            file = file.path(folder_path, paste0(category, "_kruskalwallis.csv")),
             row.names = FALSE)
   
-  # Combined Dunn
-  write.csv(dunn_category_list[[cat_name]],
-            file = file.path(cat_folder, paste0(cat_name, "_dunn_combined.csv")),
-            row.names = FALSE)
+  if (nrow(dunn_category_list[[category]]) > 0) {
+    write.csv(dunn_category_list[[category]],
+              file = file.path(folder_path, paste0(category, "_dunn.csv")),
+              row.names = FALSE)
+  }
   
-  message("Combined KW + Dunn results saved for category: ", cat_name)
+  message("Saved combined results for category: ", category)
 }
-
 
 ################################################################################
 ########################## SPEARMAN CORRELATION TEST ###########################
@@ -1537,7 +1536,6 @@ for (category_folder in category_folders) {
     next
   }
   
-  # Reorder rows/cols alphabetically
   ord <- order(colnames(cor_mat))
   cor_mat <- cor_mat[ord, ord]
   
@@ -1563,7 +1561,6 @@ for (category_folder in category_folders) {
 
 cor_mat <- cor(raw_data_lipids, use = "pairwise.complete.obs", method = "spearman")
 
-# Alphabetical order for complete matrix
 ord <- order(colnames(cor_mat))
 cor_mat <- cor_mat[ord, ord]
 
@@ -1579,8 +1576,8 @@ png("outputs/total_lipids/complete_lipid_correlation_heatmap.png",
 pheatmap(
   cor_mat,
   color = col_palette,
-  cluster_rows = FALSE,   # alphabetical
-  cluster_cols = FALSE,   # alphabetical
+  cluster_rows = FALSE,   
+  cluster_cols = FALSE,   
   show_rownames = TRUE,
   show_colnames = TRUE,
   main = "Complete Spearman Correlation (All Lipids)"
@@ -1589,7 +1586,7 @@ pheatmap(
 dev.off()
 
 ################################################################################
-##################### KRUSKAL-WALLIS AND DUNN'S RESULTS ########################
+########################## KRUSKAL-WALLIS RESULTS ##############################
 ################################################################################
 
 top_level_dir <- "outputs/lipid_categories"
@@ -1598,21 +1595,27 @@ categories <- list.dirs(top_level_dir, recursive = FALSE, full.names = TRUE)
 for (cat_path in categories) {
   cat_name <- basename(cat_path)
   
-  kw_file <- file.path(cat_path, paste0(cat_name, "_kruskalwallis_combined.csv"))
+  kw_file <- file.path(cat_path, paste0(cat_name, "_kruskalwallis.csv"))  
   if (!file.exists(kw_file)) next
+  
   kw_df <- read.csv(kw_file)
- 
+
+  if (!"p_value_adj" %in% names(kw_df) || all(is.na(kw_df$p_value_adj))) {
+    kw_df <- kw_df %>%
+      mutate(p_value_adj = p.adjust(p_value, method = "BH"))
+  }
+  
   kw_df <- kw_df %>%
     mutate(
       neg_log10_p = -log10(p_value_adj),
       label = ifelse(p_value_adj < 0.05, lipid, NA)  
     )
-
+  
   p <- ggplot(kw_df, aes(x = lipid, y = neg_log10_p, color = significance)) +
     geom_point(size = 3) +
     geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "black") +
     scale_color_manual(values = c("***" = "red", "**" = "orange", "*" = "blue", "not significant" = "grey")) +
-    scale_y_continuous(expand = expansion(mult = c(0.05, 0.3))) +  
+    scale_y_continuous(expand = expansion(mult = c(0.05, 0.3))) +
     labs(
       title = paste("Kruskal–Wallis Volcano Plot - Category:", cat_name),
       x = "Lipid",
@@ -1620,11 +1623,11 @@ for (cat_path in categories) {
     ) +
     theme_bw() +
     theme(
-      axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),  
+      axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
       legend.title = element_blank()
     ) +
     coord_cartesian(clip = "off")
-
+  
   if (any(!is.na(kw_df$label))) {
     p <- p + geom_text_repel(
       data = kw_df %>% filter(!is.na(label)),
@@ -1635,9 +1638,9 @@ for (cat_path in categories) {
       max.overlaps = Inf
     )
   }
-
+  
   ggsave(
-    filename = file.path(cat_path, paste0(cat_name, "_volcano_new.png")),
+    filename = file.path(cat_path, paste0(cat_name, "_volcano.png")),
     plot = p,
     width = 14,
     height = 6
@@ -1645,4 +1648,18 @@ for (cat_path in categories) {
   
   message("Volcano plot saved for category: ", cat_name)
 }
+
+################################################################################
+############################## DUNN'S RESULTS ##################################
+################################################################################
+
+
+
+
+
+
+
+
+
+
 
