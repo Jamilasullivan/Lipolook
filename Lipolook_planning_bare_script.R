@@ -26,28 +26,21 @@ glm_variables <- c("","","") ## include the names of columns with metadata to be
 ########################## 2. PACKAGES TO INSTALL ##############################
 ################################################################################
 
-packages <- c("moments", "tidyr", "dplyr", "ggplot2", "stats")
+# List all required packages
+packages <- c(
+  "moments", "tidyr", "dplyr", "ggplot2", "stats",
+  "dunn.test", "rmarkdown", "corrplot", "pheatmap"
+)
 
+# Install any that are missing
 for (pkg in packages) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
     install.packages(pkg)
   }
 }
 
+# Load them all
 lapply(packages, library, character.only = TRUE)
-if (!require(dunn.test)) install.packages("dunn.test")
-
-library(rmarkdown)
-library(moments)
-library(tidyr)
-library(dplyr)
-library(ggplot2)
-library(stats)
-library(dunn.test)
-
-install.packages("corrplot")  
-library(corrplot)
-library(pheatmap)
 
 ################################################################################
 ######################## 3. SETTING WORK DIRECTOTY #############################
@@ -1485,15 +1478,19 @@ for (category_folder in category_folders) {
     next
   }
   
+  # Reorder rows/cols alphabetically
+  ord <- order(colnames(cor_mat))
+  cor_mat <- cor_mat[ord, ord]
+  
   heatmap_file <- file.path(category_folder, paste0(basename(category_folder), "_correlation_heatmap.png"))
-
+  
   png(filename = heatmap_file, width = 3000, height = 3000, res = 300)
   
   pheatmap(
     cor_mat,
     color = colorRampPalette(c("blue", "white", "red"))(200),
-    cluster_rows = TRUE,
-    cluster_cols = TRUE,
+    cluster_rows = FALSE,   # keep alphabetical order
+    cluster_cols = FALSE,   # keep alphabetical order
     show_rownames = TRUE,
     show_colnames = TRUE,
     main = paste("Spearman Correlation:", basename(category_folder))
@@ -1507,6 +1504,10 @@ for (category_folder in category_folders) {
 
 cor_mat <- cor(raw_data_lipids, use = "pairwise.complete.obs", method = "spearman")
 
+# Alphabetical order for complete matrix
+ord <- order(colnames(cor_mat))
+cor_mat <- cor_mat[ord, ord]
+
 write.csv(cor_mat, file = "outputs/total_lipids/complete_lipid_correlation.csv", row.names = TRUE)
 
 print(range(cor_mat, na.rm = TRUE))
@@ -1519,145 +1520,14 @@ png("outputs/total_lipids/complete_lipid_correlation_heatmap.png",
 pheatmap(
   cor_mat,
   color = col_palette,
-  cluster_rows = TRUE,
-  cluster_cols = TRUE,
+  cluster_rows = FALSE,   # alphabetical
+  cluster_cols = FALSE,   # alphabetical
   show_rownames = TRUE,
   show_colnames = TRUE,
   main = "Complete Spearman Correlation (All Lipids)"
 )
 
 dev.off()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-################################################################################
-############################## HTML RESULTS ####################################
-################################################################################
-
-render("Lipolook_results_summary.Rmd")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
