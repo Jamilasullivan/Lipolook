@@ -1242,9 +1242,6 @@ for (name in raw_data_names) {
 ########################## AND DUNN'S POST HOC TEST ############################
 ################################################################################
 
-## Set your adjustment method here
-adjustment_method <- "fdr"   # options: "holm", "bonferroni", "BH", "fdr", "BY", "hochberg"
-
 top_level_dir <- file.path("outputs", "lipid_categories")
 count <- 1  # counter for families
 
