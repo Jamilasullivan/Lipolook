@@ -951,7 +951,12 @@ for (cat in names(counts)) {
 
 ## For all lipids combined #####################################################
 
+## For all lipids combined #####################################################
+
 top_level_dir <- file.path("outputs", "lipid_categories")
+
+# Store results across all families for combined summary
+all_lipids_distribution <- list()
 
 for (name in raw_data_names) {
   lipid_family <- sub("^raw_data_", "", name)
@@ -977,12 +982,10 @@ for (name in raw_data_names) {
   
   for (i in seq_along(lipid_columns)) {
     lipid <- lipid_columns[i]
+    values <- log1p(df[[lipid]])
     
-    # log-transform the values
-    values <- log1p(df[[lipid]])  
-    
-    distribution_summary$skewness[i] <- skewness(values)
-    distribution_summary$kurtosis[i] <- kurtosis(values)
+    distribution_summary$skewness[i] <- skewness(values, na.rm = TRUE)
+    distribution_summary$kurtosis[i] <- kurtosis(values, na.rm = TRUE)
     
     if (length(values) >= 3 & length(values) <= 5000) {
       shapiro_res <- shapiro.test(values)
@@ -996,9 +999,8 @@ for (name in raw_data_names) {
   
   distribution_summary$shapiro_p_adj <- p.adjust(distribution_summary$shapiro_p, method = adjustment_method)
   distribution_summary$normality <- ifelse(distribution_summary$shapiro_p_adj > 0.05, "Normal", "Non-normal")
+
   distribution_summary <- distribution_summary[, c("lipid", "skewness", "kurtosis", "shapiro_p", "shapiro_p_adj", "normality")]
-  
-  cat("Saving log-transformed distribution summary for:", name, "\n")
   
   if (!dir.exists(folder_path)) {
     dir.create(folder_path, recursive = TRUE, showWarnings = FALSE)
@@ -1006,7 +1008,28 @@ for (name in raw_data_names) {
   
   dis_csv_file <- file.path(folder_path, paste0(lipid_family, "_distribution_log.csv"))
   write.csv(distribution_summary, file = dis_csv_file, row.names = FALSE)
+  cat("Saved distribution summary for:", lipid_family, "\n")
+
+  distribution_summary$family <- lipid_family
+  distribution_summary$category <- category
+  all_lipids_distribution[[length(all_lipids_distribution) + 1]] <- distribution_summary
 }
+
+combined_summary <- bind_rows(all_lipids_distribution)
+
+combined_file <- file.path("outputs", "total_lipids", "combined_lipid_normality_log.csv")
+write.csv(combined_summary, file = combined_file, row.names = FALSE)
+
+distribution_counts <- table(combined_summary$normality)
+distribution_counts_df <- as.data.frame(distribution_counts)
+distribution_total <- sum(distribution_counts)
+distribution_counts_df$percent <- round(100 * distribution_counts_df$Freq / distribution_total, 1)
+
+summary_file <- file.path("outputs", "total_lipids", "combined_lipid_normality_summary_log.csv")
+write.csv(distribution_counts_df, file = summary_file, row.names = FALSE)
+
+cat("Combined summary saved with", distribution_total, "lipids.\n")
+print(distribution_counts_df)
 
 ################################################################################
 ###### 18. LOG TRANSFORMATION AND NORMALITY OUTPUTS FOR INDIVIDUAL GROUPS ######
