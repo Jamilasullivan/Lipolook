@@ -45,6 +45,8 @@ lapply(packages, library, character.only = TRUE)
 library(ggplot2)
 library(dplyr)
 library(ggrepel)
+library(dplyr)
+library(readr)
 
 ################################################################################
 ######################## 3. SETTING WORK DIRECTOTY #############################
@@ -1673,9 +1675,92 @@ for (cat_path in categories) {
 ############################## DUNN'S RESULTS ##################################
 ################################################################################
 
+#### COMBINIGN DUNN'S TEST RESULTS #############################################
 
+# Folder where category-level Dunn's CSVs are stored
+top_level_dir <- "outputs/lipid_categories"
+output_file <- "outputs/total_lipids/all_dunn_results_combined.csv"
 
+# Initialize list to hold all Dunn results
+all_dunn_list <- list()
 
+# Loop through category folders
+category_folders <- list.dirs(top_level_dir, recursive = FALSE)
+
+for (cat_folder in category_folders) {
+  # Get all Dunn CSVs inside this category folder (and subfolders)
+  dunn_files <- list.files(cat_folder, pattern = "_dunn\\.csv$", recursive = TRUE, full.names = TRUE)
+  
+  for (f in dunn_files) {
+    df <- read_csv(f, show_col_types = FALSE)
+    if (nrow(df) > 0) {
+      all_dunn_list[[length(all_dunn_list) + 1]] <- df
+    }
+  }
+}
+
+# Combine everything into one data frame
+all_dunn_combined <- bind_rows(all_dunn_list)
+
+# Create output folder if it doesn't exist
+if (!dir.exists("outputs/total_lipids")) dir.create("outputs/total_lipids", recursive = TRUE)
+
+# Save combined Dunn's results
+write_csv(all_dunn_combined, output_file)
+
+message("Combined Dunn's test results saved to: ", output_file)
+
+#### VISUALISATIONS ############################################################
+
+library(dplyr)
+library(tidyr)
+library(pheatmap)
+library(readr)
+
+dunn_all <- read_csv("outputs/total_lipids/all_dunn_results_combined.csv", show_col_types = FALSE)
+
+dunn_sig <- dunn_all %>%
+  filter(p_value_adj < 0.05)
+
+top_lipids <- dunn_sig %>%
+  group_by(lipid) %>%
+  summarize(min_p = min(p_value_adj, na.rm = TRUE)) %>%
+  arrange(min_p) %>%
+  slice(1:50) %>%   
+  pull(lipid)
+
+dunn_top <- dunn_sig %>%
+  filter(lipid %in% top_lipids)
+
+dunn_mat <- dunn_top %>%
+  select(lipid, comparison, p_value_adj) %>%
+  pivot_wider(names_from = comparison, values_from = p_value_adj)
+
+dunn_mat <- as.data.frame(dunn_mat)
+row.names(dunn_mat) <- dunn_mat$lipid
+dunn_mat <- dunn_mat[,-1]
+
+dunn_mat_log <- -log10(dunn_mat)
+dunn_mat_log[is.infinite(dunn_mat_log)] <- max(dunn_mat_log[is.finite(dunn_mat_log)], na.rm = TRUE) + 1
+
+control_cols <- grep("control_group", colnames(dunn_mat_log), value = TRUE)
+other_cols <- setdiff(colnames(dunn_mat_log), control_cols)
+dunn_mat_log <- dunn_mat_log[, c(control_cols, other_cols)]
+
+if (!dir.exists("outputs/total_lipids")) dir.create("outputs/total_lipids", recursive = TRUE)
+
+png("outputs/total_lipids/dunn_heatmap_top50_control_first.png",
+    width = 1200, height = 1500, res = 150)
+pheatmap(dunn_mat_log,
+         cluster_rows = TRUE,
+         cluster_cols = FALSE,
+         color = colorRampPalette(c("white", "red"))(100),
+         main = "-log10(FDR-adjusted Dunn’s p-values) (Top 50 lipids)",
+         fontsize_row = 6,
+         show_rownames = TRUE)
+dev.off()
+
+message("Heatmap saved to outputs/total_lipids/dunn_heatmap_top50_control_first.png")
 
 
 
