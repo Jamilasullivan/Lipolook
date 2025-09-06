@@ -50,6 +50,8 @@ library(readr)
 install.packages("tidyverse")
 library(tidyverse)
 library(pheatmap)
+install.packages("FSA")
+library(FSA)
 
 ################################################################################
 ######################## 3. SETTING WORK DIRECTOTY #############################
@@ -1320,50 +1322,43 @@ for (name in raw_data_names) {
       
       # Run Dunn’s test only if KW raw p < 0.05
       if (test_res$p.value < 0.05) {
-        dunn_res <- dunn.test(df_subset[[lipid]], g = df_subset[[group_col]],
-                              method = "none", kw = FALSE, altp = FALSE)
+        library(FSA)
         
-        # Pick correct slot for raw p-values
-        if (!is.null(dunn_res$P.unadj)) {
-          pvals_raw <- dunn_res$P.unadj
-        } else {
-          pvals_raw <- dunn_res$P
-        }
+        dunn_res <- dunnTest(df_subset[[lipid]] ~ df_subset[[group_col]],
+                             method = "bh")   # Benjamini–Hochberg (FDR)
         
-        if (length(pvals_raw) > 0) {
-          group_levels <- unique(df_subset[[group_col]])
-          comparisons <- combn(group_levels, 2, FUN = function(x) paste(x[1], "vs", x[2]))
-          
-          pvals_adj <- p.adjust(pvals_raw, method = "fdr")
-          
-          significance <- sapply(pvals_adj, function(p) {
-            if (is.na(p)) {
-              "not significant"
-            } else if (p < 0.001) {
-              "***"
-            } else if (p < 0.01) {
-              "**"
-            } else if (p < 0.05) {
-              "*"
-            } else {
-              "not significant"
-            }
-          })
-          
-          dunn_results_all <- rbind(dunn_results_all,
-                                    data.frame(
-                                      family = lipid_family,
-                                      lipid = lipid,
-                                      comparison = comparisons,
-                                      p_value_raw = pvals_raw,
-                                      p_value_adj = pvals_adj,
-                                      significance = significance,
-                                      stringsAsFactors = FALSE
-                                    ))
-        }
+        dunn_table <- dunn_res$res   # has Comparison, Z, P.unadj, P.adj
+        
+        significance <- sapply(dunn_table$P.adj, function(p) {
+          if (is.na(p)) {
+            "not significant"
+          } else if (p < 0.001) {
+            "***"
+          } else if (p < 0.01) {
+            "**"
+          } else if (p < 0.05) {
+            "*"
+          } else {
+            "not significant"
+          }
+        })
+        
+        dunn_results_all <- rbind(
+          dunn_results_all,
+          data.frame(
+            family      = lipid_family,
+            lipid       = lipid,
+            comparison  = dunn_table$Comparison,
+            p_value_raw = dunn_table$P.unadj,
+            p_value_adj = dunn_table$P.adj,
+            significance = significance,
+            stringsAsFactors = FALSE
+          )
+        )
       }
     }
   }
+  
   
   # Save family-level results
   write.csv(kw_results,
