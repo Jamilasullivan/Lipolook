@@ -1712,7 +1712,7 @@ message("Combined Dunn's test results saved to: ", output_file)
 
 ## global
 
-sig_summary <- all_dunn_combined %>%
+sig_summary_global <- all_dunn_combined %>%
   group_by(significance) %>%
   summarise(
     count = n(),
@@ -1723,7 +1723,7 @@ sig_summary <- all_dunn_combined %>%
   )
 
 summary_file <- "outputs/total_lipids/dunn_significance_summary_global.csv"
-write_csv(sig_summary, summary_file)
+write_csv(sig_summary_global, summary_file)
 
 message("Significance summary saved to: ", summary_file)
 
@@ -1753,3 +1753,62 @@ sig_summary_family_comparison <- all_dunn_combined %>%
   mutate(percentage = round((count / sum(count)) * 100, 2))
 
 write_csv(sig_summary_family_comparison, "outputs/total_lipids/dunn_significance_summary_by_family_comparison.csv")
+
+#### visulaising results #######################################################
+
+## global
+
+global_dunn <- ggplot(sig_summary_global, aes(x = significance, y = percentage, fill = significance)) +
+  geom_col() +
+  geom_text(aes(label = paste0(percentage, "%")), vjust = -0.5) +
+  scale_fill_manual(values = c("***" = "#D73027", "**" = "#EAB53A", "*" = "#9ED36F", "not significant" = "#969595")) +
+  labs(title = "Global Dunn's Test Significance Distribution",
+       x = "Significance",
+       y = "Percentage of comparisons") +
+  theme_classic()
+
+ggsave(
+  filename = "outputs/total_lipids/global_dunn_significance.png",
+  plot = global_dunn,           
+  width = 10,          
+  height = 4,         
+  dpi = 300           
+)
+
+## lipid family 
+
+family_dunn <- ggplot(sig_summary_family, aes(x = family, y = percentage, fill = significance)) +
+  geom_col(position = "stack") +
+  scale_fill_manual(values = c("***" = "#D73027", "**" = "#EAB53A", "*" = "#9ED36F", "not significant" = "#969595")) +
+  labs(title = "Significance Distribution by Lipid Family",
+       x = "Lipid Family",
+       y = "Percentage of comparisons") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave(
+  filename = "outputs/total_lipids/family_dunn_significance.png",
+  plot = family_dunn,           
+  width = 8,          
+  height = 4,         
+  dpi = 300           
+)
+
+## comparison group
+
+comparison_dunn <- ggplot(sig_summary_comparison, aes(x = comparison, y = percentage, fill = significance)) +
+  geom_col(position = "stack") +
+  scale_fill_manual(values = c("***" = "#D73027", "**" = "#EAB53A", "*" = "#9ED36F", "not significant" = "#969595")) +
+  labs(title = "Significance Distribution by Group Comparison",
+       x = "Comparison",
+       y = "Percentage of comparisons") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave(
+  filename = "outputs/total_lipids/comparison_dunn_significance.png",
+  plot = comparison_dunn,           
+  width = 8,          
+  height = 4,         
+  dpi = 300           
+)
