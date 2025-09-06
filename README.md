@@ -18,9 +18,6 @@ Effort must be made to emphasise that this is a primary version of this pipline.
 * `dplyr` - 1.1.4
 * `ggplot2` - 3.5.2
 * `stats` - 4.4.1
-* `dunn.test` - 1.3.6
-* `rmarkdown` - 2.29
-* `corrplot` - 0.95
 * `pheatmap` - 1.0.12
 * `ggrepel` - 0.9.6
 * `readr` - 2.1.5
