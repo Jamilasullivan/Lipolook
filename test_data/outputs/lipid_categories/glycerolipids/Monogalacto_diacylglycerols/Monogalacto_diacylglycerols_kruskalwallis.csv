@@ -1,0 +1,4 @@
+"family","lipid","p_value_raw","p_value_adj","significance"
+"Monogalacto_diacylglycerols","MGDG_.34.1.",0.528658968091268,0.528658968091268,"not significant"
+"Monogalacto_diacylglycerols","MGDG_.36.1.",0.0507695727844694,0.0507695727844694,"not significant"
+"Monogalacto_diacylglycerols","MGDG_.38.2.",0.00153097101724681,0.00153097101724681,"**"
