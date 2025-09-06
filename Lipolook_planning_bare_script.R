@@ -1558,8 +1558,8 @@ for (category_folder in category_folders) {
     color = colorRampPalette(c("blue", "white", "red"))(200),
     cluster_rows = FALSE,   # keep alphabetical order
     cluster_cols = FALSE,   # keep alphabetical order
-    show_rownames = TRUE,
-    show_colnames = TRUE,
+    show_rownames = FALSE,
+    show_colnames = FALSE,
     main = paste("Spearman Correlation:", basename(category_folder))
   )
   
@@ -1588,8 +1588,8 @@ pheatmap(
   color = col_palette,
   cluster_rows = FALSE,   
   cluster_cols = FALSE,   
-  show_rownames = TRUE,
-  show_colnames = TRUE,
+  show_rownames = FALSE,
+  show_colnames = FALSE,
   main = "Complete Spearman Correlation (All Lipids)"
 )
 
