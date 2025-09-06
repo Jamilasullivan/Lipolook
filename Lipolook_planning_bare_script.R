@@ -47,6 +47,11 @@ library(dplyr)
 library(ggrepel)
 library(dplyr)
 library(readr)
+install.packages("tidyverse")
+library(tidyverse)
+library(pheatmap)
+install.packages("FSA")
+library(FSA)
 
 ################################################################################
 ######################## 3. SETTING WORK DIRECTOTY #############################
@@ -1317,50 +1322,43 @@ for (name in raw_data_names) {
       
       # Run Dunn’s test only if KW raw p < 0.05
       if (test_res$p.value < 0.05) {
-        dunn_res <- dunn.test(df_subset[[lipid]], g = df_subset[[group_col]],
-                              method = "none", kw = FALSE, altp = FALSE)
+        library(FSA)
         
-        # Pick correct slot for raw p-values
-        if (!is.null(dunn_res$P.unadj)) {
-          pvals_raw <- dunn_res$P.unadj
-        } else {
-          pvals_raw <- dunn_res$P
-        }
+        dunn_res <- dunnTest(df_subset[[lipid]] ~ df_subset[[group_col]],
+                             method = "bh")   # Benjamini–Hochberg (FDR)
         
-        if (length(pvals_raw) > 0) {
-          group_levels <- unique(df_subset[[group_col]])
-          comparisons <- combn(group_levels, 2, FUN = function(x) paste(x[1], "vs", x[2]))
-          
-          pvals_adj <- p.adjust(pvals_raw, method = "fdr")
-          
-          significance <- sapply(pvals_adj, function(p) {
-            if (is.na(p)) {
-              "not significant"
-            } else if (p < 0.001) {
-              "***"
-            } else if (p < 0.01) {
-              "**"
-            } else if (p < 0.05) {
-              "*"
-            } else {
-              "not significant"
-            }
-          })
-          
-          dunn_results_all <- rbind(dunn_results_all,
-                                    data.frame(
-                                      family = lipid_family,
-                                      lipid = lipid,
-                                      comparison = comparisons,
-                                      p_value_raw = pvals_raw,
-                                      p_value_adj = pvals_adj,
-                                      significance = significance,
-                                      stringsAsFactors = FALSE
-                                    ))
-        }
+        dunn_table <- dunn_res$res   # has Comparison, Z, P.unadj, P.adj
+        
+        significance <- sapply(dunn_table$P.adj, function(p) {
+          if (is.na(p)) {
+            "not significant"
+          } else if (p < 0.001) {
+            "***"
+          } else if (p < 0.01) {
+            "**"
+          } else if (p < 0.05) {
+            "*"
+          } else {
+            "not significant"
+          }
+        })
+        
+        dunn_results_all <- rbind(
+          dunn_results_all,
+          data.frame(
+            family      = lipid_family,
+            lipid       = lipid,
+            comparison  = dunn_table$Comparison,
+            p_value_raw = dunn_table$P.unadj,
+            p_value_adj = dunn_table$P.adj,
+            significance = significance,
+            stringsAsFactors = FALSE
+          )
+        )
       }
     }
   }
+  
   
   # Save family-level results
   write.csv(kw_results,
@@ -1712,59 +1710,163 @@ message("Combined Dunn's test results saved to: ", output_file)
 
 #### VISUALISATIONS ############################################################
 
-library(dplyr)
-library(tidyr)
-library(pheatmap)
-library(readr)
+dunn_results <- read.csv("outputs/total_lipids/all_dunn_results_combined.csv")
 
-dunn_all <- read_csv("outputs/total_lipids/all_dunn_results_combined.csv", show_col_types = FALSE)
-
-dunn_sig <- dunn_all %>%
-  filter(p_value_adj < 0.05)
-
-top_lipids <- dunn_sig %>%
-  group_by(lipid) %>%
-  summarize(min_p = min(p_value_adj, na.rm = TRUE)) %>%
-  arrange(min_p) %>%
-  slice(1:50) %>%   
-  pull(lipid)
-
-dunn_top <- dunn_sig %>%
-  filter(lipid %in% top_lipids)
-
-dunn_mat <- dunn_top %>%
+heatmap_data <- dunn_results %>%
   select(lipid, comparison, p_value_adj) %>%
-  pivot_wider(names_from = comparison, values_from = p_value_adj)
+  pivot_wider(names_from = comparison, values_from = p_value_adj) %>%
+  column_to_rownames("lipid") %>%
+  mutate_all(~ -log10(.))  # transform to -log10(p_adj)
 
-dunn_mat <- as.data.frame(dunn_mat)
-row.names(dunn_mat) <- dunn_mat$lipid
-dunn_mat <- dunn_mat[,-1]
+top_level_dir <- file.path("outputs", "lipid_categories")
 
-dunn_mat_log <- -log10(dunn_mat)
-dunn_mat_log[is.infinite(dunn_mat_log)] <- max(dunn_mat_log[is.finite(dunn_mat_log)], na.rm = TRUE) + 1
+# Initialize lists to hold results per category
+kw_category_list <- list()
+dunn_category_list <- list()
 
-control_cols <- grep("control_group", colnames(dunn_mat_log), value = TRUE)
-other_cols <- setdiff(colnames(dunn_mat_log), control_cols)
-dunn_mat_log <- dunn_mat_log[, c(control_cols, other_cols)]
+count <- 1  # counter for families
 
-if (!dir.exists("outputs/total_lipids")) dir.create("outputs/total_lipids", recursive = TRUE)
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message(count, ". Skipping (no category): ", lipid_family)
+    count <- count + 1
+    next
+  }
+  
+  # Create family folder
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  df <- get(name)
+  lipid_columns <- names(df)[-1]   # exclude 'groups' column
+  group_col <- names(df)[1]
+  
+  # Family-level results (KW)
+  kw_results <- data.frame(
+    family = lipid_family,
+    lipid = lipid_columns,
+    p_value_raw = NA,
+    p_value_adj = NA,
+    significance = NA,
+    stringsAsFactors = FALSE
+  )
+  
+  dunn_results_all <- data.frame(
+    family = character(),
+    lipid = character(),
+    comparison = character(),
+    p_value_raw = numeric(),
+    p_value_adj = numeric(),
+    significance = character(),
+    stringsAsFactors = FALSE
+  )
+  
+  for (i in seq_along(lipid_columns)) {
+    lipid <- lipid_columns[i]
+    
+    df_subset <- df[!is.na(df[[lipid]]), c(group_col, lipid)]
+    
+    if (length(unique(df_subset[[group_col]])) > 1) {
+      # Kruskal–Wallis test
+      test_res <- kruskal.test(df_subset[[lipid]] ~ df_subset[[group_col]])
+      kw_results$p_value_raw[i] <- test_res$p.value
+      kw_results$p_value_adj[i] <- p.adjust(test_res$p.value, method = "fdr")
+      
+      # Significance for KW
+      if (!is.na(kw_results$p_value_adj[i])) {
+        if (kw_results$p_value_adj[i] < 0.001) {
+          kw_results$significance[i] <- "***"
+        } else if (kw_results$p_value_adj[i] < 0.01) {
+          kw_results$significance[i] <- "**"
+        } else if (kw_results$p_value_adj[i] < 0.05) {
+          kw_results$significance[i] <- "*"
+        } else {
+          kw_results$significance[i] <- "not significant"
+        }
+      }
+      
+      # Run Dunn’s test only if KW raw p < 0.05
+      if (test_res$p.value < 0.05) {
+        library(FSA)
+        
+        dunn_res <- dunnTest(df_subset[[lipid]] ~ df_subset[[group_col]],
+                             method = "bh")   # Benjamini–Hochberg (FDR)
+        
+        dunn_table <- dunn_res$res   # has Comparison, Z, P.unadj, P.adj
+        
+        significance <- sapply(dunn_table$P.adj, function(p) {
+          if (is.na(p)) {
+            "not significant"
+          } else if (p < 0.001) {
+            "***"
+          } else if (p < 0.01) {
+            "**"
+          } else if (p < 0.05) {
+            "*"
+          } else {
+            "not significant"
+          }
+        })
+        
+        dunn_results_all <- rbind(
+          dunn_results_all,
+          data.frame(
+            family      = lipid_family,
+            lipid       = lipid,
+            comparison  = dunn_table$Comparison,
+            p_value_raw = dunn_table$P.unadj,
+            p_value_adj = dunn_table$P.adj,
+            significance = significance,
+            stringsAsFactors = FALSE
+          )
+        )
+      }
+    }
+  }
 
-png("outputs/total_lipids/dunn_heatmap_top50_control_first.png",
-    width = 1200, height = 1500, res = 150)
-pheatmap(dunn_mat_log,
-         cluster_rows = TRUE,
-         cluster_cols = FALSE,
-         color = colorRampPalette(c("white", "red"))(100),
-         main = "-log10(FDR-adjusted Dunn’s p-values) (Top 50 lipids)",
-         fontsize_row = 6,
-         show_rownames = TRUE)
-dev.off()
+  
+  # Save family-level results
+  write.csv(kw_results,
+            file = file.path(folder_path, paste0(lipid_family, "_kruskalwallis.csv")),
+            row.names = FALSE)
+  
+  if (nrow(dunn_results_all) > 0) {
+    write.csv(dunn_results_all,
+              file = file.path(folder_path, paste0(lipid_family, "_dunn.csv")),
+              row.names = FALSE)
+  }
+  
+  # Append to category-level lists
+  kw_category_list[[category]] <- rbind(kw_category_list[[category]], kw_results)
+  dunn_category_list[[category]] <- rbind(dunn_category_list[[category]], dunn_results_all)
+  
+  message(count, ". Kruskal–Wallis (+Dunn if KW significant) results saved for family: ", lipid_family)
+  count <- count + 1
+}
 
-message("Heatmap saved to outputs/total_lipids/dunn_heatmap_top50_control_first.png")
-
-
-
-
-
-
-
+# Save combined category-level results
+for (category in names(kw_category_list)) {
+  folder_path <- file.path(top_level_dir, category)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  write.csv(kw_category_list[[category]],
+            file = file.path(folder_path, paste0(category, "_kruskalwallis.csv")),
+            row.names = FALSE)
+  
+  if (nrow(dunn_category_list[[category]]) > 0) {
+    write.csv(dunn_category_list[[category]],
+              file = file.path(folder_path, paste0(category, "_dunn.csv")),
+              row.names = FALSE)
+  }
+  
+  message("Saved combined results for category: ", category)
+}
+# Plot heatmap
+pheatmap(heatmap_data, 
+         cluster_rows = TRUE, 
+         cluster_cols = FALSE, 
+         color = colorRampPalette(c("white", "red"))(50),
+         main = "-log10(adj p-value) across comparisons")
