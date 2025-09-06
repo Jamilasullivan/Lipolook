@@ -29,7 +29,8 @@ glm_variables <- c("","","") ## include the names of columns with metadata to be
 # List all required packages
 packages <- c(
   "moments", "tidyr", "dplyr", "ggplot2", "stats",
-  "dunn.test", "rmarkdown", "corrplot", "pheatmap"
+  "dunn.test", "rmarkdown", "corrplot", "pheatmap",
+  "ggrepel","readr", "tidyverse", "FSA"
 )
 
 # Install any that are missing
@@ -41,17 +42,6 @@ for (pkg in packages) {
 
 # Load them all
 lapply(packages, library, character.only = TRUE)
-
-library(ggplot2)
-library(dplyr)
-library(ggrepel)
-library(dplyr)
-library(readr)
-install.packages("tidyverse")
-library(tidyverse)
-library(pheatmap)
-install.packages("FSA")
-library(FSA)
 
 ################################################################################
 ######################## 3. SETTING WORK DIRECTOTY #############################
