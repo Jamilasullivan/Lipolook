@@ -1,7 +1,0 @@
-"family","lipid","p_value_raw","p_value_adj","significance"
-"Phosphatidyl_serines","PS_.37.2.",0.00571637885608067,0.00571637885608067,"**"
-"Phosphatidyl_serines","PS_.37.3.",6.86500332920339e-05,6.86500332920339e-05,"***"
-"Phosphatidyl_serines","PS_.37.4.",0.727210903068687,0.727210903068687,"not significant"
-"Phosphatidyl_serines","PS_.38.3.",5.96586908426709e-05,5.96586908426709e-05,"***"
-"Phosphatidyl_serines","PS_.40.4.",5.12089469471439e-05,5.12089469471439e-05,"***"
-"Phosphatidyl_serines","PS_.40.7.",6.05238143849585e-05,6.05238143849585e-05,"***"
