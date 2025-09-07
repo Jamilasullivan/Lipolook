@@ -1,0 +1,381 @@
+comparison,significance,count,percentage
+A - B,*,2,0.26
+A - B,**,2,0.26
+A - B,not significant,754,99.47
+A - C,*,218,28.76
+A - C,**,2,0.26
+A - C,***,2,0.26
+A - C,not significant,536,70.71
+A - D,*,184,24.27
+A - D,**,4,0.53
+A - D,***,2,0.26
+A - D,not significant,568,74.93
+A - E,***,2,0.26
+A - E,not significant,756,99.74
+A - F,*,10,1.32
+A - F,***,2,0.26
+A - F,not significant,746,98.42
+A - G,*,226,29.82
+A - G,**,2,0.26
+A - G,***,2,0.26
+A - G,not significant,528,69.66
+A - H,*,182,24.01
+A - H,**,2,0.26
+A - H,***,2,0.26
+A - H,not significant,572,75.46
+A - I,*,56,7.39
+A - I,***,2,0.26
+A - I,not significant,700,92.35
+A - J,*,8,1.06
+A - J,***,2,0.26
+A - J,not significant,748,98.68
+A - K,*,42,5.54
+A - K,***,2,0.26
+A - K,not significant,714,94.2
+A - L,*,166,21.9
+A - L,***,2,0.26
+A - L,not significant,590,77.84
+A - M,*,12,1.58
+A - M,***,2,0.26
+A - M,not significant,744,98.15
+A - N,*,66,8.71
+A - N,***,2,0.26
+A - N,not significant,690,91.03
+A - O,*,84,11.08
+A - O,***,2,0.26
+A - O,not significant,672,88.65
+A - P,*,126,16.62
+A - P,***,2,0.26
+A - P,not significant,630,83.11
+A - Q,*,28,3.69
+A - Q,***,2,0.26
+A - Q,not significant,728,96.04
+A - R,*,80,10.55
+A - R,***,2,0.26
+A - R,not significant,676,89.18
+A - S,*,6,0.79
+A - S,***,2,0.26
+A - S,not significant,750,98.94
+B - C,*,98,12.93
+B - C,not significant,660,87.07
+B - D,*,66,8.71
+B - D,**,2,0.26
+B - D,not significant,690,91.03
+B - E,*,4,0.53
+B - E,not significant,754,99.47
+B - F,*,2,0.26
+B - F,not significant,756,99.74
+B - G,*,138,18.21
+B - G,**,2,0.26
+B - G,not significant,618,81.53
+B - H,*,110,14.51
+B - H,**,2,0.26
+B - H,not significant,646,85.22
+B - I,*,2,0.26
+B - I,not significant,756,99.74
+B - J,*,8,1.06
+B - J,**,2,0.26
+B - J,not significant,748,98.68
+B - K,*,4,0.53
+B - K,not significant,754,99.47
+B - L,*,66,8.71
+B - L,not significant,692,91.29
+B - M,*,6,0.79
+B - M,not significant,752,99.21
+B - N,*,18,2.37
+B - N,not significant,740,97.63
+B - O,*,10,1.32
+B - O,not significant,748,98.68
+B - P,*,42,5.54
+B - P,not significant,716,94.46
+B - Q,*,16,2.11
+B - Q,not significant,742,97.89
+B - R,*,34,4.49
+B - R,not significant,724,95.51
+B - S,*,8,1.06
+B - S,not significant,750,98.94
+C - D,*,12,1.58
+C - D,**,2,0.26
+C - D,not significant,744,98.15
+C - E,*,236,31.13
+C - E,**,2,0.26
+C - E,not significant,520,68.6
+C - F,*,52,6.86
+C - F,not significant,706,93.14
+C - G,*,2,0.26
+C - G,not significant,756,99.74
+C - H,*,20,2.64
+C - H,**,2,0.26
+C - H,not significant,736,97.1
+C - I,*,4,0.53
+C - I,not significant,754,99.47
+C - J,*,90,11.87
+C - J,**,2,0.26
+C - J,not significant,666,87.86
+C - K,*,4,0.53
+C - K,not significant,754,99.47
+C - L,*,14,1.85
+C - L,not significant,744,98.15
+C - M,*,132,17.41
+C - M,not significant,626,82.59
+C - N,*,20,2.64
+C - N,not significant,738,97.36
+C - O,not significant,758,100
+C - P,*,26,3.43
+C - P,not significant,732,96.57
+C - Q,*,34,4.49
+C - Q,not significant,724,95.51
+C - R,*,30,3.96
+C - R,not significant,728,96.04
+C - S,*,66,8.71
+C - S,not significant,692,91.29
+D - E,*,208,27.44
+D - E,**,4,0.53
+D - E,not significant,546,72.03
+D - F,*,76,10.03
+D - F,**,2,0.26
+D - F,not significant,680,89.71
+D - G,*,26,3.43
+D - G,**,4,0.53
+D - G,not significant,728,96.04
+D - H,*,2,0.26
+D - H,not significant,756,99.74
+D - I,**,2,0.26
+D - I,not significant,756,99.74
+D - J,*,34,4.49
+D - J,**,4,0.53
+D - J,not significant,720,94.99
+D - K,*,4,0.53
+D - K,not significant,754,99.47
+D - L,*,30,3.96
+D - L,not significant,728,96.04
+D - M,*,96,12.66
+D - M,**,2,0.26
+D - M,not significant,660,87.07
+D - N,*,36,4.75
+D - N,**,2,0.26
+D - N,not significant,720,94.99
+D - O,*,6,0.79
+D - O,**,2,0.26
+D - O,not significant,750,98.94
+D - P,*,46,6.07
+D - P,**,2,0.26
+D - P,not significant,710,93.67
+D - Q,*,36,4.75
+D - Q,**,2,0.26
+D - Q,not significant,720,94.99
+D - R,*,24,3.17
+D - R,**,4,0.53
+D - R,not significant,730,96.31
+D - S,*,48,6.33
+D - S,**,2,0.26
+D - S,not significant,708,93.4
+E - F,*,2,0.26
+E - F,not significant,756,99.74
+E - G,*,212,27.97
+E - G,**,2,0.26
+E - G,not significant,544,71.77
+E - H,*,202,26.65
+E - H,**,2,0.26
+E - H,not significant,554,73.09
+E - I,*,92,12.14
+E - I,not significant,666,87.86
+E - J,*,22,2.9
+E - J,not significant,736,97.1
+E - K,*,56,7.39
+E - K,not significant,702,92.61
+E - L,*,132,17.41
+E - L,not significant,626,82.59
+E - M,*,4,0.53
+E - M,not significant,754,99.47
+E - N,*,36,4.75
+E - N,not significant,722,95.25
+E - O,*,82,10.82
+E - O,not significant,676,89.18
+E - P,*,78,10.29
+E - P,not significant,680,89.71
+E - Q,*,68,8.97
+E - Q,not significant,690,91.03
+E - R,*,98,12.93
+E - R,**,2,0.26
+E - R,not significant,658,86.81
+E - S,*,40,5.28
+E - S,not significant,718,94.72
+F - G,*,12,1.58
+F - G,**,2,0.26
+F - G,not significant,744,98.15
+F - H,*,22,2.9
+F - H,**,2,0.26
+F - H,not significant,734,96.83
+F - I,*,10,1.32
+F - I,not significant,748,98.68
+F - J,*,18,2.37
+F - J,**,2,0.26
+F - J,not significant,738,97.36
+F - K,*,14,1.85
+F - K,not significant,744,98.15
+F - L,not significant,758,100
+F - M,*,4,0.53
+F - M,not significant,754,99.47
+F - N,not significant,758,100
+F - O,*,16,2.11
+F - O,not significant,742,97.89
+F - P,*,4,0.53
+F - P,not significant,754,99.47
+F - Q,*,12,1.58
+F - Q,not significant,746,98.42
+F - R,*,36,4.75
+F - R,not significant,722,95.25
+F - S,*,4,0.53
+F - S,not significant,754,99.47
+G - H,*,12,1.58
+G - H,**,4,0.53
+G - H,not significant,742,97.89
+G - I,*,20,2.64
+G - I,not significant,738,97.36
+G - J,*,126,16.62
+G - J,**,2,0.26
+G - J,not significant,630,83.11
+G - K,*,12,1.58
+G - K,not significant,746,98.42
+G - L,*,4,0.53
+G - L,not significant,754,99.47
+G - M,*,82,10.82
+G - M,not significant,676,89.18
+G - N,*,6,0.79
+G - N,not significant,752,99.21
+G - O,*,10,1.32
+G - O,not significant,748,98.68
+G - P,not significant,758,100
+G - Q,*,52,6.86
+G - Q,not significant,706,93.14
+G - R,*,58,7.65
+G - R,not significant,700,92.35
+G - S,*,96,12.66
+G - S,not significant,662,87.34
+H - I,*,10,1.32
+H - I,**,2,0.26
+H - I,not significant,746,98.42
+H - J,*,58,7.65
+H - J,**,4,0.53
+H - J,not significant,696,91.82
+H - K,not significant,758,100
+H - L,*,12,1.58
+H - L,not significant,746,98.42
+H - M,*,44,5.8
+H - M,**,2,0.26
+H - M,not significant,712,93.93
+H - N,*,6,0.79
+H - N,**,2,0.26
+H - N,not significant,750,98.94
+H - O,*,20,2.64
+H - O,**,2,0.26
+H - O,not significant,736,97.1
+H - P,*,12,1.58
+H - P,not significant,746,98.42
+H - Q,*,54,7.12
+H - Q,not significant,704,92.88
+H - R,*,44,5.8
+H - R,not significant,714,94.2
+H - S,*,78,10.29
+H - S,not significant,680,89.71
+I - J,*,12,1.58
+I - J,**,2,0.26
+I - J,not significant,744,98.15
+I - K,not significant,758,100
+I - L,not significant,758,100
+I - M,*,30,3.96
+I - M,not significant,728,96.04
+I - N,not significant,758,100
+I - O,*,4,0.53
+I - O,not significant,754,99.47
+I - P,*,20,2.64
+I - P,not significant,738,97.36
+I - Q,*,2,0.26
+I - Q,not significant,756,99.74
+I - R,not significant,758,100
+I - S,not significant,758,100
+J - K,*,4,0.53
+J - K,not significant,754,99.47
+J - L,*,50,6.6
+J - L,not significant,708,93.4
+J - M,*,2,0.26
+J - M,not significant,756,99.74
+J - N,*,8,1.06
+J - N,not significant,750,98.94
+J - O,*,12,1.58
+J - O,not significant,746,98.42
+J - P,*,30,3.96
+J - P,not significant,728,96.04
+J - Q,*,8,1.06
+J - Q,not significant,750,98.94
+J - R,*,22,2.9
+J - R,not significant,736,97.1
+J - S,*,8,1.06
+J - S,not significant,750,98.94
+K - L,*,6,0.79
+K - L,not significant,752,99.21
+K - M,*,12,1.58
+K - M,not significant,746,98.42
+K - N,*,2,0.26
+K - N,not significant,756,99.74
+K - O,*,2,0.26
+K - O,not significant,756,99.74
+K - P,*,8,1.06
+K - P,not significant,750,98.94
+K - Q,*,4,0.53
+K - Q,not significant,754,99.47
+K - R,*,6,0.79
+K - R,not significant,752,99.21
+K - S,*,4,0.53
+K - S,not significant,754,99.47
+L - M,*,24,3.17
+L - M,not significant,734,96.83
+L - N,not significant,758,100
+L - O,*,20,2.64
+L - O,not significant,738,97.36
+L - P,*,4,0.53
+L - P,not significant,754,99.47
+L - Q,*,2,0.26
+L - Q,not significant,756,99.74
+L - R,*,10,1.32
+L - R,not significant,748,98.68
+L - S,*,18,2.37
+L - S,not significant,740,97.63
+M - N,not significant,758,100
+M - O,*,36,4.75
+M - O,not significant,722,95.25
+M - P,*,10,1.32
+M - P,not significant,748,98.68
+M - Q,*,20,2.64
+M - Q,not significant,738,97.36
+M - R,*,46,6.07
+M - R,not significant,712,93.93
+M - S,*,14,1.85
+M - S,not significant,744,98.15
+N - O,*,6,0.79
+N - O,not significant,752,99.21
+N - P,not significant,758,100
+N - Q,*,6,0.79
+N - Q,not significant,752,99.21
+N - R,*,22,2.9
+N - R,not significant,736,97.1
+N - S,*,14,1.85
+N - S,not significant,744,98.15
+O - P,not significant,758,100
+O - Q,*,14,1.85
+O - Q,not significant,744,98.15
+O - R,*,20,2.64
+O - R,not significant,738,97.36
+O - S,*,14,1.85
+O - S,not significant,744,98.15
+P - Q,*,26,3.43
+P - Q,not significant,732,96.57
+P - R,*,46,6.07
+P - R,not significant,712,93.93
+P - S,*,22,2.9
+P - S,not significant,736,97.1
+Q - R,*,8,1.06
+Q - R,not significant,750,98.94
+Q - S,not significant,758,100
+R - S,not significant,758,100
