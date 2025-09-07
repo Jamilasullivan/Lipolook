@@ -17,9 +17,13 @@ It does this using simple inputs and organises the outputs into a logical direct
 
 It requires minimal inputs or alterations to run. However, further versions of this pipeline plan to further refine this feature. 
 
-Here, we will look at how the pipeline runs in an explanitory fashion and provide users with assistance on their inputs to the pipeline. We will look at each section of the *Lipolook_planning_bare_script.R*  file, in accordance with its numbered sections. This will provide a detailed explaination of how the script works and make it more managable for those less familiar with reading R Studio code.
+Here, we will look at how the pipeline runs in an explanitory fashion and provide users with assistance on their inputs to the pipeline. We will look at the data organisation sections of the *Lipolook_planning_bare_script.R*  file, in accordance with its numbered sections. This will provide a detailed explaination of how these sections work and what the requirements are for the pipeline to run correctly. The code following these sections should be autonomous.
 
 THe *Lipolook_planning_annotated.R* script also provides a script with included descriptions of individual coding tasks, for those more comfortable with reading R Studio code or interesting the tasks completed by each section.
+
+Please be aware that everything in R Studio is case and character sensitive. Therefore, when filling in the variables or altering any other sections, please write as such. 
+
+If any issues are encountered and fixed within the script, best practice is to delete all outputs currently made, clear the environment and run the pipeline again from the start. 
 
 For any further queries, errors or if anything is unclear, please contact: sullivan-al-kadhomiyj@cardiff.ac.uk
 
@@ -43,7 +47,7 @@ This section provides the user with optional preferences that will then be used 
 working_directory <- "test_data"
 ```
 
-In this case `"test_data"` refers to the directory in which your raw data is held. For clear organisation, aim to have this directory free of anything else. If you are unsure on this path, navigate to the files tab in R Studio, access the file in which your data is stored, click the 'more' drop down menu at the top of the files pane and select 'Copy Folder Path to Clipboard'. You should then be able to past this directly into the script between the speech marks.
+In this case `"test_data"` refers to the directory in which your raw data is held. For clear organisation, aim to have this directory free of anything else. If you are unsure on this path, navigate to the files tab in R Studio, access the file in which your data is stored, click the 'more' drop down menu at the top of the files pane and select 'Copy Folder Path to Clipboard'. You should then be able to paste this directly into the script between the speech marks.
 
 \
 
@@ -53,7 +57,7 @@ In this case `"test_data"` refers to the directory in which your raw data is hel
 raw_data_file_name <- "raw_data_1.csv"
 ```
 
-Here, `"raw_data_1.csv"` refers to the raw lipid data that the pipeline requires to run. This will be provided to you. The name of the file should be given exactly as it is named on your PC. Any spaces or special characters should be replaced with '_' before completing this step. Furthermore, this excel sheet should be saved as a .csv file and this suffix added to the "file_name". An example of how this file should be laid out is given below. The essential part is that all metadata should be given before the start of the lipid data and one metadata column must include groupings. The lipids in this file should include all the lipid results combined. The sample numbers (not IDs) should be equivalent to the row numbers, to make results traceable. 
+Here, `"raw_data_1.csv"` refers to the raw lipid data that the pipeline requires to run. This will be provided to you. The name of the file should be given exactly as it is named on your PC. Any spaces or special characters should be replaced with '_' before completing this step. Furthermore, this excel sheet should be saved as a .csv file and this suffix added to the "file_name". An example of how this file should be laid out is given below. The essential part is that all metadata should be given before the start of the lipid data and one metadata column must include groupings. The lipids in this file should include all the lipid results combined. The sample numbers (not IDs) should be equivalent to the row numbers, to make results traceable. The lipids named here should be in the format of TG(50:0) for example. This ensures that they are recognised as lipids and not wrongly recognised as metadata. Equally, metadata should not end with any special characters. This is because this pipeline recognises the `)` transformed to `.`. Therefore, any metadata ending in a special character that could be transformed to `.` will result in it being wrongly stored as a lipid and unnoticed by the pipeline. Therefore, it is goo practice to check the variables in the data frames produced by sorting. 
 
 | Sample | Metadata 1 | Metadata 2 | Metadata 3 | Metadata *n* | Lipid 1 | Lipid 2 | Lipid 3 | Lipid *n* |
 |:-------|:-----------|:-----------|:-----------|:-------------|:--------|:--------|:--------|:----------|
@@ -71,7 +75,7 @@ Here, `"raw_data_1.csv"` refers to the raw lipid data that the pipeline requires
 lipids_tested_file_name <- "lipids_tested_1.csv"
 ```
 
-Here, `"lipids_tested_1.csv"` refers to the document containing details of which lipids were tested when running the LC-MS method. This will be provided to you as the second sheet of the raw data sreadsheet. You should save this second sheet as a separate .csv file. The name of the file should be given exactly as it is named on your PC. Any spaces or special characters should be replaced with '_' before completing this step. Furthermore, this excel sheet should be saved as a .csv file and this suffix added to the "file_name". An example of how this file should be laid out is given below. The important part is that lipid family names should be the head of columns and all lipids included in that family should be given in rows below it. 
+Here, `"lipids_tested_1.csv"` refers to the document containing details of which lipids were tested when running the LC-MS method. This will be provided to you as the second sheet of the raw data spreadsheet. You should save this second sheet as a separate .csv file. The name of the file should be given exactly as it is named on your PC. Any spaces or special characters should be replaced with '_' before completing this step. Furthermore, this excel sheet should be saved as a .csv file and this suffix added to the "file_name". An example of how this file should be laid out is given below. The important part is that lipid family names should be the head of columns and all lipids included in that family should be given in rows below it. 
 
 | Family A  | Family B  | Family C  | Family *n*  |
 |:----------|:----------|:----------|:------------|
@@ -97,6 +101,22 @@ adjustment_method <- "fdr" # options are "holm" = Holm–Bonferroni
 
 Here, `"fdr"` refers to which adjustment method you would like to use to account for multiple testing for correction. As can be seen above, the options available are given in the code. The method chosen, will be used throughout all subsequent code unless the subsequent code is adjusted.
 
+#### Group
+
+```{r}
+groups <- "Group" 
+```
+
+`"Group"` refers to the name of the column in your raw data under which groupings are stored. 
+
+#### Control group
+
+```{r}
+control_group <- "E"
+```
+
+`"E"` refers to the name of the control group within your data.
+
 \
 
 ## **Data Organisation**
@@ -104,7 +124,10 @@ Here, `"fdr"` refers to which adjustment method you would like to use to account
 ### 2. Packages to install
 
 ```{r, results='hide', message=FALSE, warning=FALSE}
-packages <- c("moments", "tidyr", "dplyr", "ggplot2", "stats")
+packages <- c(
+  "moments", "tidyr", "dplyr", "ggplot2", "stats", "pheatmap",
+  "ggrepel","readr", "tidyverse", "FSA"
+)
 
 for (pkg in packages) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
@@ -113,21 +136,17 @@ for (pkg in packages) {
 }
 
 lapply(packages, library, character.only = TRUE)
-
-library(moments)
-library(tidyr)
-library(dplyr)
-library(ggplot2)
-library(stats)
 ```
 
 This block of code will conditionally install (if not already present) and load all packages required for the pipeline. Version control of these packages can be found in the linked GitHub repository.
 
 ### 3. Setting Work Directory
 
-`setwd(working_directory)` is included in the original script but cannot function in an R Markdown file. It sets the working directory as the initial `working_directory` path set.
+`setwd(working_directory)` is included in the original script but cannot function in an R Markdown file. It sets the working directory as the initial `working_directory` path.
 
 ### 4. Creating Directory Structure
+
+This section of code looks at whether the `outputs` and subsequent `total_lipids` and `error_files` directories are present in the working directory. If they are not, it will create them. These will then serve as storage locations for subsequent outputs.
 
 ```{r, results='hide', message=FALSE, warning=FALSE}
 if(!dir.exists("outputs")){
@@ -155,40 +174,36 @@ if(!dir.exists("outputs/error_files")){
 
 ### 5. Initial Data Tidying
 
+This section of code uses the `raw_data` input previously provided to, firstly, look for any duplicated columns. A file containing the names of any duplicated columns will be provided in the `error_files` directory. These are columns where each row's value is identical to that of another column. This could be a mistake or could be a genuine part of the data. Therefore, it is imperative that you check this document and decide on this independently. If you believe that there is a mistake and a column needs to be removed, please return to your original excel spreadsheet, make any changes required, resave it and run the pipeline again from the beginning. 
+
+Secondly, the pipeline uses patterns to recognise lipid data vs metadata and separate them. R Studio cannot use the `TG(50:0)` lipid naming structure for column names. Therefore, it will transform them to `TG_.50.0.` format. This means that all lipid columns should end with `.` and the pipeline will recognise them as lipid data. Anything not ending with `.` will be classified as metadata and saved as such. Therefore, adherance to the naming guidelines above is very important. 
+
 ```{r, results='hide', message=FALSE, warning=FALSE}
 raw_data <- read.csv(raw_data_file_name, header = T)
-names(raw_data)[c(1,2,3,4,5)] <- c("Filename", "CMaLL Sample Name", "Group", "code", "Cell Count")
-raw_data <- raw_data[-1,]
-raw_data$code <- NULL
-raw_data$`Cell Count` <- NULL
-str(raw_data)
-raw_data[, 4:ncol(raw_data)] <- lapply(raw_data[, 4:ncol(raw_data)], function(x)
-  as.numeric(as.character(x)))
-sum(is.na(raw_data[, 4:ncol(raw_data)]))
-str(raw_data)
-sapply(raw_data, is.numeric)
-```
 
-
-### 6. Raw Data Manipulation
-
-```{r}
 raw_data_lipids <- raw_data
-rownames(raw_data_lipids) <- raw_data_lipids[[2]]
-raw_data_lipids <- raw_data_lipids[, -(1:2)]
 duplicated_columns <- duplicated(as.list(raw_data_lipids))
 any(duplicated_columns)
 duplicated_column_names <- names(raw_data_lipids)[duplicated_columns]
 print(duplicated_column_names)
 duplicated_column_names <- data.frame(duplicated_columns = duplicated_column_names)
 write.csv(duplicated_column_names, "outputs/error_files/duplicated_columns.csv", row.names = FALSE)
+
+metadata <- raw_data[ , !(grepl("\\.$", names(raw_data)) | names(raw_data) == "Cholesterol")]
+groups <- metadata[,"Group"]
+raw_data_lipids <- raw_data[ , grepl("\\.$", names(raw_data)) | names(raw_data) == "Cholesterol"]
+str(raw_data_lipids)
+raw_data_lipids[] <- lapply(raw_data_lipids, function(x) as.numeric(as.character(x)))
+str(raw_data_lipids)
+sum(is.na(raw_data_lipids[,ncol(raw_data_lipids)]))
 ```
 
 
-### 7. Lipids Tested File Manipulation
+### 6. Lipids Tested Manipulation
 
-```{r}
+This section of code will use the `lipids_tested` file previously specified and structure it appropriately for further analysis. 
 
+```{r, results='hide', message=FALSE, warning=FALSE}
 lipids_tested <- read.csv(lipids_tested_file_name, header = T)
 lipids_tested <- pivot_longer(lipids_tested,
     cols = everything(),
@@ -201,19 +216,23 @@ lipids_tested$lipid <- make.names(lipids_tested$lipid)
 ```
 
 
-### 8. Checking For Mismatched Columns
+### 7. Checking For Mismatched Columns
 
-```{r}
-raw_data_columns <- colnames(raw_data_lipids[2:ncol(raw_data_lipids)])
+This code will match all lipid columns from raw data to their respective family. Any columns not successfully matched to a family will be listed in the `error_files/unmatched_columns.csv` file and should be checked and data corrcted before proceeding. Any lipids listed in this file (not matched to a family) will be excluded from further analysis. 
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+raw_data_columns <- colnames(raw_data_lipids[ncol(raw_data_lipids)])
 lipids <- lipids_tested$lipid
 unmatched_cols <- setdiff(raw_data_columns, lipids)
 number_unmatched <- length(unmatched_cols)
 unmatched_cols <- data.frame(Unmatched_columns = unmatched_cols)
-write.csv(unmatched_cols, "outputs/error_files/unmatched_columns.csv", row.names = FALSE)
+write.csv(unmatched_cols, "outputs/error_files/unmatched_columns.csv", row.names = FALSE) # this should be empty because the mismatched columns now end up in the metadata object
 ```
 
 
-### 9. Subset Data By Lipid Family
+### 8. Subset Data By Lipid Family
+
+Here, naming is standardised and the `raw_data` is split by family into respctive data frames for further analysis. it then creates a list called `raw_data_names`. This list contains only the names of all separated family raw data frames for use in subsequent looping. The section between the two `## OPTIONAL ##` flags at the bottom shows users how to rename variables if there are issue with the length of the names when saving objects. If not in use, this section should be removed. 
 
 ```{r, results='hide', message=FALSE, warning=FALSE}
 sanitize_name <- function(x) {
@@ -264,24 +283,52 @@ raw_data_names <- Filter(function(x) {
   TRUE
 }, all_raw_data)
 
+## OPTIONAL ##
+
+#1
 raw_data_CPEs <- raw_data_Ceramide_phospho_ethanolamines
 rm(raw_data_Ceramide_phospho_ethanolamines)
-raw_data_Chol_CEs <- raw_data_Cholesterol_cholesteryl_esters
-rm(raw_data_Cholesterol_cholesteryl_esters)
+#3
 raw_data_LPEs <- raw_data_Lysophosphatidy_ethanolamines
 rm(raw_data_Lysophosphatidy_ethanolamines)
 
-raw_data_names <- c(raw_data_names, c("raw_data_CPEs", "raw_data_Chol_CEs", "raw_data_LPEs"))
-raw_data_names <- raw_data_names[!raw_data_names %in% c("raw_data_Ceramide_phospho_ethanolamines", "raw_data_Cholesterol_cholesteryl_esters", "raw_data_Lysophosphatidy_ethanolamines")]
+raw_data_names <- c(raw_data_names, c("raw_data_CPEs", "raw_data_LPEs"))
+raw_data_names <- raw_data_names[!raw_data_names %in% c("raw_data_Ceramide_phospho_ethanolamines", "raw_data_Lysophosphatidy_ethanolamines")]
 
+## OPTIONAL ##
+
+raw_data_names <- raw_data_names[raw_data_names != "raw_data_lipids"]
 raw_data_names
 ```
 
 
-### 10. Creating directories For All Lipid Families and Categories
+### 9. Creating Folders For All Lipid Families and Categories
 
-```{r}
-category_mapping <- read.csv("lipid_categories_1.csv", stringsAsFactors = FALSE)
+Finally, this section assigns each family to its correct lipid category and makes directories for all in an `outputs` folder called `lipid_categories`. These files will be used for all relative outputs going forwards. 
+
+Currently, the categorisation of lipid families is a manual job. However, this is likely to soon be updated. 
+
+You should create an excel spreadsheet called exactly `complete_lipid_categories.csv`. This csv file should contain two columns: Family and Category (in this order). All family names should be taken from the column names in your `lipids_tested.csv` document. These families should then be matched to their respective category using the LIPID MAPS database. This must be done in a case and character sensitive fashion with no spaces i.e. all families included in glycerolipids should have the exact category name `glycerolipids` and underscores replacing spaces. An example of the layout of this file can be seen below. 
+
+| Family                          | Category                          |
+|:--------------------------------|:----------------------------------|
+| PC                              | Glycerophospholipids              |
+| PE                              | Glycerophospholipids              |
+| TG                              | Glycerolipids                     |
+| DG                              | Glycerolipids                     |
+| Cer                             | Sphingolipids                     |
+| SM                              | Sphingolipids                     |
+| CE                              | Sterol_Lipids                     |
+
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+write.csv(
+  data.frame(Family = names(lipid_families)),
+  "lipid_categories_1.csv",
+  row.names = FALSE
+) ## THIS NEEDS TO BE FILLED IN BY THE CLIENT AND SAVED AS 'complete_lipid_categories.csv'
+
+category_mapping <- read.csv("complete_lipid_categories.csv", stringsAsFactors = FALSE)
 
 category_mapping$Family_clean   <- sanitize_name(category_mapping$Family)
 category_mapping$Category_clean <- sanitize_name(category_mapping$Category)
@@ -312,195 +359,4 @@ for (name in raw_data_names) {
   }
 }
 ```
-
- 
-## **Basic Descriptive Statistics**
-
-### 11. Adding Groups Back To Data Frames
-
-```{r, results='hide', message=FALSE, warning=FALSE}
-groups <- raw_data[,3]
-
-for (name in raw_data_names) {
-  cat("Adding 'groups' column to:", name, "\n")
-  df <- get(name)
-  df <- cbind(groups, df)
-  assign(name, df)
-} 
-
-for (name in raw_data_names) {
-  lipid_family <- make.names(sub("^raw_data_", "", name))
-  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
-  
-  if (is.na(category) || length(category) == 0) {
-    message("No category found for family: ", lipid_family)
-    next
-  }
-  
-  folder_path <- file.path(top_level_dir, category, lipid_family)
-  cat("Saving raw data for:", name, "\n")
-  df <- get(name)
-  write.csv(df, file = file.path(folder_path, paste0(lipid_family, "_raw_data.csv")), row.names = FALSE)
-  
-}
-```
-
-### 12. Calculating Group Averages
-
-```{r, results='hide', message=FALSE, warning=FALSE}
-top_level_dir <- file.path("outputs", "lipid_categories")
-
-for (name in raw_data_names) {
-  lipid_family <- make.names(sub("^raw_data_", "", name))
-  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
-  
-  if (is.na(category) || length(category) == 0) {
-    message("No category found for family: ", lipid_family)
-    next
-  }
-  
-  folder_path <- file.path(top_level_dir, category, lipid_family)
-  cat("Saving averages for:", name, "to folder:", folder_path, "\n")
-  df_avg <- aggregate(. ~ groups, data = get(name), FUN = mean)
-  csv_file <- file.path(folder_path, paste0(lipid_family, "_avg.csv"))
-  write.csv(df_avg, file = csv_file, row.names = FALSE)
-}
-```
-
-### 13. Histograms For Normality
-
-```{r, results='hide', message=FALSE, warning=FALSE}
-top_level_dir <- file.path("outputs", "lipid_categories")
-
-for (name in raw_data_names) {
-  lipid_family <- sub("^raw_data_", "", name)
-  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
-  
-  if (is.na(category) || length(category) == 0) {
-    message("No category found for family: ", lipid_family)
-    next
-  }
-  
-  folder_path <- file.path(top_level_dir, category, lipid_family)
-  
-  hist_folder <- file.path(folder_path, "histograms")
-  if (!dir.exists(hist_folder)) {
-    dir.create(hist_folder, recursive = TRUE, showWarnings = FALSE)
-    message("Created histograms subfolder for: ", lipid_family)
-  }
-  
-  cat("Processing histograms for:", name, "\n")
-  df <- get(name)
-  
-  for (col in setdiff(names(df), "groups")) {
-    png(file.path(hist_folder, paste0(col, "_hist.png")))
-    hist(df[[col]],
-         main = paste("Histogram of", col),
-         xlab = col,
-         breaks = 30)
-    dev.off()
-  }
-}
-```
-
-### 14. Normality Outputs For All Samples COmbined
-
-```{r, results='hide', message=FALSE, warning=FALSE}
-top_level_dir <- file.path("outputs", "lipid_categories")
-
-for (name in raw_data_names) {
-  lipid_family <- sub("^raw_data_", "", name)
-  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
-  
-  if (is.na(category) || length(category) == 0) {
-    message("No category found for family: ", lipid_family)
-    next
-  }
-  
-  folder_path <- file.path(top_level_dir, category, lipid_family)  
-  df <- get(name)
-  lipid_columns <- names(df)[-1]
-  distribution_summary <- data.frame(
-    lipid = lipid_columns,
-    skewness = numeric(length(lipid_columns)),
-    kurtosis = numeric(length(lipid_columns)),
-    shapiro_p = numeric(length(lipid_columns)),
-    normality = character(length(lipid_columns)),
-    stringsAsFactors = FALSE
-  )
-  
-  for (i in seq_along(lipid_columns)) {
-    lipid <- lipid_columns[i]
-    values <- df[[lipid]]  
-    distribution_summary$skewness[i] <- skewness(values)
-    distribution_summary$kurtosis[i] <- kurtosis(values)
-    
-    if (length(values) >= 3 & length(values) <= 5000) {
-      shapiro_res <- shapiro.test(values)
-      distribution_summary$shapiro_p[i] <- shapiro_res$p.value
-      distribution_summary$normality[i] <- ifelse(shapiro_res$p.value > 0.05, "Normal", "Non-normal")
-    } else {
-      distribution_summary$shapiro_p[i] <- NA
-      distribution_summary$normality[i] <- "NA"
-    }
-  }
-  
-  distribution_summary$shapiro_p_adj <- p.adjust(distribution_summary$shapiro_p, method = adjustment_method)
-  distribution_summary$normality <- ifelse(distribution_summary$shapiro_p_adj > 0.05, "Normal", "Non-normal")
-  distribution_summary <- distribution_summary[, c("lipid", "skewness", "kurtosis", "shapiro_p", "shapiro_p_adj", "normality")]
-  cat("Saving distribution summary for:", name, "\n")
-  
-  if (!dir.exists(folder_path)) {
-    dir.create(folder_path, recursive = TRUE, showWarnings = FALSE)
-  }
-  
-  dis_csv_file <- file.path(folder_path, paste0(lipid_family, "_distribution.csv"))
-  write.csv(distribution_summary, file = dis_csv_file, row.names = FALSE)
-}
-
-## number of all lipids that reached normality with shapiro-wilk test (plus correction for multiple testing)
-
-top_level_dir <- file.path("outputs", "lipid_categories")
-all_distribution_csv_files <- list.files(top_level_dir, pattern = "_distribution\\.csv$", full.names = TRUE, recursive = TRUE)
-all_lipids_distribution <- list()
-
-for (file in all_distribution_csv_files) {
-  df <- read.csv(file, header = TRUE)
-  summary_df <- df[, c(1, ncol(df))]
-  summary_df$family <- basename(file)
-  all_lipids_distribution[[length(all_lipids_distribution) + 1]] <- summary_df
-}
-
-combined_summary <- bind_rows(all_lipids_distribution)
-combined_summary <- combined_summary[-3]
-write.csv(combined_summary, file = file.path(top_level_dir,"..","total_lipids", "combined_lipid_normality.csv"), row.names = FALSE)
-distribution_counts <- table(combined_summary$normality)
-distribution_counts_df <- as.data.frame(distribution_counts)
-distribution_total <- sum(distribution_counts)
-distribution_counts_df$percent <- round(100 * distribution_counts_df$Freq / distribution_total, 1)
-distribution_counts_df
-write.csv(distribution_counts_df, file = file.path(top_level_dir,"..","total_lipids", "combined_lipid_normality_summary.csv"), row.names = FALSE)
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
