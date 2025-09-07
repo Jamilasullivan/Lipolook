@@ -308,7 +308,7 @@ Finally, this section assigns each family to its correct lipid category and make
 
 Currently, the categorisation of lipid families is a manual job. However, this is likely to soon be updated. 
 
-You should create an excel spreadsheet called exactly `complete_lipid_categories.csv`. This csv file should contain two columns: Family and Category (in this order). All family names should be taken from the column names in your `lipids_tested.csv` document. These families should then be matched to their respective category using the LIPID MAPS database. This must be done in a case and character sensitive fashion with no spaces i.e. all families included in glycerolipids should have the exact category name `glycerolipids` and underscores replacing spaces. An example of the layout of this file can be seen below. 
+A template is created and output to the working directory called `complete_lipid_categories.csv`. This csv file gives a list of all the families from your data that categories must be assigned to, using the LIPID MAPS database. This must be done in a case and character sensitive fashion with no spaces i.e. all families included in glycerolipids should have the exact category name `glycerolipids` and underscores replacing spaces. An example of the layout of this file can be seen below. Do not change the output file at all other than adding respective category names. Then proceed with the script.
 
 | Family                          | Category                          |
 |:--------------------------------|:----------------------------------|
