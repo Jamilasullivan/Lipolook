@@ -1,545 +1,1793 @@
-## packages ####################################################################
-
-library(tidyr)
-library(dplyr)
-library(ggplot2)
-
-## Data given in .xlsx format ##################################################
-
-setwd("C:/Users/jamsu/OneDrive - Cardiff University/University/Masters/Big Data Biology/Modules/Dissertation/R Programme/Dissertation/test_data")
-
 ################################################################################
-## data provided to the client #################################################
+########################## 1. VARIABLES TO FILL ################################
 ################################################################################
 
-raw_data <- read.csv("raw_data_1.csv", header = T) # reading in the raw data
+working_directory <- "" # place where data is stored (outside of sub folders) and outputs will be placed
 
-names(raw_data)[c(1,2,3,4,5)] <- c("Filename", "CMaLL Sample Name", "Group", "code", "Cell Count") # renaming columns
+raw_data_file_name <- "" # name of lipid data file (.csv)
 
-raw_data <- raw_data[-1,] # deleting the first row 
+lipids_tested_file_name <- "" # name of lipids tested file (.csv)
 
-raw_data$code <- NULL # deleting 'code' column
+adjustment_method <- ""     # options are "holm" = Holm–Bonferroni
+                            #             "hochber" = Hochberg
+                            #             "hommel" = Hommel
+                            #             "bonferroni" = Bonferroni
+                            #             "BH" or "fdr" = Benjamini–Hochberg
+                            #             "BY" = Benjamini–Yekutieli
+                            #             "none" = No adjustment
 
-raw_data$`Cell Count` <- NULL # deleting 'Cell count' column
+groups <- "" ## what is the current name of your column containing groupings in raw data?
 
-#View(raw_data) # viewing raw data 
+control_group <- "" ## the name of your control group in your raw data file. what is your control group called?
 
-summary(raw_data) # summary of results
-
-str(raw_data) # looking at data structure. They were all characters here.
-
-raw_data[, 4:ncol(raw_data)] <- lapply(raw_data[, 4:ncol(raw_data)], function(x)
-as.numeric(as.character(x))) # changing columns 4-n in raw data to numeric variables. Takes all columns in raw_data, from column 4 to the last and changes all character columns to numeric values
-
-sum(is.na(raw_data[, 4:ncol(raw_data)])) # checking that no NA values were introduced by coercion
-
-str(raw_data) # checking the structure again
-
-summary(raw_data) # summarising the data 
-
-summary(raw_data[, 4:10]) # summaries for a subset of data
-
-##### setting row names to sample names (not decided long term) and deleting all columns other than lipids tested. ##############################################
-
-raw_data_lipids <- raw_data # copying the data frame to manipulate
-
-rownames(raw_data_lipids) <- raw_data_lipids[[2]] # renaming the row names as the sample names
-
-raw_data_lipids <- raw_data_lipids[, -(1:2)] # Deleting columns 1-2/3 to just keep the lipid data and remove unnecessary metadata. To 2 is keeping grouping, to 3 is without grouping.
-
-duplicated_columns <- duplicated(as.list(raw_data_lipids)) # creates logical list of whether any columns are completely duplicated values
-
-any(duplicated_columns) # tells you if any in the list are true
+glm_variables <- c("","","") ## include the names of columns with metadata to be included
 
 ################################################################################
-## lipids tested for the client ################################################
+########################## 2. PACKAGES TO INSTALL ##############################
 ################################################################################
 
-lipids_tested <- read.csv("lipids_tested_1.csv", header = T) # reading in the list of lipids tested
-#View(lipids_tested)
+packages <- c(
+  "moments", "tidyr", "dplyr", "ggplot2", "stats", "pheatmap",
+  "ggrepel","readr", "tidyverse", "FSA"
+) # names of all packages to be installed and loaded
 
-lipids_tested <- lipids_tested %>% 
-  pivot_longer(
-    cols = everything(),
-    names_to = "family",
-    values_to = "lipid"
-  ) %>% 
-  filter(!is.na(lipid)) # putting all column values (lipid) into rows with their associated column name (family)
 
-lipids_tested <- lipids_tested[order(lipids_tested$family), ] # ordering the lipid families alphabetically
+for (pkg in packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    install.packages(pkg)
+  }
+} # Install any that are missing
 
-summary(lipids_tested) # 4318 rows with empty lipid cells
+lapply(packages, library, character.only = TRUE) # Load them all
 
-lipids_tested <- lipids_tested[!(is.na(lipids_tested$lipid) | lipids_tested$lipid == ""), ] # getting rid of the rows without relevant lipids attached (i.e. blank cells for lipid names). | means OR in syntax.
+################################################################################
+######################## 3. SETTING WORK DIRECTOTY #############################
+################################################################################
 
-lipids_tested$lipid <- make.names(lipids_tested$lipid) # changing the (): characters to . to match the syntax of the column names in the other data frame.
+setwd(working_directory) # sets working directory as that stated at the top of the script
 
-#View(lipids_tested)
-summary(lipids_tested) # 1602 rows without empty lipid cells
+################################################################################
+###################### 4. CREATING DIRECTORY STRUCTURE #########################
+################################################################################
 
-## checking for mismatched columns #############################################
+if(!dir.exists("outputs")){
+  cat("'Outputs' directory created")
+  dir.create("outputs")
+} else {
+  cat("'Outputs' directory already exists")
+} # creates 'outputs' directory if it isn't already there
 
-#all_cols <- unique(unlist(lapply(raw_data_by_family, colnames))) 
-#number_of_lipids_saved <- length(all_cols)  # total number of unique column names. Should be the same as the number of variables in the raw_data_lipids. If it's not then there is an issue with mismatched columns somewhere and the below script will help with figuring out where those are.
+if(!dir.exists("outputs/total_lipids")){
+  cat("'total_lipids' directory created")
+  dir.create("outputs/total_lipids", recursive = TRUE)
+} else {
+  cat("'total_lipids' directory already exists")
+} # creates 'outputs/total_lipids' directory if it isn't already there
 
-raw_data_columns <- colnames(raw_data_lipids) # saving all of the column names (lipids)
-lipids <- lipids_tested$lipid # saving the names of all of the lipids tested.
+if(!dir.exists("outputs/error_files")){
+  cat("'error_files' directory created")
+  dir.create("outputs/error_files", recursive = TRUE)
+} else {
+  cat("'error_files' directory already exists")
+} # creates 'outputs/error_files' directory if it isn't already there
 
-unmatched_cols <- setdiff(raw_data_columns, lipids) # looking at how the two above lists match by outputting which ones didn't. We're asking what columns in the results table were never officially tested by name? We then need to look at what results these are and why they're there. These cause an issue as they are unlikely to be included in the analysis due to the way this script works.
+################################################################################
+######################### 5. INITIAL DATA TIDYING ##############################
+################################################################################
 
-number_unmatched <- length(unmatched_cols) # asking how many columns didn't match
+raw_data <- read.csv(raw_data_file_name, header = T) # reads in the raw data file as an object
 
-print(unmatched_cols[1:number_unmatched]) # to tell me what the mismatched columns are
+raw_data_lipids <- raw_data # creates copy of object to work with
+duplicated_columns <- duplicated(as.list(raw_data_lipids)) # lists the columns of raw data and looks for any that are duplicated to save as an object
+any(duplicated_columns) # asks if there are any duplicated columns (TRUE/FALSE)
+duplicated_column_names <- names(raw_data_lipids)[duplicated_columns] # saves the names of the duplicated columns
+print(duplicated_column_names) # prints them in the console
+duplicated_column_names <- data.frame(duplicated_columns = duplicated_column_names) # makes a data frame out of them
+write.csv(duplicated_column_names, "outputs/error_files/duplicated_columns.csv", row.names = FALSE) # saves the duplicated column names as an error file
 
-## subset data by lipid family #################################################
+metadata <- raw_data[ , !(grepl("\\.$", names(raw_data)) | names(raw_data) == "Cholesterol")] # separates metadata from raw data by anything not ending in '.' or anything not named Cholesterol
+groups <- metadata[,"Group"] # separates the column that the groupings are in and saves them
+raw_data_lipids <- raw_data[ , grepl("\\.$", names(raw_data)) | names(raw_data) == "Cholesterol"] # separates lipid data from raw data by anything that ends in '.' or is called Cholesterol
+str(raw_data_lipids) # asks what the structure of raw_data_lipids is
+raw_data_lipids[] <- lapply(raw_data_lipids, function(x) as.numeric(as.character(x))) # turns everything in raw_data_lipids that was a character to numeric
+str(raw_data_lipids) # check that it's worked
+sum(is.na(raw_data_lipids[,ncol(raw_data_lipids)])) # look for if there are any NA values in the data
 
-lipid_families <- split(lipids_tested$lipid, lipids_tested$family) # split the lipids by their family and save them as such. It's asking for all lipids to be grouped by family
+################################################################################
+####################### 6. LIPIDS TESTED MANIPULATION ##########################
+################################################################################
 
-raw_data_by_family <- list() # creating an empty list to store the separated data frames
+lipids_tested <- read.csv(lipids_tested_file_name, header = T) # reads in the lipids tested data
+lipids_tested <- pivot_longer(lipids_tested, # transforms the data to long from wide format
+                              cols = everything(), # takes all of the columns
+                              names_to = "family", # puts each previous column name into a new column called family 
+                              values_to = "lipid" # puts all the values associated with the old column names into a column called lipid
+)
+
+lipids_tested <- lipids_tested[order(lipids_tested$family), ] # order the family column alphabetically
+lipids_tested <- lipids_tested[!(is.na(lipids_tested$lipid) | lipids_tested$lipid == ""), ] # only keep rows that show actual values in the lipid column
+lipids_tested$lipid <- make.names(lipids_tested$lipid) # standardize the names of the lipid families to something R can recognise
+
+################################################################################
+###################### 7. CHECKING FOR MISMATCHED COLUMNS ######################
+######################## I.E. COLUMNS TESTED THAT THERE ########################
+########################## WAS NO RESULTANT DATA FOR ###########################
+################################################################################
+
+raw_data_columns <- colnames(raw_data_lipids[ncol(raw_data_lipids)]) # 
+lipids <- lipids_tested$lipid
+unmatched_cols <- setdiff(raw_data_columns, lipids)
+number_unmatched <- length(unmatched_cols)
+unmatched_cols <- data.frame(Unmatched_columns = unmatched_cols)
+write.csv(unmatched_cols, "outputs/error_files/unmatched_columns.csv", row.names = FALSE) # this should be empty because the mismatched columns now end up in the metadata object
+
+################################################################################
+####################### 8. SUBSET DATA BY LIPID FAMILY #########################
+################################################################################
+
+sanitize_name <- function(x) {
+  x <- gsub("[^A-Za-z0-9]+", "_", x)  # replace non-alphanumeric with underscore
+  x <- gsub("_+", "_", x)             # collapse multiple underscores
+  x <- gsub("^_|_$", "", x)           # trim leading/trailing underscores
+  x
+}
+
+lipids_tested$Family_clean <- sanitize_name(lipids_tested$family)
+lipid_families <- split(lipids_tested$lipid, lipids_tested$Family_clean)
+raw_data_by_family <- list()
 
 for(family in names(lipid_families)) {
-  # Get lipid columns for this family
   cols <- lipid_families[[family]]
-  
-  # Only keep columns that actually exist in raw_data
   cols <- intersect(cols, colnames(raw_data_lipids))
-  
-  # Subset raw_data by these columns
   raw_data_by_family[[family]] <- raw_data[, cols, drop = FALSE]
-} # the column numbers (489 added) do not match the number of columns in the raw data (500 columns) because of the mismatched columns previously detected. This means that this program will only separate columns in raw data that are identically found in the list of tested lipids. Anything named any differently will be ignored. Therefore, data could be lost this way and is something to be very careful of.[] is for a subset, [[]] extracts a whole object.
+}
 
 for(family in names(raw_data_by_family)) {
   assign(paste0("raw_data_", family), raw_data_by_family[[family]])
-} # creating different data frames of the separated
+}
 
-## remove data frames with 0 variables before averaging ########################
-## it causes issues with loops to keep them there and they are unnecessary #####
+all_raw_data <- ls(pattern = "^raw_data_")
 
-raw_data_names <- ls(pattern = "^raw_data_") # making a list of all the data frames I have with names starting 'raw_data_'
-
-for (name in raw_data_names) {
+for (name in all_raw_data) {
   df <- get(name)
-  
   if (is.data.frame(df) && ncol(df) == 0) {
     message("Removing empty data frame: ", name)
     rm(list = name, envir = .GlobalEnv)
+    all_raw_data <- setdiff(all_raw_data, name)  
   }
-} # checking for empty data frames and removing them. This loops says, check for every name in the list I've made, get the data frame that's related to it, if the data frame has no columns then give a message that it's empty and then remove it. 
-
-################################################################################
-########### WORKING ON A LOOP FOR ALL LIPID FAMILIES ###########################
-################################################################################
-
-raw_data_names <- ls(pattern = "^raw_data_") # makes sure we're analysing everything that has data in the final data frame
-
-raw_data_names <- raw_data_names[sapply(raw_data_names, function(x) {
-  df <- get(x)
-  is.data.frame(df) && all(sapply(df, is.numeric))
-})]
-
-if (!dir.exists("outputs")) {
-  dir.create("outputs")
-} # makes a folder called 'outputs'
-
-lipid_families_folder <- file.path("outputs", "lipid_families")
-
-if (!dir.exists(lipid_families_folder)) {
-  dir.create(lipid_families_folder)
-} # makes an extra folder in 'outputs' called 'lipid families'
-
-
-for (name in raw_data_names) {
-  cat("Creating folder for:", name, "\n")
-  lipid_family <- sub("^raw_data_", "", name)
-  folder_path <- file.path("outputs/lipid_families", lipid_family)
-  if (!dir.exists(folder_path)) {
-    dir.create(folder_path)
-  }
-} # creates a folder in 'outputs/lipid_families' for all information relating to each of the lipid families
-
-#### FOR LOOP FOR COMPARING THE AVERAGES OF ALL LIPIDS WITHIN A FAMILY #########
-
-for (df_name in raw_data_names) {
-  
-  lipid_family <- sub("^raw_data_", "", df_name)
-  folder_path <- file.path("outputs", "lipid_families", lipid_family)
-  
-  ## setting message
-  cat("Processing bar plots for:", df_name, "\n")
-  
-  ## Just in case folder doesn't exist, you can optionally check or skip
-  if (!dir.exists(folder_path)) {
-    warning(paste("Folder does not exist:", folder_path))
-    next  # skip to next iteration if folder missing
-  }
-  
-  df <- get(df_name)
-  
-  # Calculate average values for each lipid
-  avg_values <- colMeans(df, na.rm = TRUE)
-  
-  plot_df <- data.frame(
-    Lipid = names(avg_values),
-    Average = as.numeric(avg_values)
-  )
-  
-  p <- ggplot(plot_df, aes(x = reorder(Lipid, Average), y = Average, fill = Average)) +
-    geom_bar(stat = "identity") +
-    coord_flip() +
-    scale_fill_gradient(low = "pink", high = "red") +
-    labs(title = paste("Average Lipid Values -", lipid_family),
-         x = "Lipid",
-         y = "Average Value") +
-    theme_classic()  
-  
-  num_lipids <- nrow(plot_df)
-  height <- max(4, num_lipids * 0.15)
-  
-  # Save the plot inside the existing folder
-  plot_file <- file.path(folder_path, paste0(lipid_family, "_barplot.png"))
-  ggsave(filename = plot_file, plot = p, width = 8, height = height)
 }
 
+raw_data_names <- Filter(function(x) {
+  obj <- get(x)
+  
+  if (!is.data.frame(obj)) {
+    message("Excluded for not being a data frame: ", x)
+    return(FALSE)
+  }
+  
+  if (!all(sapply(obj, is.numeric))) {
+    message("Excluded for non-numeric columns: ", x)
+    return(FALSE)
+  }
+  
+  TRUE
+}, all_raw_data)
+
+raw_data_names <- raw_data_names[raw_data_names != "raw_data_lipids"]
+raw_data_names
+
 ################################################################################
-####### LOOP FOR A GENERAL FOREST PLOT COMPARING ALL LIPIDS IN A FAMILY ########
+######### 9. CREATING FOLDERS FOR ALL LIPID FAMILIES AND CATEGORIES ############
 ################################################################################
 
-for (df_name in raw_data_names) {
+write.csv(
+  data.frame(Family = names(lipid_families)),
+  "lipid_categories_1.csv",
+  row.names = FALSE
+) ## THIS NEEDS TO BE FILLED IN BY THE CLIENT AND SAVED AS 'complete_lipid_categories.csv'
+
+category_mapping <- read.csv("complete_lipid_categories.csv", stringsAsFactors = FALSE)
+
+category_mapping$Family_clean   <- sanitize_name(category_mapping$Family)
+category_mapping$Category_clean <- sanitize_name(category_mapping$Category)
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+if (!dir.exists(top_level_dir)) {
+  dir.create(top_level_dir, recursive = TRUE, showWarnings = FALSE)
+}
+
+count <- 1
+
+for (name in raw_data_names) {
+  lipid_family <- make.names(sub("^raw_data_", "", name))
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
   
-  lipid_family <- sub("^raw_data_", "", df_name)
-  folder_path <- file.path("outputs", "lipid_families", lipid_family)
-  
-  cat("Processing forest plots comparing all lipids within a family for:", df_name, "\n")
-  
-  if (!dir.exists(folder_path)) {
-    warning(paste("Folder does not exist:", folder_path))
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
     next
   }
   
-  df <- get(df_name)
+  folder_path <- file.path(top_level_dir, category, lipid_family)
   
-  # Convert df to long format for easier summary stats
-  df_long <- tidyr::pivot_longer(df, cols = everything(), names_to = "Lipid", values_to = "Value")
-  
-  # Calculate summary statistics for each lipid
-  summary_stats <- df_long %>%
-    group_by(Lipid) %>%
-    summarise(
-      mean = mean(Value, na.rm = TRUE),
-      sd = sd(Value, na.rm = TRUE),
-      n = sum(!is.na(Value)),
-      se = sd / sqrt(n),
-      lower = mean - 1.96 * se,
-      upper = mean + 1.96 * se
-    )
-  
-  csv_file <- file.path(folder_path, paste0(lipid_family, "_summary_stats.csv"))
-  write.csv(summary_stats, csv_file, row.names = FALSE)
-  
-  # Create the forest plot
-  p <- ggplot(summary_stats, aes(x = reorder(Lipid, mean), y = mean)) +
-    geom_point(color = "red", size = 3) +
-    geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.3, color = "darkred") +
-    coord_flip() +
-    labs(title = paste("Forest Plot -", lipid_family),
-         x = "Lipid",
-         y = "Mean (95% CI)") +
-    theme_classic()
-  
-  num_lipids <- nrow(summary_stats)
-  height <- max(4, num_lipids * 0.15)
-  
-  # Save the forest plot to file
-  plot_file <- file.path(folder_path, paste0(lipid_family, "_forest_plot.png"))
-  ggsave(filename = plot_file, plot = p, width = 8, height = height)
+  if (!dir.exists(folder_path)) {
+    dir.create(folder_path, recursive = TRUE, showWarnings = FALSE)
+    message(count, ". Folder created: ", folder_path)
+    count <- count + 1
+  }
 }
 
 ################################################################################
-################## FOREST PLOT FOR TOP 10% OF AVERAGES #########################
+########################## END OF DATA ORGANISATION ############################
+################################################################################
+################################################################################
+########################## END OF DATA ORGANISATION ############################
+################################################################################
+################################################################################
+########################## END OF DATA ORGANISATION ############################
 ################################################################################
 
 ################################################################################
-######################## ADDING GROUPS BACK TO DFS #############################
+###################### 10. ADDING GROUPS BACK TO DFS ###########################
 ################################################################################
-
-groups <- raw_data[,3]
 
 for (name in raw_data_names) {
   cat("Adding 'groups' column to:", name, "\n")
   df <- get(name)
-  cbind(groups, df)
+  df <- cbind(groups, df)
   assign(name, df)
-} # adding a groups column to every lipid families df
-
-################################################################################
-################## CALCULATING AVERAGES FOR GROUPS #############################
-################################################################################
+} # only run once!!
 
 for (name in raw_data_names) {
+  lipid_family <- make.names(sub("^raw_data_", "", name))
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
   
-  lipid_family <- sub("^raw_data_", "", name)
-  folder_path <- file.path("outputs", "lipid_families", lipid_family)
-  
-  # make sure the folder exists
-  if (!dir.exists(folder_path)) {
-    dir.create(folder_path, recursive = TRUE)
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    next
   }
   
-  cat("Processing group averages for:", name, "\n")
-  
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  cat("Saving raw data for:", name, "\n")
   df <- get(name)
-  df_avg <- aggregate(. ~ groups, data = df, FUN = mean)
+  write.csv(df, file = file.path(folder_path, paste0(lipid_family, "_raw_data.csv")), row.names = FALSE)
+}
+
+################################################################################
+###################### 11. CALCULATING GROUP AVERGAGES #########################
+################################################################################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+for (name in raw_data_names) {
+  lipid_family <- make.names(sub("^raw_data_", "", name))
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
   
-  new_name <- paste0(name, "_avg")
-  assign(new_name, df_avg)
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    next
+  }
   
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  cat("Saving averages for:", name, "to folder:", folder_path, "\n")
+  df_avg <- aggregate(. ~ groups, data = get(name), FUN = mean)
   csv_file <- file.path(folder_path, paste0(lipid_family, "_avg.csv"))
   write.csv(df_avg, file = csv_file, row.names = FALSE)
 }
 
 ################################################################################
-################## CALCULATING AVERAGES FOR GROUPS #############################
+####################### 12. HISTOGRAMS FOR NORMALITY ###########################
 ################################################################################
 
-## this loop performs an ANOVA on all lipid families individually and confirms whether, for any lipid, there is one group significantly different from the others. Based on a p-value threshold of 0.05 and below.
+top_level_dir <- file.path("outputs", "lipid_categories")
 
 for (name in raw_data_names) {
-  cat("Running ANOVA for:", name, "\n")
+  lipid_family <- sub("^raw_data_", "", name)
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  
+  hist_folder <- file.path(folder_path, "histograms")
+  if (!dir.exists(hist_folder)) {
+    dir.create(hist_folder, recursive = TRUE, showWarnings = FALSE)
+    message("Created histograms subfolder for: ", lipid_family)
+  }
+  
+  cat("Processing histograms for:", name, "\n")
+  df <- get(name)
+  
+  for (col in setdiff(names(df), "groups")) {
+    png(file.path(hist_folder, paste0(col, "_hist.png")))
+    hist(df[[col]],
+         main = paste("Histogram of", col),
+         xlab = col,
+         breaks = 30)
+    dev.off()
+  }
+}
+
+################################################################################
+################# 13. FOREST PLOTS - GROUPS WITHIN A FAMILIY ###################
+################################################################################
+
+#### SAVING TOTALS FOR EACH FAMILY #############################################
+
+counter <- 1
+total_families <- length(raw_data_names)
+
+for (name in raw_data_names) {
+  # Display progress
+  lipid_family <- sub("^raw_data_", "", name)
+  message("Processing family ", counter, " of ", total_families, ": ", lipid_family)
+  
+  # Get the data frame
+  df <- get(name)
+  group_col <- names(df)[1]
+  lipid_columns <- names(df)[-1]
+  
+  # Convert lipid columns to numeric safely
+  df[, lipid_columns] <- lapply(df[, lipid_columns, drop = FALSE], function(x) as.numeric(as.character(x)))
+  
+  # Compute total per sample
+  total_df <- data.frame(
+    group = df[[group_col]],
+    total = rowSums(df[, lipid_columns, drop = FALSE], na.rm = TRUE)
+  )
+  
+  # Assign the new data frame in the environment
+  total_name <- paste0("total_", lipid_family)
+  assign(total_name, total_df)
+  
+  # Increment counter
+  counter <- counter + 1
+}
+
+##### FOREST PLOTS (ABSOLUTE DIFFERENCE) #######################################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+counter <- 1
+total_families <- length(raw_data_names)
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  message("Processing family ", counter, " of ", total_families, ": ", lipid_family)
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    counter <- counter + 1
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  total_name <- paste0("total_", lipid_family)
+  if (!exists(total_name)) {
+    message("No total data frame found for: ", lipid_family)
+    counter <- counter + 1
+    next
+  }
+  
+  df_total <- get(total_name)  # must have columns: group, total
+  group_col <- "group"
+  
+  df_total$total <- as.numeric(df_total$total)
+  
+  summary_df <- df_total %>%
+    group_by(.data[[group_col]]) %>%
+    summarize(
+      mean_total = mean(total, na.rm = TRUE),
+      sd_total = sd(total, na.rm = TRUE),
+      n = n(),
+      se_total = sd_total / sqrt(n),
+      .groups = "drop"
+    )
+  
+  if (!control_group %in% summary_df[[group_col]]) {
+    message("Control group not found for ", lipid_family, " — skipping plot")
+    counter <- counter + 1
+    next
+  }
+  
+  control_mean <- summary_df$mean_total[summary_df[[group_col]] == control_group]
+  summary_df <- summary_df %>%
+    mutate(diff_from_control = mean_total - control_mean)
+  
+  plot_df <- summary_df %>% filter(.data[[group_col]] != control_group)
+  
+  max_diff <- max(abs(plot_df$diff_from_control + plot_df$se_total), 
+                  abs(plot_df$diff_from_control - plot_df$se_total), na.rm = TRUE)
+  
+  plot <- ggplot(plot_df, aes(y = .data[[group_col]], x = diff_from_control)) +
+    geom_point(size = 3, color = "#990101") +
+    geom_errorbarh(aes(
+      xmin = diff_from_control - se_total,
+      xmax = diff_from_control + se_total
+    ), height = 0.1, color = "#990101") +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "#747373") +
+    labs(
+      title = paste("Forest plot (relative to Control):", lipid_family),
+      x = "Difference from Control (sum of lipids)",
+      y = "Group"
+    ) +
+    theme_bw() +
+    coord_cartesian(xlim = c(-max_diff, max_diff))
+  
+  ggsave(
+    filename = file.path(folder_path, paste0(lipid_family, "_forest_plot.png")),
+    plot = plot,
+    width = 6,
+    height = 8
+  )
+  
+  message("Saved forest plot for: ", lipid_family)
+  counter <- counter + 1
+}
+
+#### FOREST PLOTS (LOG2 FOLD CHANGE) ###########################################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+counter <- 1
+total_families <- length(raw_data_names)
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  message("Processing family ", counter, " of ", total_families, ": ", lipid_family)
+  
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    counter <- counter + 1
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  total_name <- paste0("total_", lipid_family)
+  if (!exists(total_name)) {
+    message("No total data frame found for: ", lipid_family)
+    counter <- counter + 1
+    next
+  }
+  
+  df_total <- get(total_name)  # must have columns: group, total
+  df_total$total <- as.numeric(df_total$total)
+  group_col <- "group"
+  
+  # Summary per group
+  summary_df <- df_total %>%
+    group_by(.data[[group_col]]) %>%
+    summarize(
+      mean_total = mean(total, na.rm = TRUE),
+      sd_total = sd(total, na.rm = TRUE),
+      n = n(),
+      se_total = sd_total / sqrt(n),
+      .groups = "drop"
+    )
+  
+  # Skip if control group not present
+  if (!control_group %in% summary_df[[group_col]]) {
+    message("Control group not found for ", lipid_family, " — skipping plot")
+    counter <- counter + 1
+    next
+  }
+  
+  # Compute log2 fold change relative to control
+  control_mean <- summary_df$mean_total[summary_df[[group_col]] == control_group]
+  summary_df <- summary_df %>%
+    mutate(
+      fold_change = mean_total / control_mean,
+      log2_fold_change = log2(fold_change),
+      log2_se = se_total / (control_mean * log(2))  # approximate SE on log2 scale
+    )
+  
+  # Exclude control group from plotting
+  plot_df <- summary_df %>% filter(.data[[group_col]] != control_group)
+  
+  # Determine symmetric x-axis limits
+  max_abs_log2 <- max(abs(plot_df$log2_fold_change + plot_df$log2_se),
+                      abs(plot_df$log2_fold_change - plot_df$log2_se),
+                      na.rm = TRUE)
+  
+  # Forest plot
+  plot <- ggplot(plot_df, aes(y = .data[[group_col]], x = log2_fold_change)) +
+    geom_point(size = 3, color = "#05016F") +
+    geom_errorbarh(aes(
+      xmin = log2_fold_change - log2_se,
+      xmax = log2_fold_change + log2_se
+    ), height = 0.1, color = "#05016F") +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "#747373") +
+    labs(
+      title = paste("Forest plot (log2 fold change vs Control):", lipid_family),
+      x = "Log2 Fold Change from Control",
+      y = "Group"
+    ) +
+    theme_bw() +
+    coord_cartesian(xlim = c(-max_abs_log2, max_abs_log2))
+  
+  # Save plot
+  ggsave(
+    filename = file.path(folder_path, paste0(lipid_family, "_log2_fold_change_forest_plot.png")),
+    plot = plot,
+    width = 6,
+    height = 8
+  )
+  
+  message("Saved log2 fold change forest plot for: ", lipid_family)
+  counter <- counter + 1
+}
+
+################################################################################
+################ 14. FOREST PLOTS - GROUPS WITHIN A CATEGORY ###################
+################################################################################
+
+#### SAVING TOTALS FOR EACH CATEGORY ###########################################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+unique_categories <- unique(category_mapping$Category_clean)
+counter <- 1
+total_categories <- length(unique_categories)
+
+category_dfs <- list()  
+
+for (category in unique_categories) {
+  message("Processing category ", counter, " of ", total_categories, ": ", category)
+  families_in_cat <- category_mapping$Family_clean[category_mapping$Category_clean == category]
+  
+  family_dfs <- list()
+  for (family in families_in_cat) {
+    total_name <- paste0("total_", family)
+    if (exists(total_name)) {
+      family_dfs[[family]] <- get(total_name)
+    }
+  }
+  
+  if (length(family_dfs) == 0) {
+    message("No family data found for category: ", category)
+    counter <- counter + 1
+    next
+  }
+  
+  totals_only <- lapply(family_dfs, function(df) df$total)
+  
+  if (length(totals_only) == 1) {
+    category_df <- data.frame(
+      group = family_dfs[[1]]$group
+    )
+    category_df[[paste0("total_", names(family_dfs))]] <- totals_only[[1]]
+    
+    category_df$total <- totals_only[[1]]
+    
+  } else {
+    category_df <- data.frame(
+      group = family_dfs[[1]]$group,
+      do.call(cbind, totals_only)
+    )
+    names(category_df)[-1] <- paste0("total_", names(family_dfs))
+    category_df$total <- rowSums(category_df[,-1], na.rm = TRUE)
+  }
+  
+  assign(paste0("category_", category), category_df)
+  category_dfs[[category]] <- category_df
+  
+  message("Category data frame created with ", nrow(category_df), " rows and ", ncol(category_df), " columns (including total column)")
+  
+  counter <- counter + 1
+}
+
+#### FOREST PLOTS (ABSOLUTE DIFFERENCE FROM MEAN) ##############################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+counter <- 1
+total_categories <- length(category_dfs)
+
+for (category in names(category_dfs)) {
+  message("Processing category ", counter, " of ", total_categories, ": ", category)
+  
+  df_category <- category_dfs[[category]]
+  
+  df_category$total <- as.numeric(df_category$total)
+  
+  summary_df <- df_category %>%
+    group_by(group) %>%
+    summarize(
+      mean_total = mean(total, na.rm = TRUE),
+      sd_total = sd(total, na.rm = TRUE),
+      n = n(),
+      se_total = sd_total / sqrt(n),
+      .groups = "drop"
+    )
+  
+  if (!control_group %in% summary_df$group) {
+    message("Control group not found for category ", category, " — skipping plot")
+    counter <- counter + 1
+    next
+  }
+  
+  control_mean <- summary_df$mean_total[summary_df$group == control_group]
+  summary_df <- summary_df %>%
+    mutate(diff_from_control = mean_total - control_mean)
+  
+  plot_df <- summary_df %>% filter(group != control_group)
+  
+  if (nrow(plot_df) == 0) {
+    message("No groups to plot for category ", category, " — skipping plot")
+    counter <- counter + 1
+    next
+  }
+  
+  max_diff <- max(abs(plot_df$diff_from_control + plot_df$se_total), 
+                  abs(plot_df$diff_from_control - plot_df$se_total), na.rm = TRUE)
+  
+  plot <- ggplot(plot_df, aes(y = group, x = diff_from_control)) +
+    geom_point(size = 3, color = "#990101") +
+    geom_errorbarh(aes(
+      xmin = diff_from_control - se_total,
+      xmax = diff_from_control + se_total
+    ), height = 0.1, color = "#990101") +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "#747373") +
+    labs(
+      title = paste("Forest plot (relative to Control):", category),
+      x = "Difference from Control (sum of lipids)",
+      y = "Group"
+    ) +
+    theme_bw() +
+    coord_cartesian(xlim = c(-max_diff, max_diff))
+  
+  folder_path <- file.path(top_level_dir, category)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  ggsave(
+    filename = file.path(folder_path, paste0(category, "_absolute_change_forest_plot.png")),
+    plot = plot,
+    width = 6,
+    height = 8
+  )
+  
+  message("Saved forest plot for category: ", category)
+  counter <- counter + 1
+}
+
+#### FOREST PLOTS (LOG2 FOLD CHANGE DIFFERENCE FROM MEAN) ######################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+counter <- 1
+total_categories <- length(category_dfs)  # category_dfs from previous step
+
+for (category in names(category_dfs)) {
+  message("Processing category ", counter, " of ", total_categories, ": ", category)
+  
+  # Get category data frame
+  df_category <- category_dfs[[category]]  # must have 'group' and 'total'
+  
+  # Ensure numeric
+  df_category$total <- as.numeric(df_category$total)
+  
+  # Compute summary per group
+  summary_df <- df_category %>%
+    group_by(group) %>%
+    summarize(
+      mean_total = mean(total, na.rm = TRUE),
+      sd_total = sd(total, na.rm = TRUE),
+      n = n(),
+      se_total = sd_total / sqrt(n),
+      .groups = "drop"
+    )
+  
+  # Skip if control group is missing
+  if (!control_group %in% summary_df$group) {
+    message("Control group not found for category ", category, " — skipping plot")
+    counter <- counter + 1
+    next
+  }
+  
+  # Compute fold change relative to control
+  control_mean <- summary_df$mean_total[summary_df$group == control_group]
+  summary_df <- summary_df %>%
+    mutate(
+      fold_change = mean_total / control_mean,
+      log2_fold_change = log2(fold_change)
+    )
+  
+  # Exclude control group from plotting
+  plot_df <- summary_df %>% filter(group != control_group)
+  
+  if (nrow(plot_df) == 0) {
+    message("No groups to plot for category ", category, " — skipping plot")
+    counter <- counter + 1
+    next
+  }
+  
+  # Determine symmetric x-axis limits using SEs from plot_df only
+  max_abs_log2 <- max(
+    abs(plot_df$log2_fold_change + (plot_df$se_total / (control_mean * log(2)))),
+    abs(plot_df$log2_fold_change - (plot_df$se_total / (control_mean * log(2)))),
+    na.rm = TRUE
+  )
+  
+  # Forest plot using log2 fold change
+  plot <- ggplot(plot_df, aes(y = group, x = log2_fold_change)) +
+    geom_point(size = 3, color = "#990101") +
+    geom_errorbarh(aes(
+      xmin = log2_fold_change - (se_total / (control_mean * log(2))),
+      xmax = log2_fold_change + (se_total / (control_mean * log(2)))
+    ), height = 0.1, color = "#990101") +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "#747373") +
+    labs(
+      title = paste("Category-level Forest Plot (log2 fold change):", category),
+      x = "Log2 Fold Change from Control",
+      y = "Group"
+    ) +
+    theme_bw() +
+    coord_cartesian(xlim = c(-max_abs_log2, max_abs_log2))
+  
+  # Create category folder if it doesn't exist
+  folder_path <- file.path(top_level_dir, category)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  # Save the forest plot
+  ggsave(
+    filename = file.path(folder_path, paste0(category, "_log2_change_forest_plot.png")),
+    plot = plot,
+    width = 6,
+    height = 8
+  )
+  
+  message("Saved forest plot for category: ", category)
+  counter <- counter + 1
+}
+
+################################################################################
+############### 15. NORMALITY OUTPUT FOR ALL SAMPLES COMBINED ##################
+################################################################################
+
+## across all samples for each lipid ###########################################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)  
+  df <- get(name)
+  lipid_columns <- names(df)[-1]
+  distribution_summary <- data.frame(
+    lipid = lipid_columns,
+    skewness = numeric(length(lipid_columns)),
+    kurtosis = numeric(length(lipid_columns)),
+    shapiro_p = numeric(length(lipid_columns)),
+    normality = character(length(lipid_columns)),
+    stringsAsFactors = FALSE
+  )
+  
+  for (i in seq_along(lipid_columns)) {
+    lipid <- lipid_columns[i]
+    values <- df[[lipid]]  
+    distribution_summary$skewness[i] <- skewness(values)
+    distribution_summary$kurtosis[i] <- kurtosis(values)
+    
+    if (length(values) >= 3 & length(values) <= 5000) {
+      shapiro_res <- shapiro.test(values)
+      distribution_summary$shapiro_p[i] <- shapiro_res$p.value
+      distribution_summary$normality[i] <- ifelse(shapiro_res$p.value > 0.05, "Normal", "Non-normal")
+    } else {
+      distribution_summary$shapiro_p[i] <- NA
+      distribution_summary$normality[i] <- "NA"
+    }
+  }
+  
+  distribution_summary$shapiro_p_adj <- p.adjust(distribution_summary$shapiro_p, method = adjustment_method)
+  distribution_summary$normality <- ifelse(distribution_summary$shapiro_p_adj > 0.05, "Normal", "Non-normal")
+  distribution_summary <- distribution_summary[, c("lipid", "skewness", "kurtosis", "shapiro_p", "shapiro_p_adj", "normality")]
+  cat("Saving distribution summary for:", name, "\n")
+  
+  if (!dir.exists(folder_path)) {
+    dir.create(folder_path, recursive = TRUE, showWarnings = FALSE)
+  }
+  
+  dis_csv_file <- file.path(folder_path, paste0(lipid_family, "_distribution.csv"))
+  write.csv(distribution_summary, file = dis_csv_file, row.names = FALSE)
+}
+
+## number of all lipids that reached normality with shapiro-wilk test (plus correction for multiple testing)
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+all_distribution_csv_files <- list.files(top_level_dir, pattern = "_distribution\\.csv$", full.names = TRUE, recursive = TRUE)
+all_lipids_distribution <- list()
+
+for (file in all_distribution_csv_files) {
+  df <- read.csv(file, header = TRUE)
+  summary_df <- df[, c(1, ncol(df))]
+  summary_df$family <- basename(file)
+  all_lipids_distribution[[length(all_lipids_distribution) + 1]] <- summary_df
+}
+
+combined_summary <- bind_rows(all_lipids_distribution)
+combined_summary <- combined_summary[-3]
+write.csv(combined_summary, file = file.path(top_level_dir,"..","total_lipids", "combined_lipid_normality.csv"), row.names = FALSE)
+distribution_counts <- table(combined_summary$normality)
+distribution_counts_df <- as.data.frame(distribution_counts)
+distribution_total <- sum(distribution_counts)
+distribution_counts_df$percent <- round(100 * distribution_counts_df$Freq / distribution_total, 1)
+distribution_counts_df
+write.csv(distribution_counts_df, file = file.path(top_level_dir,"..","total_lipids", "combined_lipid_normality_summary.csv"), row.names = FALSE)
+
+################################################################################
+################# 16. NORMALITY OUTPUT FOR INDIVIDUAL GROUPS ###################
+################################################################################
+
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)  
+  df <- get(name)
+  lipid_columns <- names(df)[-1]
+  group_col <- names(df)[1]
+  groups <- unique(df[[group_col]])
+  
+  per_group_results <- list()
+  
+  for (i in seq_along(lipid_columns)) {
+    lipid <- lipid_columns[i]
+    
+    group_p <- c()
+    group_normality <- c()
+    
+    for (g in groups) {
+      vals_g <- df[df[[group_col]] == g, lipid]
+      if (length(vals_g) >= 3 & length(vals_g) <= 5000) {
+        if (length(unique(vals_g)) > 1) {
+          p <- shapiro.test(vals_g)$p.value
+          group_p <- c(group_p, p)
+          group_normality <- c(group_normality, ifelse(p > 0.05, "Normal", "Non-normal"))
+        } else {
+          group_p <- c(group_p, NA)
+          group_normality <- c(group_normality, "All identical")
+        }
+      } else {
+        group_p <- c(group_p, NA)
+        group_normality <- c(group_normality, NA)
+      }
+    }
+    
+    group_p_adj <- p.adjust(group_p, method = adjustment_method)
+    group_normality <- ifelse(group_p_adj > 0.05, "Normal", "Non-normal")
+    
+    per_group_results[[lipid]] <- data.frame(
+      group = groups, 
+      p_value = group_p, 
+      p_value_adj = group_p_adj, 
+      normality = group_normality
+    )
+  }
+  
+  for (lipid in names(per_group_results)) {
+    write.csv(
+      per_group_results[[lipid]], 
+      file = file.path(folder_path, paste0(lipid, "_distribution_groups_raw.csv")), 
+      row.names = FALSE
+    )
+    message("Saving RAW distribution per group for: ", lipid_family, " -> ", lipid)
+  }
+}
+
+#### conbining values ##########################################################
+
+all_files <- list.files(
+  top_level_dir, 
+  pattern = "_distribution_groups_raw\\.csv$", 
+  full.names = TRUE, 
+  recursive = TRUE
+)
+
+combined_df <- NULL
+
+for (file in all_files) {
+  df <- read.csv(file)
+  
+  lipid_name <- sub("_distribution_groups_raw\\.csv$", "", basename(file))
+  df_lipid <- df[, c(1, ncol(df))]
+  colnames(df_lipid) <- c("Group", lipid_name) 
+  
+  if (is.null(combined_df)) {
+    combined_df <- df_lipid
+  } else {
+    combined_df <- merge(combined_df, df_lipid, by = "Group", all = TRUE)
+  }
+}
+
+write.csv(
+  combined_df, 
+  file = file.path(top_level_dir,"..","total_lipids", "combined_per_group_normality_raw.csv"), 
+  row.names = FALSE
+)
+
+normality_per_group <- read.csv("outputs/total_lipids/combined_per_group_normality_raw.csv", row.names = 1)
+all_values <- unlist(normality_per_group)
+counts <- table(all_values)
+total <- length(all_values)
+percentages <- round(100 * counts / total, 1)
+
+write.csv(
+  percentages,
+  file = file.path(top_level_dir,"..","total_lipids", "combined_per_group_normality_raw_percentages.csv"),
+  row.names = TRUE
+)
+
+for (cat in names(counts)) {
+  cat(cat, ":", counts[cat], "(", percentages[cat], "%)\n")
+}
+
+################################################################################
+##### 17. LOG TRANSFORMATION AND NORMALITY OUTPUTS FOR ALL SAMPLES COMBINED ####
+################################################################################
+
+## For all lipids combined #####################################################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+all_lipids_distribution <- list()
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)  
+  df <- get(name)
+  lipid_columns <- names(df)[-1]
+  
+  distribution_summary <- data.frame(
+    lipid = lipid_columns,
+    skewness = numeric(length(lipid_columns)),
+    kurtosis = numeric(length(lipid_columns)),
+    shapiro_p = numeric(length(lipid_columns)),
+    normality = character(length(lipid_columns)),
+    stringsAsFactors = FALSE
+  )
+  
+  for (i in seq_along(lipid_columns)) {
+    lipid <- lipid_columns[i]
+    values <- log1p(df[[lipid]])
+    
+    distribution_summary$skewness[i] <- skewness(values, na.rm = TRUE)
+    distribution_summary$kurtosis[i] <- kurtosis(values, na.rm = TRUE)
+    
+    if (length(values) >= 3 & length(values) <= 5000) {
+      shapiro_res <- shapiro.test(values)
+      distribution_summary$shapiro_p[i] <- shapiro_res$p.value
+      distribution_summary$normality[i] <- ifelse(shapiro_res$p.value > 0.05, "Normal", "Non-normal")
+    } else {
+      distribution_summary$shapiro_p[i] <- NA
+      distribution_summary$normality[i] <- "NA"
+    }
+  }
+  
+  distribution_summary$shapiro_p_adj <- p.adjust(distribution_summary$shapiro_p, method = adjustment_method)
+  distribution_summary$normality <- ifelse(distribution_summary$shapiro_p_adj > 0.05, "Normal", "Non-normal")
+  
+  distribution_summary <- distribution_summary[, c("lipid", "skewness", "kurtosis", "shapiro_p", "shapiro_p_adj", "normality")]
+  
+  if (!dir.exists(folder_path)) {
+    dir.create(folder_path, recursive = TRUE, showWarnings = FALSE)
+  }
+  
+  dis_csv_file <- file.path(folder_path, paste0(lipid_family, "_distribution_log.csv"))
+  write.csv(distribution_summary, file = dis_csv_file, row.names = FALSE)
+  cat("Saved distribution summary for:", lipid_family, "\n")
+  
+  distribution_summary$family <- lipid_family
+  distribution_summary$category <- category
+  all_lipids_distribution[[length(all_lipids_distribution) + 1]] <- distribution_summary
+}
+
+combined_summary <- bind_rows(all_lipids_distribution)
+
+combined_file <- file.path("outputs", "total_lipids", "combined_lipid_normality_log.csv")
+write.csv(combined_summary, file = combined_file, row.names = FALSE)
+
+distribution_counts <- table(combined_summary$normality)
+distribution_counts_df <- as.data.frame(distribution_counts)
+distribution_total <- sum(distribution_counts)
+distribution_counts_df$percent <- round(100 * distribution_counts_df$Freq / distribution_total, 1)
+
+summary_file <- file.path("outputs", "total_lipids", "combined_lipid_normality_summary_log.csv")
+write.csv(distribution_counts_df, file = summary_file, row.names = FALSE)
+
+cat("Combined summary saved with", distribution_total, "lipids.\n")
+print(distribution_counts_df)
+
+################################################################################
+###### 18. LOG TRANSFORMATION AND NORMALITY OUTPUTS FOR INDIVIDUAL GROUPS ######
+################################################################################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message("No category found for family: ", lipid_family)
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)  
+  df <- get(name)
+  lipid_columns <- names(df)[-1]
+  group_col <- names(df)[1]
+  groups <- unique(df[[group_col]])
+  
+  per_group_results <- list()
+  
+  for (i in seq_along(lipid_columns)) {
+    lipid <- lipid_columns[i]
+    
+    group_p <- c()
+    group_normality <- c()
+    
+    for (g in groups) {
+      vals_g <- log1p(df[df[[group_col]] == g, lipid])  
+      
+      if (length(vals_g) >= 3 & length(vals_g) <= 5000) {
+        if (length(unique(vals_g)) > 1) {
+          p <- shapiro.test(vals_g)$p.value
+          group_p <- c(group_p, p)
+          group_normality <- c(group_normality, ifelse(p > 0.05, "Normal", "Non-normal"))
+        } else {
+          group_p <- c(group_p, NA)
+          group_normality <- c(group_normality, "All identical")
+        }
+      } else {
+        group_p <- c(group_p, NA)
+        group_normality <- c(group_normality, NA)
+      }
+    }
+    
+    group_p_adj <- p.adjust(group_p, method = adjustment_method)
+    group_normality <- ifelse(group_p_adj > 0.05, "Normal", "Non-normal")
+    
+    per_group_results[[lipid]] <- data.frame(
+      group = groups, 
+      p_value = group_p, 
+      p_value_adj = group_p_adj, 
+      normality = group_normality
+    )
+  }
+  
+  for (lipid in names(per_group_results)) {
+    write.csv(
+      per_group_results[[lipid]], 
+      file = file.path(folder_path, paste0(lipid, "_distribution_groups_log.csv")), 
+      row.names = FALSE
+    )
+    message("Saving LOG distribution per group for: ", lipid_family, " -> ", lipid)
+  }
+}
+
+#### conbining values ##########################################################
+
+all_files <- list.files(
+  top_level_dir, 
+  pattern = "_distribution_groups_log\\.csv$", 
+  full.names = TRUE, 
+  recursive = TRUE
+)
+
+combined_df <- NULL
+
+for (file in all_files) {
+  df <- read.csv(file)
+  
+  lipid_name <- sub("_distribution_groups_log\\.csv$", "", basename(file))
+  df_lipid <- df[, c(1, ncol(df))]
+  colnames(df_lipid) <- c("Group", lipid_name) 
+  
+  if (is.null(combined_df)) {
+    combined_df <- df_lipid
+  } else {
+    combined_df <- merge(combined_df, df_lipid, by = "Group", all = TRUE)
+  }
+}
+
+write.csv(
+  combined_df, 
+  file = file.path(top_level_dir,"..","total_lipids", "combined_per_group_normality_log.csv"), 
+  row.names = FALSE
+)
+
+normality_per_group <- read.csv("outputs/total_lipids/combined_per_group_normality_log.csv", row.names = 1)
+all_values <- unlist(normality_per_group)
+counts <- table(all_values)
+total <- length(all_values)
+percentages <- round(100 * counts / total, 1)
+
+write.csv(
+  percentages,
+  file = file.path(top_level_dir,"..","total_lipids", "combined_per_group_normality_log_percentages.csv"),
+  row.names = TRUE
+)
+
+for (cat in names(counts)) {
+  cat(cat, ":", counts[cat], "(", percentages[cat], "%)\n")
+}
+
+################################################################################
+############### 19. MANN-WHITNEY U TEST - TWO INDEPENDENT GROUPS ###############
+################################################################################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+count <- 1  # counter for families
+
+for (name in raw_data_names) {
+  lipid_family <- sub("^raw_data_", "", name)
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message(count, ". Skipping (no category): ", lipid_family)
+    count <- count + 1
+    next
+  }
+  
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
   
   df <- get(name)
   
-  # Identify lipid columns (everything except 'groups')
-  lipid_columns <- setdiff(names(df), "groups")
+  lipid_columns <- names(df)[-1]   # exclude 'groups'
+  group_col <- names(df)[1]
   
-  # Create a vector to store p-values
-  p_values <- numeric(length(lipid_columns))
-  names(p_values) <- lipid_columns
-  
-  for (lipid in lipid_columns) {
-    formula <- as.formula(paste(lipid, "~ groups"))
-    aov_result <- aov(formula, data = df)
-    summary_result <- summary(aov_result)
-    p_values[lipid] <- summary_result[[1]][["Pr(>F)"]][1]
-  }
-  
-  # Convert to data frame for output
-  output_df <- data.frame(
+  mw_results <- data.frame(
     lipid = lipid_columns,
-    p_value = p_values
+    p_value = NA,
+    p_value_adj = NA,
+    significance = NA,
+    stringsAsFactors = FALSE
   )
   
-  # Create output folder (adjust as needed)
+  for (i in seq_along(lipid_columns)) {
+    lipid <- lipid_columns[i]
+    control_vals <- df[df[[group_col]] == control_group, lipid]
+    other_groups <- setdiff(unique(df[[group_col]]), control_group)
+    
+    pvals <- c()
+    for (g in other_groups) {
+      test_vals <- df[df[[group_col]] == g, lipid]
+      if (length(control_vals) > 0 & length(test_vals) > 0) {
+        test_res <- wilcox.test(control_vals, test_vals)
+        pvals <- c(pvals, test_res$p.value)
+      } else {
+        pvals <- c(pvals, NA)
+      }
+    }
+    
+    if (all(is.na(pvals))) {
+      mw_results$p_value[i] <- NA
+    } else {
+      mw_results$p_value[i] <- min(pvals, na.rm = TRUE)
+    }
+  }
+  
+  # adjust p-values
+  mw_results$p_value_adj <- p.adjust(mw_results$p_value, method = adjustment_method)
+  
+  # assign significance stars
+  mw_results$significance <- sapply(mw_results$p_value_adj, function(p) {
+    if (is.na(p)) {
+      "not significant"
+    } else if (p < 0.001) {
+      "***"
+    } else if (p < 0.01) {
+      "**"
+    } else if (p < 0.05) {
+      "*"
+    } else {
+      "not significant"
+    }
+  })
+  
+  write.csv(
+    mw_results, 
+    file = file.path(folder_path, paste0(lipid_family, "_mannwhitney.csv")), 
+    row.names = FALSE
+  )
+  
+  message(count, ". Mann–Whitney results saved for family: ", lipid_family)
+  count <- count + 1
+}
+
+################################################################################
+############### 20. KRUSKAL-WALLIS H TEST (>2 INDEPENDENT GROUPS) ##############
+########################## AND DUNN'S POST HOC TEST ############################
+################################################################################
+
+top_level_dir <- file.path("outputs", "lipid_categories")
+
+# Initialize lists to hold results per category
+kw_category_list <- list()
+dunn_category_list <- list()
+
+count <- 1  # counter for families
+
+for (name in raw_data_names) {
   lipid_family <- sub("^raw_data_", "", name)
-  folder_path <- file.path("outputs", "lipid_families", lipid_family)
-  if (!dir.exists(folder_path)) {
-    dir.create(folder_path, recursive = TRUE)
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+  
+  if (is.na(category) || length(category) == 0) {
+    message(count, ". Skipping (no category): ", lipid_family)
+    count <- count + 1
+    next
   }
   
-  output_df$significance <- cut(output_df$p_value,
-                                breaks = c(-Inf, 0.001, 0.01, 0.05, Inf),
-                                labels = c("***", "**", "*", "NO"),
-                                right = TRUE
+  # Create family folder
+  folder_path <- file.path(top_level_dir, category, lipid_family)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  df <- get(name)
+  lipid_columns <- names(df)[-1]   # exclude 'groups' column
+  group_col <- names(df)[1]
+  
+  # Family-level results (KW)
+  kw_results <- data.frame(
+    family = lipid_family,
+    lipid = lipid_columns,
+    p_value_raw = NA,
+    p_value_adj = NA,
+    significance = NA,
+    stringsAsFactors = FALSE
   )
   
-  output_df <- output_df[order(output_df$p_value, decreasing = FALSE), ]
+  dunn_results_all <- data.frame(
+    family = character(),
+    lipid = character(),
+    comparison = character(),
+    p_value_raw = numeric(),
+    p_value_adj = numeric(),
+    significance = character(),
+    stringsAsFactors = FALSE
+  )
   
-  # Write CSV with p-values
-  csv_file <- file.path(folder_path, paste0(lipid_family, "_anova_pvalues.csv"))
-  write.csv(output_df, file = csv_file, row.names = FALSE)
-  
-  cat("Saved results to:", csv_file, "\n")
-}
-
-
-
-
-
-
-
-
-
-
-## I believe it would also be beneficial to do an ANOVA on the whole data frame to know which lipids change most significantly out of all those tested between groups.
-
-raw_data_lipids$Group <- as.factor(raw_data_lipids$Group) # Make sure groups column is a factor
-
-lipid_columns <- names(raw_data_lipids)[-1] # Get lipid column names (everything except column 1)
-
-
-p_values <- sapply(lipid_columns, function(lipid) {
-  formula <- as.formula(paste(lipid, "~ groups"))
-  summary(aov(formula, data = raw_data_lipids))[[1]][["Pr(>F)"]][1]
-}) # Run ANOVA for each lipid and extract p-values
-
-
-output_df <- data.frame(
-  lipid = lipid_columns,
-  p_value = p_values,
-  significance <- ifelse(p_values <= 0.001, "***",
-                         ifelse(p_values <= 0.01, "**",
-                                ifelse(p_values <= 0.05, "*", "NO")))
-) # Convert to data frame
-
-# Optional: order by p-value ascending (most significant first)
-output_df <- output_df[order(output_df$p_value, decreasing = FALSE), ]
-
-# View results
-print(output_df)
-
-# Save to CSV
-write.csv(output_df, "anova_results.csv", row.names = FALSE)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-################################################################################
-################### HISTOGRAMS TO CHECK FOR NORMALITY ##########################
-################################################################################
-
-for (df_name in raw_data_names) {
-  
-  lipid_family <- sub("^raw_data_", "", df_name)
-  folder_path <- file.path("test_data", "outputs", "lipid_families",         lipid_family, "histograms")
-  
-  # Ensure output folder exists
-  if (!dir.exists(folder_path)) {
-    dir.create(folder_path, recursive = TRUE)
+  for (i in seq_along(lipid_columns)) {
+    lipid <- lipid_columns[i]
+    
+    df_subset <- df[!is.na(df[[lipid]]), c(group_col, lipid)]
+    
+    if (length(unique(df_subset[[group_col]])) > 1) {
+      # Kruskal–Wallis test
+      test_res <- kruskal.test(df_subset[[lipid]] ~ df_subset[[group_col]])
+      kw_results$p_value_raw[i] <- test_res$p.value
+      kw_results$p_value_adj[i] <- p.adjust(test_res$p.value, method = "fdr")
+      
+      # Significance for KW
+      if (!is.na(kw_results$p_value_adj[i])) {
+        if (kw_results$p_value_adj[i] < 0.001) {
+          kw_results$significance[i] <- "***"
+        } else if (kw_results$p_value_adj[i] < 0.01) {
+          kw_results$significance[i] <- "**"
+        } else if (kw_results$p_value_adj[i] < 0.05) {
+          kw_results$significance[i] <- "*"
+        } else {
+          kw_results$significance[i] <- "not significant"
+        }
+      }
+      
+      # Run Dunn’s test only if KW raw p < 0.05
+      if (test_res$p.value < 0.05) {
+        library(FSA)
+        
+        dunn_res <- dunnTest(df_subset[[lipid]] ~ df_subset[[group_col]],
+                             method = "bh")   # Benjamini–Hochberg (FDR)
+        
+        dunn_table <- dunn_res$res   # has Comparison, Z, P.unadj, P.adj
+        
+        significance <- sapply(dunn_table$P.adj, function(p) {
+          if (is.na(p)) {
+            "not significant"
+          } else if (p < 0.001) {
+            "***"
+          } else if (p < 0.01) {
+            "**"
+          } else if (p < 0.05) {
+            "*"
+          } else {
+            "not significant"
+          }
+        })
+        
+        dunn_results_all <- rbind(
+          dunn_results_all,
+          data.frame(
+            family      = lipid_family,
+            lipid       = lipid,
+            comparison  = dunn_table$Comparison,
+            p_value_raw = dunn_table$P.unadj,
+            p_value_adj = dunn_table$P.adj,
+            significance = significance,
+            stringsAsFactors = FALSE
+          )
+        )
+      }
+    }
   }
   
-  cat("Processing histograms for:", df_name, "\n")
-  df <- get(df_name)
   
-  for (col in setdiff(names(df), "groups")) {
-    
-    # Create PNG file for this histogram
-    png(file.path(folder_path, paste0(col, "_hist.png")))
-    
-    hist(df[[col]],
-         main = paste("Histogram of", col),
-         xlab = col)
-    
-    dev.off()  # Close the PNG device
+  # Save family-level results
+  write.csv(kw_results,
+            file = file.path(folder_path, paste0(lipid_family, "_kruskalwallis.csv")),
+            row.names = FALSE)
+  
+  if (nrow(dunn_results_all) > 0) {
+    write.csv(dunn_results_all,
+              file = file.path(folder_path, paste0(lipid_family, "_dunn.csv")),
+              row.names = FALSE)
   }
+  
+  # Append to category-level lists
+  kw_category_list[[category]] <- rbind(kw_category_list[[category]], kw_results)
+  dunn_category_list[[category]] <- rbind(dunn_category_list[[category]], dunn_results_all)
+  
+  message(count, ". Kruskal–Wallis (+Dunn if KW significant) results saved for family: ", lipid_family)
+  count <- count + 1
 }
 
+# Save combined category-level results
+for (category in names(kw_category_list)) {
+  folder_path <- file.path(top_level_dir, category)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  write.csv(kw_category_list[[category]],
+            file = file.path(folder_path, paste0(category, "_kruskalwallis.csv")),
+            row.names = FALSE)
+  
+  if (nrow(dunn_category_list[[category]]) > 0) {
+    write.csv(dunn_category_list[[category]],
+              file = file.path(folder_path, paste0(category, "_dunn.csv")),
+              row.names = FALSE)
+  }
+  
+  message("Saved combined results for category: ", category)
+}
 
+################################################################################
+########################## SPEARMAN CORRELATION TEST ###########################
+################################################################################
 
+#### FOR ALL LIPIDS COMBINED ###################################################
 
+cor_mat <- cor(raw_data_lipids, use = "pairwise.complete.obs", method = "spearman")
+?cor
 
+range(cor_mat, na.rm = TRUE)
 
+output_folder <- "outputs/total_lipids"
+if (!dir.exists(output_folder)) dir.create(output_folder, recursive = TRUE)
 
+csv_file <- file.path(output_folder, "lipid_spearman_correlation.csv")
+write.csv(cor_mat, file = csv_file, row.names = TRUE)
 
+message("Spearman correlation CSV saved to: ", csv_file)
 
+#### FOR EACH LIPID CATEGORY ###################################################
 
+top_level_dir <- file.path("outputs", "lipid_categories")
+if (!dir.exists(top_level_dir)) dir.create(top_level_dir, recursive = TRUE)
 
+count <- 1
 
+for (category in unique(category_mapping$Category_clean)) {
+  
+  families_in_cat <- category_mapping$Family_clean[category_mapping$Category_clean == category]
+  
+  lipid_species <- unlist(lapply(families_in_cat, function(fam) {
+    lipid_families[[fam]] 
+  }))
+  
+  lipid_species <- lipid_species[lipid_species %in% colnames(cor_mat)]
+  
+  if (length(lipid_species) < 2) {
+    message("Not enough lipids for category ", category, " — skipping")
+    next
+  }
+  
+  cor_sub <- cor_mat[lipid_species, lipid_species]
+  
+  folder_path <- file.path(top_level_dir, category)
+  if (!dir.exists(folder_path)) dir.create(folder_path, recursive = TRUE)
+  
+  csv_file <- file.path(folder_path, paste0(category, "_spearman_correlation.csv"))
+  write.csv(cor_sub, file = csv_file, row.names = TRUE)
+  
+  message(count, ". Saved Spearman correlation CSV for category: ", category)
+  count <- count + 1
+}
 
+################################################################################
+############################ EXTRA VISUALISATIONS ##############################
+################################################################################
 
+################################################################################
+####################### AVERAGES BAR CHART FOR CATEGORIES ######################
+################################################################################
 
+#### GETTING AVERAGES PER CATEGORY #############################################
 
+top_level_dir <- file.path("outputs", "lipid_categories")
 
+all_objs <- ls()
 
+pattern_end <- paste0(category_mapping$Category_clean, collapse = "|")
 
+lipid_categories <- grep(paste0("^category_.*(", pattern_end, ")$"), 
+                         all_objs, 
+                         value = TRUE)
 
+all_avg <- data.frame() 
 
+for (name in lipid_categories) {
+  
+  df <- get(name)
+  cat_total <- df[, c(1, ncol(df))]
+  colnames(cat_total) <- c("group", "total")
+  cat_avg <- aggregate(total ~ group, data = cat_total, FUN = mean)
+  cat_avg$category <- name
+  all_avg <- rbind(all_avg, cat_avg)
+}
 
+all_avg$category <- factor(all_avg$category)
+all_avg$group <- factor(all_avg$group)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-########### rough distribution test#############################################
-
-# Load required library
-install.packages("moments")
-library(moments)
-
-# Assuming your data frame is raw_data_lipids
-# First column is Group, remaining columns are lipids
-lipid_columns <- names(raw_data_lipids)[-1]
-
-# Initialize output
-distribution_summary <- data.frame(
-  lipid = lipid_columns,
-  skewness = numeric(length(lipid_columns)),
-  kurtosis = numeric(length(lipid_columns)),
-  shapiro_p = numeric(length(lipid_columns)),
-  normality = character(length(lipid_columns)),
-  stringsAsFactors = FALSE
+category_colors <- c(
+  "category_fatty_acyls" = "#D56401",
+  "category_glycerolipids" = "#7F0101",
+  "category_glycerophospholipids" = "#017B7F",
+  "category_sphingolipids" = "#057F01",
+  "category_sterol_lipids" = "#7F0163"
 )
 
-# Loop through lipids
-for (i in seq_along(lipid_columns)) {
-  lipid <- lipid_columns[i]
-  values <- raw_data_lipids[[lipid]]  # across all samples
-  distribution_summary$skewness[i] <- skewness(values)
-  distribution_summary$kurtosis[i] <- kurtosis(values)
+cat_avg <- ggplot(all_avg, aes(x = group, y = total, fill = category)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  labs(title = "Average by Group Across Lipid Categories",
+       x = "Group",
+       y = "Average Value") +
+  theme_classic() +
+  scale_fill_manual(values = category_colors)
+
+ggsave(file.path(top_level_dir, "..", "total_lipids/category_averages.png"),
+       plot = cat_avg,
+       width = 10, height = 6, dpi = 300)
+
+#### SAME BUT LOG TRANSFORMED ##################################################
+
+all_avg <- data.frame()  
+
+for (name in lipid_categories) {
   
-  # Shapiro-Wilk test (n must be <= 5000)
-  if (length(values) >= 3 & length(values) <= 5000) {
-    shapiro_res <- shapiro.test(values)
-    distribution_summary$shapiro_p[i] <- shapiro_res$p.value
-    distribution_summary$normality[i] <- ifelse(shapiro_res$p.value > 0.05, "Normal", "Non-normal")
-  } else {
-    distribution_summary$shapiro_p[i] <- NA
-    distribution_summary$normality[i] <- "NA"
+  df <- get(name)
+  cat_total <- df[, c(1, ncol(df))]
+  colnames(cat_total) <- c("group", "total")
+  cat_total$total <- log10(cat_total$total + 1e-6)
+  cat_avg <- aggregate(total ~ group, data = cat_total, FUN = mean)
+  cat_avg$category <- name
+  all_avg <- rbind(all_avg, cat_avg)
+}
+
+all_avg$category <- factor(all_avg$category)
+all_avg$group <- factor(all_avg$group)
+
+cat_avg_log <- ggplot(all_avg, aes(x = group, y = total, fill = category)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  labs(title = "Average by Group Across Lipid Categories",
+       x = "Group",
+       y = "Average Value") +
+  theme_classic() +
+  scale_fill_manual(values = category_colors)
+
+ggsave(file.path(top_level_dir, "..", "total_lipids/category_log_averages.png"),
+       plot = cat_avg_log,
+       width = 10, height = 6, dpi = 300)
+
+################################################################################
+################### CORRELATION MATRIX FOR EACH CATEGORY #######################
+################################################################################
+
+category_folders <- list.dirs(top_level_dir, recursive = FALSE)
+
+for (category_folder in category_folders) {
+  
+  csv_file <- list.files(category_folder, pattern = "_spearman_correlation\\.csv$", full.names = TRUE)
+  
+  if (length(csv_file) == 0) {
+    message("No CSV found in folder: ", category_folder, " — skipping")
+    next
+  }
+  
+  cor_mat <- as.matrix(read.csv(csv_file, row.names = 1, check.names = FALSE))
+  
+  if (ncol(cor_mat) < 2) {
+    message("Not enough lipids in correlation matrix for folder: ", category_folder, " — skipping")
+    next
+  }
+  
+  ord <- order(colnames(cor_mat))
+  cor_mat <- cor_mat[ord, ord]
+  
+  heatmap_file <- file.path(category_folder, paste0(basename(category_folder), "_correlation_heatmap.png"))
+  
+  png(filename = heatmap_file, width = 3000, height = 3000, res = 300)
+  
+  pheatmap(
+    cor_mat,
+    color = colorRampPalette(c("blue", "white", "red"))(200),
+    cluster_rows = FALSE,   # keep alphabetical order
+    cluster_cols = FALSE,   # keep alphabetical order
+    show_rownames = FALSE,
+    show_colnames = FALSE,
+    main = paste("Spearman Correlation:", basename(category_folder))
+  )
+  
+  dev.off()
+  message("Saved heatmap for category: ", basename(category_folder))
+}
+
+#### FOR ALL LIPIDS COMBINED ###################################################
+
+cor_mat <- cor(raw_data_lipids, use = "pairwise.complete.obs", method = "spearman")
+
+ord <- order(colnames(cor_mat))
+cor_mat <- cor_mat[ord, ord]
+
+write.csv(cor_mat, file = "outputs/total_lipids/complete_lipid_correlation.csv", row.names = TRUE)
+
+print(range(cor_mat, na.rm = TRUE))
+
+col_palette <- colorRampPalette(c("blue", "white", "red"))(200)
+
+png("outputs/total_lipids/complete_lipid_correlation_heatmap.png",
+    width = 4000, height = 4000, res = 300)
+
+pheatmap(
+  cor_mat,
+  color = col_palette,
+  cluster_rows = FALSE,   
+  cluster_cols = FALSE,   
+  show_rownames = FALSE,
+  show_colnames = FALSE,
+  main = "Complete Spearman Correlation (All Lipids)"
+)
+
+dev.off()
+
+################################################################################
+########################## KRUSKAL-WALLIS RESULTS ##############################
+################################################################################
+
+top_level_dir <- "outputs/lipid_categories"
+categories <- list.dirs(top_level_dir, recursive = FALSE, full.names = TRUE)
+
+for (cat_path in categories) {
+  cat_name <- basename(cat_path)
+  
+  kw_file <- file.path(cat_path, paste0(cat_name, "_kruskalwallis.csv"))  
+  if (!file.exists(kw_file)) next
+  
+  kw_df <- read.csv(kw_file)
+  
+  if (!"p_value_adj" %in% names(kw_df) || all(is.na(kw_df$p_value_adj))) {
+    kw_df <- kw_df %>%
+      mutate(p_value_adj = p.adjust(p_value, method = "BH"))
+  }
+  
+  kw_df <- kw_df %>%
+    mutate(
+      neg_log10_p = -log10(p_value_adj),
+      label = ifelse(p_value_adj < 0.05, lipid, NA)  
+    )
+  
+  p <- ggplot(kw_df, aes(x = lipid, y = neg_log10_p, color = significance)) +
+    geom_point(size = 3) +
+    geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "black") +
+    scale_color_manual(values = c("***" = "red", "**" = "orange", "*" = "blue", "not significant" = "grey")) +
+    scale_y_continuous(expand = expansion(mult = c(0.05, 0.3))) +
+    labs(
+      title = paste("Kruskal–Wallis Volcano Plot - Category:", cat_name),
+      x = "Lipid",
+      y = "-log10(adj. p-value)"
+    ) +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+      legend.title = element_blank()
+    ) +
+    coord_cartesian(clip = "off")
+  
+  if (any(!is.na(kw_df$label))) {
+    p <- p + geom_text_repel(
+      data = kw_df %>% filter(!is.na(label)),
+      aes(label = label),
+      size = 3,
+      nudge_y = 0.2,
+      segment.color = "grey50",
+      max.overlaps = Inf
+    )
+  }
+  
+  ggsave(
+    filename = file.path(cat_path, paste0(cat_name, "_volcano.png")),
+    plot = p,
+    width = 14,
+    height = 6
+  )
+  
+  message("Volcano plot saved for category: ", cat_name)
+}
+
+################################################################################
+############################## DUNN'S RESULTS ##################################
+################################################################################
+
+#### COMBINIGN DUNN'S TEST RESULTS #############################################
+
+# Folder where category-level Dunn's CSVs are stored
+top_level_dir <- "outputs/lipid_categories"
+output_file <- "outputs/total_lipids/all_dunn_results_combined.csv"
+
+# Initialize list to hold all Dunn results
+all_dunn_list <- list()
+
+# Loop through category folders
+category_folders <- list.dirs(top_level_dir, recursive = FALSE)
+
+for (cat_folder in category_folders) {
+  # Get all Dunn CSVs inside this category folder (and subfolders)
+  dunn_files <- list.files(cat_folder, pattern = "_dunn\\.csv$", recursive = TRUE, full.names = TRUE)
+  
+  for (f in dunn_files) {
+    df <- read_csv(f, show_col_types = FALSE)
+    if (nrow(df) > 0) {
+      all_dunn_list[[length(all_dunn_list) + 1]] <- df
+    }
   }
 }
 
-# Save results
-output_file <- "outputs/total_lipids/lipid_distribution_summary.csv"
-dir.create(dirname(output_file), recursive = TRUE, showWarnings = FALSE)
-write.csv(distribution_summary, output_file, row.names = FALSE)
+# Combine everything into one data frame
+all_dunn_combined <- bind_rows(all_dunn_list)
 
-cat("Distribution summary saved to:", output_file, "\n")
+# Create output folder if it doesn't exist
+if (!dir.exists("outputs/total_lipids")) dir.create("outputs/total_lipids", recursive = TRUE)
 
-normal <- sum(distribution_summary$normality == "Normal")
-non_normal <- sum(distribution_summary$normality == "Non-normal")
+# Save combined Dunn's results
+write_csv(all_dunn_combined, output_file)
 
+message("Combined Dunn's test results saved to: ", output_file)
 
+#### PERCENTAGE SUMMARY ########################################################
 
+## global
 
+sig_summary_global <- all_dunn_combined %>%
+  group_by(significance) %>%
+  summarise(
+    count = n(),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    percentage = round((count / sum(count)) * 100, 2)
+  )
 
+summary_file <- "outputs/total_lipids/dunn_significance_summary_global.csv"
+write_csv(sig_summary_global, summary_file)
 
+message("Significance summary saved to: ", summary_file)
 
+## per lipid family
 
+sig_summary_family <- all_dunn_combined %>%
+  group_by(family, significance) %>%
+  summarise(count = n(), .groups = "drop_last") %>%
+  mutate(percentage = round((count / sum(count)) * 100, 2))
 
+write_csv(sig_summary_family, "outputs/total_lipids/dunn_significance_summary_by_family.csv")
 
+## group vs group 
 
+sig_summary_comparison <- all_dunn_combined %>%
+  group_by(comparison, significance) %>%
+  summarise(count = n(), .groups = "drop_last") %>%
+  mutate(percentage = round((count / sum(count)) * 100, 2))
 
+write_csv(sig_summary_comparison, "outputs/total_lipids/dunn_significance_summary_by_comparison.csv")
 
+## per family and per comparison 
 
+sig_summary_family_comparison <- all_dunn_combined %>%
+  group_by(family, comparison, significance) %>%
+  summarise(count = n(), .groups = "drop_last") %>%
+  mutate(percentage = round((count / sum(count)) * 100, 2))
 
+write_csv(sig_summary_family_comparison, "outputs/total_lipids/dunn_significance_summary_by_family_comparison.csv")
+
+#### visulaising results #######################################################
+
+## global
+
+global_dunn <- ggplot(sig_summary_global, aes(x = significance, y = percentage, fill = significance)) +
+  geom_col() +
+  geom_text(aes(label = paste0(percentage, "%")), vjust = -0.5) +
+  scale_fill_manual(values = c("***" = "#D73027", "**" = "#EAB53A", "*" = "#9ED36F", "not significant" = "#969595")) +
+  labs(title = "Global Dunn's Test Significance Distribution",
+       x = "Significance",
+       y = "Percentage of comparisons") +
+  theme_classic()
+
+ggsave(
+  filename = "outputs/total_lipids/global_dunn_significance.png",
+  plot = global_dunn,           
+  width = 10,          
+  height = 4,         
+  dpi = 300           
+)
+
+## lipid family 
+
+family_dunn <- ggplot(sig_summary_family, aes(x = family, y = percentage, fill = significance)) +
+  geom_col(position = "stack") +
+  scale_fill_manual(values = c("***" = "#D73027", "**" = "#EAB53A", "*" = "#9ED36F", "not significant" = "#969595")) +
+  labs(title = "Significance Distribution by Lipid Family",
+       x = "Lipid Family",
+       y = "Percentage of comparisons") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave(
+  filename = "outputs/total_lipids/family_dunn_significance.png",
+  plot = family_dunn,           
+  width = 8,          
+  height = 4,         
+  dpi = 300           
+)
+
+## comparison group
+
+comparison_dunn <- ggplot(sig_summary_comparison, aes(x = comparison, y = percentage, fill = significance)) +
+  geom_col(position = "stack") +
+  scale_fill_manual(values = c("***" = "#D73027", "**" = "#EAB53A", "*" = "#9ED36F", "not significant" = "#969595")) +
+  labs(title = "Significance Distribution by Group Comparison",
+       x = "Comparison",
+       y = "Percentage of comparisons") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave(
+  filename = "outputs/total_lipids/comparison_dunn_significance.png",
+  plot = comparison_dunn,           
+  width = 8,          
+  height = 4,         
+  dpi = 300           
+)
