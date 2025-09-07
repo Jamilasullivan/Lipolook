@@ -183,9 +183,9 @@ raw_data_names
 
 write.csv(
   data.frame(Family = names(lipid_families)),
-  "lipid_categories_1.csv",
+  "complete_lipid_categories.csv",
   row.names = FALSE
-) ## THIS NEEDS TO BE FILLED IN BY THE CLIENT AND SAVED AS 'complete_lipid_categories.csv'
+) ## THIS NEEDS TO BE FILLED IN BY THE CLIENT 
 
 category_mapping <- read.csv("complete_lipid_categories.csv", stringsAsFactors = FALSE)
 
