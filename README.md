@@ -4,11 +4,13 @@ Lipolook is a primary statistical analysis tool built in R Studio specifically f
 Detailed explainations of pipeline usage can be found in the *Lipolook_instructions.R* document provided in this repository. Open with R Studio and choose the `knit` option on the top ribbon to produce the user friendly HTML file. 
 The specified file path should contain two .csv files: *raw data* and *lipids tested*
 
-#### Input Format
+#### Capabilities
+
+#### Inputs
 
 An instructional HTML file (*Lipolook_instructions.R*) is provided for the data input and cleaning sections of the pipeline. Everything past these sections should be fully automated. However, if any issues do arise, a separate annotated copy of the script (*Lipolook_script_annotated.R*) is given for information on what each section of code does. 
 
-
+#### Outputs
 
 
 
