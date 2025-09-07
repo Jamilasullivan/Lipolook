@@ -11,6 +11,9 @@ The specified file path should contain two .csv files: *raw data* and *lipids te
 An instructional HTML file (*Lipolook_instructions.R*) is provided for the data input and cleaning sections of the pipeline. Everything past these sections should be fully automated. However, if any issues do arise, a separate annotated copy of the script (*Lipolook_script_annotated.R*) is given for information on what each section of code does. 
 
 #### Outputs
+Outputs will be saved in the following directory structure:  
+<img width="500" height="800" alt="File structure" src="https://github.com/user-attachments/assets/2c358636-75d7-4d3e-95a2-416dcbc1808b" />
+
 
 
 
