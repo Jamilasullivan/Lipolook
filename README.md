@@ -12,7 +12,8 @@ An instructional HTML file (*Lipolook_instructions.R*) is provided for the data 
 
 #### Outputs
 Outputs will be saved in the following directory structure: 
-<img width="2521" height="3123" alt="File structure" src="https://github.com/user-attachments/assets/4bf649a8-fc94-4a28-85d4-8dbf1b633390" />
+<img width="2521" height="3123" alt="File structure" src="https://github.com/user-attachments/assets/2c358636-75d7-4d3e-95a2-416dcbc1808b" />
+
 
 
 
