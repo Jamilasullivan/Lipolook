@@ -10,8 +10,10 @@ Detailed explainations of pipeline inputs can be found in the *Lipolook_instruct
 Inputs for the Lipolook pipeline include `raw_data`, `lipids_tested` and `lipid_categories` files. These files must have a specified layout in order for the pipeline to function correctly. An instructional file (*Lipolook_instructions.R*) is provided for the data input and cleaning sections of the pipeline. This will guide and assist with any manual steps included. Everything past these sections should be fully automated. However, if any issues do arise, a separate annotated copy of the script (*Lipolook_script_annotated.R*) is given for information on what each section of code does. 
   
 #### Outputs
-Outputs will be saved in the following directory structure:  
+Outputs will be saved in the following directory structure:   
+  
 <img width="500" height="800" alt="File structure" src="https://github.com/user-attachments/assets/2c358636-75d7-4d3e-95a2-416dcbc1808b" />  
+  
 This file structure will be built using the pipeline.  
   
 **Main numerical outputs for the Lipolook pipeline are:**  
