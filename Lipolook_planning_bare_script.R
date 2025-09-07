@@ -28,8 +28,7 @@ glm_variables <- c("","","") ## include the names of columns with metadata to be
 
 # List all required packages
 packages <- c(
-  "moments", "tidyr", "dplyr", "ggplot2", "stats",
-  "dunn.test", "rmarkdown", "corrplot", "pheatmap",
+  "moments", "tidyr", "dplyr", "ggplot2", "stats", "pheatmap",
   "ggrepel","readr", "tidyverse", "FSA"
 )
 
@@ -1394,6 +1393,7 @@ for (category in names(kw_category_list)) {
 #### FOR ALL LIPIDS COMBINED ###################################################
 
 cor_mat <- cor(raw_data_lipids, use = "pairwise.complete.obs", method = "spearman")
+?cor
 
 range(cor_mat, na.rm = TRUE)
 
@@ -1456,8 +1456,8 @@ all_objs <- ls()
 pattern_end <- paste0(category_mapping$Category_clean, collapse = "|")
 
 lipid_categories <- grep(paste0("^category_.*(", pattern_end, ")$"), 
-                      all_objs, 
-                      value = TRUE)
+                         all_objs, 
+                         value = TRUE)
 
 all_avg <- data.frame() 
 
