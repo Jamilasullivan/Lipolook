@@ -114,12 +114,12 @@ lipids_tested$lipid <- make.names(lipids_tested$lipid) # standardize the names o
 ########################## WAS NO RESULTANT DATA FOR ###########################
 ################################################################################
 
-raw_data_columns <- colnames(raw_data_lipids[ncol(raw_data_lipids)]) # 
-lipids <- lipids_tested$lipid
-unmatched_cols <- setdiff(raw_data_columns, lipids)
-number_unmatched <- length(unmatched_cols)
-unmatched_cols <- data.frame(Unmatched_columns = unmatched_cols)
-write.csv(unmatched_cols, "outputs/error_files/unmatched_columns.csv", row.names = FALSE) # this should be empty because the mismatched columns now end up in the metadata object
+raw_data_columns <- colnames(raw_data_lipids[ncol(raw_data_lipids)]) # list all the column names of the raw data i.e. the lipids that there is data for
+lipids <- lipids_tested$lipid # ask the names of all of the lipids tested
+unmatched_cols <- setdiff(raw_data_columns, lipids) # asks whether there are any columns in the raw data that weren't said to be tested for
+number_unmatched <- length(unmatched_cols) # how many columns like this is there?
+unmatched_cols <- data.frame(Unmatched_columns = unmatched_cols) # makes them into a data frame
+write.csv(unmatched_cols, "outputs/error_files/unmatched_columns.csv", row.names = FALSE) # what are they called? This is saved as an error file
 
 ################################################################################
 ####################### 8. SUBSET DATA BY LIPID FAMILY #########################
@@ -130,35 +130,35 @@ sanitize_name <- function(x) {
   x <- gsub("_+", "_", x)             # collapse multiple underscores
   x <- gsub("^_|_$", "", x)           # trim leading/trailing underscores
   x
-}
+} # a function to standardize naming
 
-lipids_tested$Family_clean <- sanitize_name(lipids_tested$family)
-lipid_families <- split(lipids_tested$lipid, lipids_tested$Family_clean)
-raw_data_by_family <- list()
+lipids_tested$Family_clean <- sanitize_name(lipids_tested$family) # standardize the family names
+lipid_families <- split(lipids_tested$lipid, lipids_tested$Family_clean) # lists all lipids by their family in a matrix
+raw_data_by_family <- list() # creates an empty list
 
-for(family in names(lipid_families)) {
-  cols <- lipid_families[[family]]
-  cols <- intersect(cols, colnames(raw_data_lipids))
-  raw_data_by_family[[family]] <- raw_data[, cols, drop = FALSE]
-}
+for(family in names(lipid_families)){ # loops through each family
+  cols <- lipid_families[[family]] # extracts the columns for that family 
+  cols <- intersect(cols, colnames(raw_data_lipids)) # keeps the columns that are present in raw data
+  raw_data_by_family[[family]] <- raw_data[, cols, drop = FALSE] # makes these into a separate data frame for the respective family
+} # subsets data b lipid family
 
 for(family in names(raw_data_by_family)) {
   assign(paste0("raw_data_", family), raw_data_by_family[[family]])
-}
+} # creates the names of all new family data frames
 
-all_raw_data <- ls(pattern = "^raw_data_")
+all_raw_data <- ls(pattern = "^raw_data_") # lists all data frames that start with this naming pattern
 
-for (name in all_raw_data) {
-  df <- get(name)
-  if (is.data.frame(df) && ncol(df) == 0) {
-    message("Removing empty data frame: ", name)
+for (name in all_raw_data) { # for each name listed 
+  df <- get(name) # gets it
+  if (is.data.frame(df) && ncol(df) == 0) { # ask if it's an empty data frame
+    message("Removing empty data frame: ", name) # if it is, remove it from the list
     rm(list = name, envir = .GlobalEnv)
-    all_raw_data <- setdiff(all_raw_data, name)  
+    all_raw_data <- setdiff(all_raw_data, name) # taking it out of the list  
   }
 }
 
 raw_data_names <- Filter(function(x) {
-  obj <- get(x)
+  obj <- get(x) 
   
   if (!is.data.frame(obj)) {
     message("Excluded for not being a data frame: ", x)
@@ -171,10 +171,10 @@ raw_data_names <- Filter(function(x) {
   }
   
   TRUE
-}, all_raw_data)
+}, all_raw_data) # make a filter function for all_raw_data that makes a new list called raw_data_names, where only data frames with all numeric columns are kept
 
-raw_data_names <- raw_data_names[raw_data_names != "raw_data_lipids"]
-raw_data_names
+raw_data_names <- raw_data_names[raw_data_names != "raw_data_lipids"] # removes the original raw_data_lipids data frame
+raw_data_names # all left in the list should be the family data frames suitable for loops going forward
 
 ################################################################################
 ######### 9. CREATING FOLDERS FOR ALL LIPID FAMILIES AND CATEGORIES ############
@@ -182,40 +182,40 @@ raw_data_names
 
 write.csv(
   data.frame(Family = names(lipid_families)),
-  "lipid_categories_1.csv",
+  "complete_lipid_categories.csv",
   row.names = FALSE
-) ## THIS NEEDS TO BE FILLED IN BY THE CLIENT AND SAVED AS 'complete_lipid_categories.csv'
+) # gives a template to fill in for lipid categories
 
-category_mapping <- read.csv("complete_lipid_categories.csv", stringsAsFactors = FALSE)
+category_mapping <- read.csv("complete_lipid_categories.csv", stringsAsFactors = FALSE) # reads the filled in file back in
 
-category_mapping$Family_clean   <- sanitize_name(category_mapping$Family)
-category_mapping$Category_clean <- sanitize_name(category_mapping$Category)
+category_mapping$Family_clean   <- sanitize_name(category_mapping$Family) # standardises the family names
+category_mapping$Category_clean <- sanitize_name(category_mapping$Category) # standardises the category names
 
-top_level_dir <- file.path("outputs", "lipid_categories")
+top_level_dir <- file.path("outputs", "lipid_categories") # sets a shortcut for working in the lipid categories file.
 
 if (!dir.exists(top_level_dir)) {
   dir.create(top_level_dir, recursive = TRUE, showWarnings = FALSE)
-}
+} # makes the lipid categories file if it's not already there
 
-count <- 1
+count <- 1 # sets a counter
 
-for (name in raw_data_names) {
-  lipid_family <- make.names(sub("^raw_data_", "", name))
-  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1]
+for (name in raw_data_names) { # for all names of family data frames
+  lipid_family <- make.names(sub("^raw_data_", "", name)) # remove the prefix, to just leave the family name
+  category <- category_mapping$Category_clean[category_mapping$Family_clean == lipid_family][1] # give the category associated with the family
   
   if (is.na(category) || length(category) == 0) {
     message("No category found for family: ", lipid_family)
     next
-  }
+  } # if a category is not found for the lipid family or nothing was assigned, tell me there was no category found for that family
   
-  folder_path <- file.path(top_level_dir, category, lipid_family)
+  folder_path <- file.path(top_level_dir, category, lipid_family) # make a path of what the file structure should look like
   
-  if (!dir.exists(folder_path)) {
-    dir.create(folder_path, recursive = TRUE, showWarnings = FALSE)
-    message(count, ". Folder created: ", folder_path)
-    count <- count + 1
-  }
-}
+  if (!dir.exists(folder_path)) { # if the directory doesnt already exist for the category and respective family
+    dir.create(folder_path, recursive = TRUE, showWarnings = FALSE) # create it and allow sub folders to be made
+    message(count, ". Folder created: ", folder_path) # tell me its been created
+    count <- count + 1 # count up by one every time you do this
+  } 
+} # creates the complete file structure needed for saving outputs. 
 
 ################################################################################
 ########################## END OF DATA ORGANISATION ############################
